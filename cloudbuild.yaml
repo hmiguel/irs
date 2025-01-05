@@ -1,0 +1,5 @@
+steps:
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['app', 'deploy', '--project', '$PROJECT_ID', '--no-cache',
+         '-q', '$_GAE_PROMOTE', '-v', '$_GAE_VERSION']
+timeout: "1600s"

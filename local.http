@@ -1,0 +1,18 @@
+
+
+### Get irs 2024
+
+POST http://127.0.0.1:8000/irs
+Content-Type: application/json
+
+{
+    "year": 2024
+    "county": "lisboa",
+    "global_income": 50000,
+    "deductions": 1000,
+    "withhold": 11500
+}
+
+### get counties
+GET http://127.0.0.1:8000/counties
+Accept: application/json
