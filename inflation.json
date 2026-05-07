@@ -1,0 +1,20 @@
+[
+  { "year": 2008, "inflation": 2.59 },
+  { "year": 2009, "inflation": -0.83 },
+  { "year": 2010, "inflation": 1.40 },
+  { "year": 2011, "inflation": 3.65 },
+  { "year": 2012, "inflation": 2.77 },
+  { "year": 2013, "inflation": 0.30 },
+  { "year": 2014, "inflation": -0.36 },
+  { "year": 2015, "inflation": 0.50 },
+  { "year": 2016, "inflation": 0.60 },
+  { "year": 2017, "inflation": 1.40 },
+  { "year": 2018, "inflation": 1.50 },
+  { "year": 2019, "inflation": 0.30 },
+  { "year": 2020, "inflation": -0.01 },
+  { "year": 2021, "inflation": 1.27 },
+  { "year": 2022, "inflation": 7.80 },
+  { "year": 2023, "inflation": 3.80 },
+  { "year": 2024, "inflation": 2.40 },
+  { "year": 2025, "inflation": 2.30 }
+]
