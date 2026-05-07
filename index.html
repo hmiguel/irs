@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador IRS 2024</title>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+  <style>
+    :root {
+      --color-primary: #1a56db;
+      --color-primary-light: #eff4ff;
+      --color-surface: #ffffff;
+      --color-bg: #f3f4f6;
+      --color-text: #111827;
+      --color-muted: #6b7280;
+      --color-border: #e5e7eb;
+      --color-green: #059669;
+      --color-red: #dc2626;
+      --color-green-bg: #ecfdf5;
+      --color-red-bg: #fef2f2;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.5;
+      padding-bottom: 3rem;
+    }
+
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 2.5rem 1rem 1.5rem;
+    }
+    .header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      letter-spacing: -.5px;
+    }
+    .header p {
+      color: var(--color-muted);
+      margin-top: .25rem;
+      font-size: .95rem;
+    }
+
+    /* Card */
+    .card {
+      background: var(--color-surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+    .card-title {
+      font-size: .8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--color-muted);
+      margin-bottom: 1rem;
+    }
+
+    /* Input grid */
+    .input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+    }
+    .input-grid .full { grid-column: 1 / -1; }
+
+    @media (max-width: 480px) {
+      .input-grid { grid-template-columns: 1fr; }
+      .input-grid .full { grid-column: 1; }
+    }
+
+    .field label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 500;
+      color: var(--color-muted);
+      margin-bottom: .35rem;
+    }
+    .field input,
+    .field select {
+      width: 100%;
+      padding: .55rem .75rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      font-size: .95rem;
+      color: var(--color-text);
+      background: var(--color-surface);
+      outline: none;
+      transition: border-color .15s;
+    }
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(26,86,219,.1);
+    }
+    .field input::placeholder { color: #c0c4cc; }
+
+    /* Results */
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: .55rem 0;
+      border-bottom: 1px solid var(--color-border);
+      font-size: .9rem;
+    }
+    .result-row:last-child { border-bottom: none; }
+    .result-row .label { color: var(--color-muted); }
+    .result-row .value { font-variant-numeric: tabular-nums; font-weight: 500; }
+    .result-row.indent .label { padding-left: 1rem; font-size: .85rem; }
+
+    .result-row.total {
+      padding-top: .75rem;
+      margin-top: .25rem;
+      border-top: 2px solid var(--color-border);
+      border-bottom: none;
+    }
+    .result-row.total .label { font-weight: 600; color: var(--color-text); }
+    .result-row.total .value { font-size: 1.05rem; font-weight: 700; }
+
+    .result-row.assessed {
+      margin-top: .25rem;
+      padding: .75rem 1rem;
+      border-radius: 8px;
+      border-bottom: none;
+    }
+    .result-row.assessed.payment {
+      background: var(--color-red-bg);
+    }
+    .result-row.assessed.refund {
+      background: var(--color-green-bg);
+    }
+    .result-row.assessed .label { font-weight: 600; font-size: .95rem; }
+    .result-row.assessed .value { font-size: 1.1rem; font-weight: 700; }
+    .assessed.payment .value { color: var(--color-red); }
+    .assessed.refund .value { color: var(--color-green); }
+
+    .badge {
+      display: inline-block;
+      background: var(--color-primary-light);
+      color: var(--color-primary);
+      font-size: .75rem;
+      font-weight: 600;
+      padding: .1rem .45rem;
+      border-radius: 4px;
+      margin-left: .4rem;
+      vertical-align: middle;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--color-border);
+      margin: .5rem 0;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      color: var(--color-muted);
+      font-size: .78rem;
+      padding: 1rem;
+    }
+  </style>
+</head>
+<body x-data="irsCalc()">
+
+  <div class="container">
+
+    <header class="header">
+      <h1>Simulador IRS 2024</h1>
+      <p>Cálculo aproximado do imposto sobre o rendimento de pessoas singulares</p>
+    </header>
+
+    <!-- Inputs -->
+    <div class="card">
+      <div class="card-title">Dados</div>
+      <div class="input-grid">
+
+        <div class="field full">
+          <label>Rendimento Bruto Anual (€)</label>
+          <input type="number" min="0" step="100" placeholder="Ex: 35 000"
+                 x-model="grossInput">
+        </div>
+
+        <div class="field">
+          <label>Município</label>
+          <select x-model="municipality">
+            <template x-for="m in sortedMunicipalities" :key="m">
+              <option :value="m" x-text="titleCase(m)"></option>
+            </template>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Ano fiscal</label>
+          <select x-model="year">
+            <option value="2024">2024</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Dedução específica (€)</label>
+          <input type="number" min="0" step="0.01"
+                 :placeholder="gross > 0 ? 'Auto: ' + fmt(specificDeductionAuto) : 'Ex: 4 350,24'"
+                 x-model="specificDeductionInput">
+        </div>
+
+        <div class="field">
+          <label>Deduções à coleta (€)</label>
+          <input type="number" min="0" step="10" placeholder="Ex: 892"
+                 x-model="deductionsInput">
+        </div>
+
+        <div class="field">
+          <label>Retenção na fonte (€)</label>
+          <input type="number" min="0" step="10" placeholder="Ex: 8 000"
+                 x-model="withheldInput">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="card" x-show="gross > 0" x-transition>
+      <div class="card-title">Simulação</div>
+
+      <div class="result-row">
+        <span class="label">Rendimento Bruto</span>
+        <span class="value" x-text="'€ ' + fmt(gross)"></span>
+      </div>
+
+      <div class="result-row indent">
+        <span class="label">
+          Dedução específica
+          <span class="badge" x-show="!specificDeductionInput" style="background:#f0fdf4;color:#059669;">auto</span>
+        </span>
+        <span class="value" x-text="'− € ' + fmt(specificDeduction)"></span>
+      </div>
+
+      <div class="result-row total" style="padding-top:.5rem; margin-top:0; border-top:1px solid var(--color-border);">
+        <span class="label">Rendimento Coletável</span>
+        <span class="value" x-text="'€ ' + fmt(collectableIncome)"></span>
+      </div>
+
+      <div class="divider" style="margin:.75rem 0;"></div>
+
+      <div class="result-row">
+        <span class="label">
+          Escalão aplicável
+          <span class="badge" x-text="fmtPct(bracket.tax * 100)"></span>
+        </span>
+        <span class="value" x-text="'€ ' + fmt(amountCalculated)"></span>
+      </div>
+
+      <div class="result-row indent">
+        <span class="label">Parcela a abater</span>
+        <span class="value" x-text="'− € ' + fmt(bracket.parcel)"></span>
+      </div>
+
+      <div class="result-row" style="font-weight:500;">
+        <span class="label">Coleta (base)</span>
+        <span class="value" x-text="'€ ' + fmt(baseTax)"></span>
+      </div>
+
+      <template x-if="deductions > 0">
+        <div class="result-row indent">
+          <span class="label">Deduções à coleta</span>
+          <span class="value" x-text="'− € ' + fmt(deductions)"></span>
+        </div>
+      </template>
+
+      <div class="result-row indent">
+        <span class="label">
+          Benefício municipal
+          <span class="badge" x-text="titleCase(municipality) + ' ' + fmtPct(countyRate * 100)"></span>
+        </span>
+        <span class="value" x-text="countyBenefit > 0 ? '− € ' + fmt(countyBenefit) : '€ ' + fmt(0)"></span>
+      </div>
+
+      <div class="divider" style="margin:.75rem 0;"></div>
+
+      <div class="result-row total">
+        <span class="label">Coleta Líquida</span>
+        <span class="value" x-text="'€ ' + fmt(netTax)"></span>
+      </div>
+
+      <div class="result-row">
+        <span class="label">Taxa efetiva</span>
+        <span class="value" x-text="fmtPct(effectiveRate)"></span>
+      </div>
+
+      <template x-if="withheld > 0">
+        <div>
+          <div class="result-row indent">
+            <span class="label">Retenção na fonte</span>
+            <span class="value" x-text="'− € ' + fmt(withheld)"></span>
+          </div>
+          <div class="result-row assessed" :class="assessedTax >= 0 ? 'payment' : 'refund'">
+            <span class="label" x-text="assessedTax >= 0 ? 'A pagar' : 'A receber (reembolso)'"></span>
+            <span class="value" x-text="(assessedTax >= 0 ? '€ ' : '+ € ') + fmt(Math.abs(assessedTax))"></span>
+          </div>
+        </div>
+      </template>
+
+    </div>
+
+    <footer class="footer">
+      Cálculo aproximado para fins informativos. Não substitui declaração oficial AT. &mdash; Dados fiscais 2024.
+    </footer>
+
+  </div>
+
+  <script>
+    const TAX_DATA = {"2024":{"specific_deduction":4350.24,"social_security_tax":0.11,"table":{"1":{"to":7703,"parcel":0,"tax":0.1325},"2":{"to":11623,"parcel":269.61,"tax":0.165},"3":{"to":16472,"parcel":908.92,"tax":0.22},"4":{"to":21321,"parcel":1403.08,"tax":0.25},"5":{"to":27146,"parcel":2895.61,"tax":0.32},"6":{"to":39791,"parcel":3845.5,"tax":0.355},"7":{"to":51997,"parcel":7029.08,"tax":0.435},"8":{"to":81199,"parcel":7673.78,"tax":0.45},"9":{"to":10000000000,"parcel":10073.6,"tax":0.48}},"county_tax":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.048,"alcobaça":0.024,"alcochete":0.04,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"alijo":0.03,"aljezur":0.0,"aljustrel":0.05,"almada":0.035,"almeida":0.0,"almeirim":0.05,"almodovar":0.04,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.025,"alvito":0.04,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.03,"angra do heroismo":0.05,"ansião":0.03,"arcos de valdevez":0.03,"arganil":0.0,"armamar":0.01,"arraiolos":0.05,"arronches":0.0,"arruda dos vinhos":0.038,"aveiro":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.0475,"barrancos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.025,"benavente":0.025,"bombarral":0.035,"borba":0.04,"boticas":0.0,"braga":0.03,"bragança":0.05,"cabeceiras de basto":0.02,"cadaval":0.025,"caldas da rainha":0.02,"calheta (açores)":0.0,"calheta (madeira)":0.0,"camara de lobos":0.035,"caminha":0.05,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.05,"castanheira de pera":0.0,"castelo branco":0.015,"castelo de paiva":0.05,"castelo de vide":0.025,"castro daire":0.03,"castro marim":0.035,"castro verde":0.04,"celorico da beira":0.04,"celorico de basto":0.04,"chamusca":0.015,"chaves":0.05,"cinfães":0.03,"coimbra":0.05,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.05,"entroncamento":0.05,"espinho":0.045,"esposende":0.05,"estarreja":0.03,"estremoz":0.035,"evora":0.035,"fafe":0.03,"faro":0.05,"felgueiras":0.0434,"ferreira do alentejo":0.05,"ferreira do zezere":0.01,"figueira da foz":0.0325,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.03,"fornos de algodres":0.05,"freixo de espada a cinta":0.05,"fronteira":0.0,"funchal":0.0,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.05,"gouveia":0.04,"grandola":0.05,"guarda":0.04,"guimarães":0.05,"horta":0.045,"idanha-a-nova":0.025,"ilhavo":0.04,"lagoa (algarve)":0.02,"lagoa (açores)":0.05,"lagos":0.0,"lajes das flores":0.02,"lajes do pico":0.05,"lamego":0.04,"leiria":0.05,"lisboa":0.005,"loule":0.0,"loures":0.0475,"lourinhã":0.0375,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.01,"machico":0.04,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.03,"marinha grande":0.05,"marvão":0.025,"matosinhos":0.05,"mação":0.04,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mertola":0.03,"mesão frio":0.03,"mira":0.05,"miranda do corvo":0.04,"miranda do douro":0.025,"mirandela":0.02,"mogadouro":0.0,"moimenta da beira":0.045,"monchique":0.025,"mondim de basto":0.035,"monforte":0.05,"montalegre":0.05,"montemor-o-novo":0.03,"montemor-o-velho":0.045,"montijo":0.04,"monção":0.02,"mora":0.05,"mortagua":0.0,"mourão":0.03,"murtosa":0.04,"murça":0.025,"nazare":0.05,"nelas":0.04,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.035,"odivelas":0.05,"oeiras":0.047,"oleiros":0.0,"olhão":0.04,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.0,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.025,"ovar":0.02,"palmela":0.05,"pampilhosa da serra":0.0,"paredes":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.01,"penacova":0.04,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.0,"penedono":0.0,"penela":0.05,"peniche":0.03,"peso da regua":0.05,"pinhel":0.05,"pombal":0.025,"ponta delgada":0.035,"ponta do sol":0.0,"ponte da barca":0.04,"ponte de lima":0.0,"ponte de sor":0.035,"portalegre":0.035,"portel":0.05,"portimão":0.05,"porto":0.035,"porto de mos":0.025,"porto moniz":0.0,"porto santo":0.0375,"povoa de lanhoso":0.045,"povoa de varzim":0.04,"povoação":0.025,"proença-a-nova":0.025,"redondo":0.03,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.05,"ribeira grande":0.0175,"rio maior":0.046,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.05,"s. pedro do sul":0.02,"s. roque do pico":0.05,"s. vicente":0.05,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.05,"santa comba dão":0.044000000000000004,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.0,"santa maria da feira":0.05,"santa marta de penaguião":0.005,"santana":0.0,"santarem":0.045,"santiago do cacem":0.05,"santo tirso":0.035,"sardoal":0.05,"satão":0.05,"seia":0.025,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.025,"sesimbra":0.05,"setubal":0.035,"sever do vouga":0.025,"sines":0.0375,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.025,"terras de bouro":0.045,"tomar":0.04,"tondela":0.025,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.0375,"trancoso":0.0,"trofa":0.048,"vagos":0.025,"vale de cambra":0.025,"valença":0.02,"valongo":0.05,"valpaços":0.05,"velas":0.0,"vendas novas":0.05,"viana do alentejo":0.025,"vidigueira":0.05,"vieira do minho":0.0,"vila de rei":0.025,"vila do bispo":0.0,"vila do porto":0.05,"vila flor":0.0,"vila franca de xira":0.0475,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.03,"vila nova de famalicão":0.045,"vila nova de foz coa":0.05,"vila nova de gaia":0.025,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.03,"vimioso":0.05,"vinhais":0.0,"viseu":0.04,"vizela":0.035,"vouzela":0.05}}};
+
+    function r2(n) { return Math.round(n * 100) / 100; }
+
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('irsCalc', () => ({
+        grossInput: '35000',
+        municipality: 'porto',
+        year: '2024',
+        specificDeductionInput: '',
+        deductionsInput: '650',
+        withheldInput: '5200',
+
+        get gross()       { return parseFloat(this.grossInput) || 0; },
+        get deductions()  { return parseFloat(this.deductionsInput) || 0; },
+        get withheld()    { return parseFloat(this.withheldInput) || 0; },
+        get yearData()    { return TAX_DATA[this.year]; },
+        get countyRate()  { return this.yearData.county_tax[this.municipality] ?? 0; },
+        get brackets()    { return Object.values(this.yearData.table); },
+
+        get sortedMunicipalities() {
+          return Object.keys(this.yearData.county_tax).sort((a, b) => a.localeCompare(b, 'pt'));
+        },
+
+        // Auto-calculated default: max(fixed, gross * ss_rate)
+        get specificDeductionAuto() {
+          return r2(Math.max(
+            this.yearData.specific_deduction,
+            this.gross * this.yearData.social_security_tax
+          ));
+        },
+        // Use manual input if provided, otherwise fall back to auto
+        get specificDeduction() {
+          const manual = parseFloat(this.specificDeductionInput);
+          return isNaN(manual) ? this.specificDeductionAuto : r2(manual);
+        },
+
+        // Step 2: colectable income
+        get collectableIncome() {
+          return r2(Math.max(0, this.gross - this.specificDeduction));
+        },
+
+        // Step 3: bracket — strict <
+        get bracket() {
+          return this.brackets.find(b => this.collectableIncome < b.to) || this.brackets[this.brackets.length - 1];
+        },
+
+        // Step 4: base tax
+        get amountCalculated() { return r2(this.collectableIncome * this.bracket.tax); },
+        get baseTax()          { return r2(this.amountCalculated - this.bracket.parcel); },
+
+        // Step 5: municipal benefit — low county_tax = bigger reduction
+        get countyBenefit() {
+          return r2((this.baseTax - this.deductions) * (0.05 - this.countyRate));
+        },
+
+        // Step 6: net tax
+        get netTax() {
+          return r2(this.baseTax - this.deductions - Math.max(0, this.countyBenefit));
+        },
+
+        // Step 7: assessed tax (owed or refunded)
+        get assessedTax() { return r2(this.netTax - this.withheld); },
+
+        get effectiveRate() {
+          return this.gross > 0 ? (this.netTax / this.gross * 100) : 0;
+        },
+
+        fmt(n) {
+          return new Intl.NumberFormat('pt-PT', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }).format(n);
+        },
+        fmtPct(n) {
+          return new Intl.NumberFormat('pt-PT', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          }).format(n) + '%';
+        },
+        titleCase(s) {
+          return s.replace(/(^|\s|\()(\S)/g, (_, sep, c) => sep + c.toUpperCase());
+        },
+      }));
+    });
+  </script>
+
+</body>
+</html>
