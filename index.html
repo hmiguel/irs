@@ -3,409 +3,1130 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulador IRS 2024</title>
+  <title>Simulador IRS · Portugal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
   <style>
     :root {
-      --color-primary: #1a56db;
-      --color-primary-light: #eff4ff;
-      --color-surface: #ffffff;
-      --color-bg: #f3f4f6;
-      --color-text: #111827;
-      --color-muted: #6b7280;
-      --color-border: #e5e7eb;
-      --color-green: #059669;
-      --color-red: #dc2626;
-      --color-green-bg: #ecfdf5;
-      --color-red-bg: #fef2f2;
-      --radius: 12px;
-      --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+      --primary:    #e85d04;
+      --primary-lt: #2a1200;
+      --primary-md: #6b2900;
+      --cyan:       #38bdf8;
+      --green:      #34d399;
+      --green-lt:   rgba(52,211,153,.12);
+      --red:        #f87171;
+      --red-lt:     rgba(248,113,113,.12);
+      --amber:      #fbbf24;
+      --amber-lt:   rgba(251,191,36,.12);
+      --surface:    #1c1a18;
+      --surface-2:  #252220;
+      --bg:         #111009;
+      --border:     rgba(255,255,255,0.12);
+      --text:       #f0ece6;
+      --muted:      #a09890;
+      --radius:     0px;
+      --shadow:     3px 3px 0 rgba(232,93,4,.3);
+      --mono:       'JetBrains Mono', monospace;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: var(--color-bg);
-      color: var(--color-text);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       line-height: 1.5;
-      padding-bottom: 3rem;
+      min-height: 100vh;
+      scrollbar-color: var(--border) transparent;
     }
 
-    .container {
-      max-width: 680px;
+    /* ── Page shell ──────────────────────────────── */
+    .page {
+      max-width: 1040px;
       margin: 0 auto;
-      padding: 0 1rem;
+      padding: 0 1.25rem 3rem;
     }
 
-    /* Header */
-    .header {
-      text-align: center;
-      padding: 2.5rem 1rem 1.5rem;
+    /* ── Year pill bar ──────────────────────────── */
+    .year-bar {
+      display: flex;
+      gap: .35rem;
+      flex-wrap: wrap;
+      padding: 1.75rem 0 0;
+      align-items: center;
     }
-    .header h1 {
-      font-size: 1.75rem;
+    .year-bar-label {
+      font-size: .68rem;
       font-weight: 700;
-      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      color: var(--muted);
+      margin-right: .25rem;
+    }
+    .year-pill-btn {
+      padding: .28rem .75rem;
+      border-radius: 0;
+      border: 2px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-size: .7rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      cursor: pointer;
+      transition: border-color .1s, color .1s, background .1s;
+      letter-spacing: .02em;
+    }
+    .year-pill-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .year-pill-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+    .delta-context {
+      font-size: .68rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-left: .5rem;
+      opacity: .7;
+    }
+
+    /* ── Page heading ───────────────────────────── */
+    .heading {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: 1.25rem 0 1.25rem;
+    }
+    .heading h1 {
+      font-size: 1.7rem;
+      font-weight: 800;
+      color: var(--text);
       letter-spacing: -.5px;
     }
-    .header p {
-      color: var(--color-muted);
-      margin-top: .25rem;
-      font-size: .95rem;
+
+    /* ── Main two-column grid ────────────────────── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    @media (max-width: 720px) {
+      .main-grid { grid-template-columns: 1fr; }
     }
 
-    /* Card */
+    /* ── Card base ──────────────────────────────── */
     .card {
-      background: var(--color-surface);
+      background: var(--surface);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding: 1.5rem;
-      margin-bottom: 1rem;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      position: relative;
     }
-    .card-title {
-      font-size: .8rem;
-      font-weight: 600;
+    .card-header {
+      padding: 1rem 1.25rem .75rem;
+      border-bottom: 2px solid var(--border);
+    }
+    .card-label {
+      font-size: .68rem;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: .05em;
-      color: var(--color-muted);
-      margin-bottom: 1rem;
+      letter-spacing: .09em;
+      color: var(--muted);
     }
+    .card-body { padding: 1.25rem; }
+    .card-body-sm { padding: 1rem 1.25rem; }
 
-    /* Input grid */
-    .input-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: .75rem;
-    }
-    .input-grid .full { grid-column: 1 / -1; }
-
-    @media (max-width: 480px) {
-      .input-grid { grid-template-columns: 1fr; }
-      .input-grid .full { grid-column: 1; }
-    }
-
-    .field label {
-      display: block;
-      font-size: .8rem;
-      font-weight: 500;
-      color: var(--color-muted);
-      margin-bottom: .35rem;
-    }
-    .field input,
-    .field select {
-      width: 100%;
-      padding: .55rem .75rem;
-      border: 1px solid var(--color-border);
-      border-radius: 8px;
-      font-size: .95rem;
-      color: var(--color-text);
-      background: var(--color-surface);
-      outline: none;
-      transition: border-color .15s;
-    }
-    .field input:focus,
-    .field select:focus {
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(26,86,219,.1);
-    }
-    .field input::placeholder { color: #c0c4cc; }
-
-    /* Results */
-    .result-row {
+    /* ── Income slider card ─────────────────────── */
+    .slider-header {
       display: flex;
       justify-content: space-between;
+      align-items: center;
+    }
+    .slider-big-val {
+      font-size: 1.3rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      color: var(--primary);
+      font-variant-numeric: tabular-nums;
+    }
+    .slider-wrap {
+      position: relative;
+      padding-top: 1.5rem;
+      margin-top: .5rem;
+    }
+    .slider-bubble {
+      position: absolute;
+      top: 0;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 700;
+      font-family: var(--mono);
+      padding: .15rem .45rem;
+      border-radius: 0;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .slider-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-top-color: var(--primary);
+      border-bottom: none;
+    }
+    input[type="range"].rng {
+      -webkit-appearance: none; appearance: none;
+      width: 100%; height: 6px;
+      background: transparent; outline: none;
+      cursor: pointer; display: block;
+    }
+    input[type="range"].rng::-webkit-slider-runnable-track {
+      height: 4px; border-radius: 0;
+      background: linear-gradient(to right,
+        var(--primary) 0%, var(--primary) var(--pct, 35%),
+        var(--border) var(--pct, 35%), var(--border) 100%);
+    }
+    input[type="range"].rng::-moz-range-track {
+      height: 4px; border-radius: 0; background: var(--border);
+    }
+    input[type="range"].rng::-moz-range-progress {
+      height: 4px; border-radius: 0; background: var(--primary);
+    }
+    input[type="range"].rng::-webkit-slider-thumb {
+      -webkit-appearance: none; appearance: none;
+      width: 18px; height: 18px; border-radius: 0;
+      background: var(--primary); border: 2px solid var(--bg);
+      box-shadow: none;
+      margin-top: -7px; cursor: grab;
+    }
+    input[type="range"].rng::-webkit-slider-thumb:active { cursor: grabbing; }
+    input[type="range"].rng::-moz-range-thumb {
+      width: 18px; height: 18px; border-radius: 0;
+      background: var(--primary); border: 2px solid var(--bg);
+      box-shadow: none; cursor: grab;
+    }
+    .slider-ticks {
+      display: flex; justify-content: space-between;
+      margin-top: .5rem;
+    }
+    .slider-ticks span { font-size: .65rem; color: var(--muted); }
+
+    /* ── Input fields ───────────────────────────── */
+    .field { margin-bottom: .75rem; }
+    .field:last-child { margin-bottom: 0; }
+    .field label {
+      display: block; font-size: .7rem; font-weight: 700;
+      color: var(--muted); margin-bottom: .3rem;
+      text-transform: uppercase; letter-spacing: .06em;
+    }
+    .field input, .field select {
+      width: 100%; padding: .6rem .85rem;
+      border: 2px solid var(--border); border-radius: 0;
+      font-size: .9rem; color: var(--text);
+      background: var(--bg); outline: none;
+      transition: border-color .1s;
+      font-family: inherit;
+    }
+    .field select option { background: #1c1a18; color: var(--text); }
+    .field input:focus, .field select:focus {
+      border-color: var(--primary);
+      box-shadow: none;
+    }
+    .field input::placeholder { color: var(--muted); opacity: .5; }
+    .year-badge {
+      width: 100%; padding: .6rem .85rem;
+      border: 2px solid var(--primary); border-radius: 0;
+      font-size: .9rem; font-weight: 700; font-family: var(--mono);
+      color: var(--primary);
+      background: transparent; text-align: center;
+    }
+    .field-row {
+      display: grid; grid-template-columns: 1fr 1fr; gap: .6rem;
+    }
+    .optional-label {
+      font-size: .62rem; color: var(--muted);
+      text-align: right; margin-top: .2rem; opacity: .7;
+    }
+
+    /* ── Results panel ──────────────────────────── */
+    .results-empty {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 3.5rem 1.5rem;
+      color: var(--muted); font-size: .9rem;
+      text-align: center; gap: .75rem;
+    }
+    .results-empty svg { opacity: .2; color: var(--primary); }
+
+    /* Hero net number */
+    .hero {
+      padding: 2rem 1.5rem 1.75rem;
+      background: var(--primary);
+      color: #fff;
+      position: relative;
+      border-bottom: 2px solid var(--border);
+    }
+    .hero-label {
+      font-size: .65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .12em;
+      color: rgba(255,255,255,.85); margin-bottom: .4rem;
+    }
+    .hero-amount {
+      font-size: 2.8rem; font-weight: 700;
+      font-family: var(--mono);
+      letter-spacing: -.5px; font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+      display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap;
+    }
+    .hero-sub {
+      font-size: .75rem; color: rgba(255,255,255,.8); margin-top: .5rem;
+      font-family: var(--mono);
+    }
+
+    /* Stat chips row */
+    .stat-chips {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0; background: var(--border);
+      border-bottom: 2px solid var(--border);
+    }
+    .stat-chip {
+      padding: .85rem 1rem;
+      background: var(--surface);
+      border-top: 3px solid transparent;
+      border-right: 2px solid var(--border);
+    }
+    .stat-chip:last-child { border-right: none; }
+    .stat-chip-label {
+      font-size: .6rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .09em;
+      color: var(--muted); margin-bottom: .25rem;
+    }
+    .stat-chip-val {
+      font-size: .95rem; font-weight: 700;
+      font-family: var(--mono);
+      font-variant-numeric: tabular-nums;
+    }
+    .stat-chip-pct {
+      font-size: .65rem; color: var(--muted);
+      margin-top: .1rem; font-weight: 500;
+      font-family: var(--mono);
+    }
+    .chip-ss  { border-top-color: var(--amber); }
+    .chip-tax { border-top-color: var(--red); }
+    .chip-net { border-top-color: var(--green); }
+    .chip-ss   .stat-chip-val { color: var(--amber); }
+    .chip-tax  .stat-chip-val { color: var(--red); }
+    .chip-net  .stat-chip-val { color: var(--green); }
+
+    /* Breakdown bar */
+    .breakdown-section { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); }
+    .breakdown-bar {
+      height: 8px; border-radius: 0;
+      overflow: hidden; display: flex;
+      background: var(--border);
+    }
+    .breakdown-seg {
+      height: 100%;
+      transition: width .35s ease;
+    }
+    .seg-ss  { background: var(--amber); }
+    .seg-tax { background: var(--red); }
+    .seg-net { background: var(--green); }
+    .breakdown-legend {
+      display: flex; gap: 1rem; margin-top: .55rem;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: .35rem;
+      font-size: .65rem; color: var(--muted); font-weight: 500;
+    }
+    .legend-dot {
+      width: 8px; height: 8px; border-radius: 0; flex-shrink: 0;
+    }
+
+    /* Detail rows */
+    .detail-section { padding: .5rem 1.5rem 1rem; }
+    .detail-row {
+      display: flex; justify-content: space-between;
       align-items: baseline;
-      padding: .55rem 0;
-      border-bottom: 1px solid var(--color-border);
-      font-size: .9rem;
+      padding: .5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: .85rem;
     }
-    .result-row:last-child { border-bottom: none; }
-    .result-row .label { color: var(--color-muted); }
-    .result-row .value { font-variant-numeric: tabular-nums; font-weight: 500; }
-    .result-row.indent .label { padding-left: 1rem; font-size: .85rem; }
-
-    .result-row.total {
-      padding-top: .75rem;
-      margin-top: .25rem;
-      border-top: 2px solid var(--color-border);
-      border-bottom: none;
+    .detail-row:last-child { border-bottom: none; }
+    .detail-row .lbl { color: var(--muted); font-weight: 500; }
+    .detail-row .val {
+      font-weight: 600; font-family: var(--mono);
+      font-variant-numeric: tabular-nums;
     }
-    .result-row.total .label { font-weight: 600; color: var(--color-text); }
-    .result-row.total .value { font-size: 1.05rem; font-weight: 700; }
+    .detail-row.sub .lbl { padding-left: 1rem; font-size: .8rem; }
+    .detail-row.sub .val { font-weight: 400; }
+    .detail-row.strong .lbl { font-weight: 700; color: var(--text); }
+    .detail-row.strong .val { font-size: .95rem; font-weight: 700; }
 
-    .result-row.assessed {
-      margin-top: .25rem;
+    /* TET row */
+    .tet-row {
+      margin: 0 1.25rem .75rem;
+      display: flex; justify-content: space-between; align-items: center;
+      background: transparent;
+      border: 2px solid var(--primary);
+      border-radius: 0;
       padding: .75rem 1rem;
-      border-radius: 8px;
-      border-bottom: none;
     }
-    .result-row.assessed.payment {
-      background: var(--color-red-bg);
+    .tet-label { font-size: .7rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: .07em; }
+    .tet-val-wrap { display: flex; align-items: baseline; gap: .4rem; }
+    .tet-val   { font-size: 1.2rem; font-weight: 700; font-family: var(--mono); color: var(--primary); }
+
+    /* Assessed row */
+    .assessed-row {
+      margin: 0 1.25rem 1.25rem;
+      border-radius: 0;
+      padding: .85rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
     }
-    .result-row.assessed.refund {
-      background: var(--color-green-bg);
-    }
-    .result-row.assessed .label { font-weight: 600; font-size: .95rem; }
-    .result-row.assessed .value { font-size: 1.1rem; font-weight: 700; }
-    .assessed.payment .value { color: var(--color-red); }
-    .assessed.refund .value { color: var(--color-green); }
+    .assessed-row.payment { background: transparent; border: 2px solid var(--red); }
+    .assessed-row.refund  { background: transparent; border: 2px solid var(--green); }
+    .assessed-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; }
+    .assessed-val   { font-size: 1.15rem; font-weight: 700; font-family: var(--mono); }
+    .assessed-row.payment .assessed-label,
+    .assessed-row.payment .assessed-val { color: var(--red); }
+    .assessed-row.refund  .assessed-label,
+    .assessed-row.refund  .assessed-val { color: var(--green); }
 
     .badge {
       display: inline-block;
-      background: var(--color-primary-light);
-      color: var(--color-primary);
+      background: transparent; color: var(--primary);
+      font-size: .6rem; font-weight: 700;
+      padding: .05rem .35rem;
+      border: 1px solid var(--primary);
+      border-radius: 0;
+      margin-left: .3rem; vertical-align: middle;
+      font-family: var(--mono);
+    }
+    .badge-auto { color: var(--green); border-color: var(--green); }
+
+    /* Delta badges */
+    .delta {
+      font-size: .62rem; font-weight: 700;
+      font-family: var(--mono);
+      padding: .08rem .35rem;
+      border-radius: 0; border: 1px solid currentColor;
+      vertical-align: middle; white-space: nowrap;
+    }
+    .delta-up      { color: var(--green); }
+    .delta-down    { color: var(--red); }
+    .delta-tax-up  { color: var(--red); }
+    .delta-tax-down{ color: var(--green); }
+    .delta-neutral { color: var(--muted); }
+    /* On the orange hero background, override to readable white */
+    .hero .delta-up, .hero .delta-down,
+    .hero .delta-tax-up, .hero .delta-tax-down,
+    .hero .delta-neutral {
+      color: #fff;
+      border-color: rgba(255,255,255,.55);
+    }
+
+    /* Inflation row */
+    .inflation-row {
+      background: transparent;
+      border: 1px solid var(--cyan);
+      border-radius: 0;
+      padding: .5rem .75rem;
+      margin: .4rem 0 0;
+    }
+    .inflation-row .lbl { color: var(--cyan) !important; }
+    .inflation-val { color: var(--cyan) !important; font-family: var(--mono); }
+
+    /* ── Light mode — Bauhaus / Braun ────────────── */
+    body.light {
+      --primary:    #e85d04;
+      --primary-lt: #fff3eb;
+      --primary-md: #fed7aa;
+      --cyan:       #0284c7;
+      --green:      #16a34a;
+      --green-lt:   rgba(22,163,74,.08);
+      --red:        #dc2626;
+      --red-lt:     rgba(220,38,38,.08);
+      --amber:      #d97706;
+      --amber-lt:   rgba(217,119,6,.08);
+      --surface:    #ffffff;
+      --surface-2:  #faf7f4;
+      --bg:         #f5f0e8;
+      --border:     #1a1a1a;
+      --text:       #111111;
+      --muted:      #555555;
+      --shadow:     3px 3px 0 #111111;
+      scrollbar-color: #ccc transparent;
+    }
+    body.light .field input, body.light .field select {
+      background: #fff;
+      border-color: #1a1a1a;
+      color: #111;
+    }
+    body.light .field input:focus, body.light .field select:focus {
+      border-color: var(--primary);
+      box-shadow: none;
+    }
+    body.light .field select option { background: #fff; color: #111; }
+    body.light .field input::placeholder { color: #aaa; opacity: 1; }
+    body.light .year-badge {
+      background: transparent;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    body.light .hero {
+      background: var(--primary);
+      border-bottom-color: #1a1a1a;
+    }
+    body.light .chip-ss  { border-top-color: var(--amber); }
+    body.light .chip-tax { border-top-color: var(--red); }
+    body.light .chip-net { border-top-color: var(--green); }
+    body.light .breakdown-bar { background: #ddd; }
+    body.light .seg-ss  { background: var(--amber); }
+    body.light .seg-tax { background: var(--red); }
+    body.light .seg-net { background: var(--green); }
+    body.light .inflation-row { border-color: var(--cyan); }
+    body.light .inflation-row .lbl { color: var(--cyan) !important; }
+    body.light .inflation-val { color: var(--cyan) !important; }
+
+    /* ── Theme toggle button ─────────────────────── */
+    .theme-toggle {
+      margin-left: auto;
+      background: transparent;
+      border: 2px solid var(--border);
+      border-radius: 0;
+      padding: .38rem .5rem;
+      cursor: pointer;
+      color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .1s, color .1s;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* ── Escalões (brackets) ────────────────────── */
+    .brackets-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: .7rem 1.25rem;
+      cursor: pointer;
+      border-top: 2px solid var(--border);
+      font-size: .65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+      user-select: none;
+      transition: color .1s, background .1s;
+    }
+    .brackets-toggle:hover { color: var(--primary); }
+    .brackets-toggle-icon {
+      font-family: var(--mono);
+      font-size: .9rem;
+      line-height: 1;
+    }
+    .brackets-section {
+      border-top: 2px solid var(--border);
+      overflow-x: auto;
+    }
+    .brackets-section table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .brackets-section thead tr {
+      border-bottom: 2px solid var(--border);
+    }
+    .brackets-section th {
+      padding: .45rem .75rem;
+      text-align: left;
+      font-size: .58rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--muted);
+    }
+    .brackets-section th:not(:first-child) { text-align: right; }
+    .brackets-section td {
+      padding: .45rem .75rem;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--mono);
       font-size: .75rem;
-      font-weight: 600;
-      padding: .1rem .45rem;
-      border-radius: 4px;
-      margin-left: .4rem;
-      vertical-align: middle;
+      color: var(--text);
+    }
+    .brackets-section td:not(:first-child) { text-align: right; }
+    .brackets-section tbody tr:last-child td { border-bottom: none; }
+    .brackets-section tbody tr.bracket-active td {
+      color: var(--primary);
+      font-weight: 700;
+      background: rgba(232,93,4,.07);
     }
 
-    .divider {
-      height: 1px;
-      background: var(--color-border);
-      margin: .5rem 0;
-    }
-
-    /* Footer */
+    /* ── Footer ──────────────────────────────────── */
     .footer {
-      text-align: center;
-      color: var(--color-muted);
-      font-size: .78rem;
-      padding: 1rem;
+      text-align: center; color: var(--muted);
+      font-size: .72rem; padding: 1.75rem 0 .5rem;
+      font-weight: 500;
     }
   </style>
 </head>
-<body x-data="irsCalc()">
+<body x-data="irsCalc()" :class="darkMode ? '' : 'light'">
+<div class="page">
 
-  <div class="container">
-
-    <header class="header">
-      <h1>Simulador IRS 2024</h1>
-      <p>Cálculo aproximado do imposto sobre o rendimento de pessoas singulares</p>
-    </header>
-
-    <!-- Inputs -->
-    <div class="card">
-      <div class="card-title">Dados</div>
-      <div class="input-grid">
-
-        <div class="field full">
-          <label>Rendimento Bruto Anual (€)</label>
-          <input type="number" min="0" step="100" placeholder="Ex: 35 000"
-                 x-model="grossInput">
-        </div>
-
-        <div class="field">
-          <label>Município</label>
-          <select x-model="municipality">
-            <template x-for="m in sortedMunicipalities" :key="m">
-              <option :value="m" x-text="titleCase(m)"></option>
-            </template>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Ano fiscal</label>
-          <select x-model="year">
-            <option value="2024">2024</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Dedução específica (€)</label>
-          <input type="number" min="0" step="0.01"
-                 :placeholder="gross > 0 ? 'Auto: ' + fmt(specificDeductionAuto) : 'Ex: 4 350,24'"
-                 x-model="specificDeductionInput">
-        </div>
-
-        <div class="field">
-          <label>Deduções à coleta (€)</label>
-          <input type="number" min="0" step="10" placeholder="Ex: 892"
-                 x-model="deductionsInput">
-        </div>
-
-        <div class="field">
-          <label>Retenção na fonte (€)</label>
-          <input type="number" min="0" step="10" placeholder="Ex: 8 000"
-                 x-model="withheldInput">
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Results -->
-    <div class="card" x-show="gross > 0" x-transition>
-      <div class="card-title">Simulação</div>
-
-      <div class="result-row">
-        <span class="label">Rendimento Bruto</span>
-        <span class="value" x-text="'€ ' + fmt(gross)"></span>
-      </div>
-
-      <div class="result-row indent">
-        <span class="label">
-          Dedução específica
-          <span class="badge" x-show="!specificDeductionInput" style="background:#f0fdf4;color:#059669;">auto</span>
-        </span>
-        <span class="value" x-text="'− € ' + fmt(specificDeduction)"></span>
-      </div>
-
-      <div class="result-row total" style="padding-top:.5rem; margin-top:0; border-top:1px solid var(--color-border);">
-        <span class="label">Rendimento Coletável</span>
-        <span class="value" x-text="'€ ' + fmt(collectableIncome)"></span>
-      </div>
-
-      <div class="divider" style="margin:.75rem 0;"></div>
-
-      <div class="result-row">
-        <span class="label">
-          Escalão aplicável
-          <span class="badge" x-text="fmtPct(bracket.tax * 100)"></span>
-        </span>
-        <span class="value" x-text="'€ ' + fmt(amountCalculated)"></span>
-      </div>
-
-      <div class="result-row indent">
-        <span class="label">Parcela a abater</span>
-        <span class="value" x-text="'− € ' + fmt(bracket.parcel)"></span>
-      </div>
-
-      <div class="result-row" style="font-weight:500;">
-        <span class="label">Coleta (base)</span>
-        <span class="value" x-text="'€ ' + fmt(baseTax)"></span>
-      </div>
-
-      <template x-if="deductions > 0">
-        <div class="result-row indent">
-          <span class="label">Deduções à coleta</span>
-          <span class="value" x-text="'− € ' + fmt(deductions)"></span>
-        </div>
-      </template>
-
-      <div class="result-row indent">
-        <span class="label">
-          Benefício municipal
-          <span class="badge" x-text="titleCase(municipality) + ' ' + fmtPct(countyRate * 100)"></span>
-        </span>
-        <span class="value" x-text="countyBenefit > 0 ? '− € ' + fmt(countyBenefit) : '€ ' + fmt(0)"></span>
-      </div>
-
-      <div class="divider" style="margin:.75rem 0;"></div>
-
-      <div class="result-row total">
-        <span class="label">Coleta Líquida</span>
-        <span class="value" x-text="'€ ' + fmt(netTax)"></span>
-      </div>
-
-      <div class="result-row">
-        <span class="label">Taxa efetiva</span>
-        <span class="value" x-text="fmtPct(effectiveRate)"></span>
-      </div>
-
-      <template x-if="withheld > 0">
-        <div>
-          <div class="result-row indent">
-            <span class="label">Retenção na fonte</span>
-            <span class="value" x-text="'− € ' + fmt(withheld)"></span>
-          </div>
-          <div class="result-row assessed" :class="assessedTax >= 0 ? 'payment' : 'refund'">
-            <span class="label" x-text="assessedTax >= 0 ? 'A pagar' : 'A receber (reembolso)'"></span>
-            <span class="value" x-text="(assessedTax >= 0 ? '€ ' : '+ € ') + fmt(Math.abs(assessedTax))"></span>
-          </div>
-        </div>
-      </template>
-
-    </div>
-
-    <footer class="footer">
-      Cálculo aproximado para fins informativos. Não substitui declaração oficial AT. &mdash; Dados fiscais 2024.
-    </footer>
-
+  <!-- Year pill bar -->
+  <div class="year-bar">
+    <span class="year-bar-label">Ano fiscal</span>
+    <template x-for="y in availableYears" :key="y">
+      <button class="year-pill-btn"
+              :class="{active: year===y}"
+              @click="year=y"
+              x-text="y">
+      </button>
+    </template>
+    <template x-if="prevYear">
+      <span class="delta-context" x-text="'Δ vs ' + prevYear"></span>
+    </template>
   </div>
 
+  <!-- Heading -->
+  <div class="heading">
+    <h1>Simulador IRS</h1>
+    <button class="theme-toggle" @click="toggleTheme()"
+            :title="darkMode ? 'Mudar para modo claro' : 'Mudar para modo escuro'">
+      <!-- Sun (show in dark mode → click to go light) -->
+      <template x-if="darkMode">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <path stroke-linecap="round" d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+        </svg>
+      </template>
+      <!-- Moon (show in light mode → click to go dark) -->
+      <template x-if="!darkMode">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </template>
+    </button>
+  </div>
+
+  <!-- Two-column grid -->
+  <div class="main-grid">
+
+    <!-- ── LEFT: Inputs ── -->
+    <div style="display:flex; flex-direction:column; gap:1.25rem;">
+
+      <!-- Income slider -->
+      <div class="card">
+        <div class="card-body-sm">
+          <div class="slider-header">
+            <span class="card-label">Rendimento Bruto</span>
+            <span class="slider-big-val" x-text="'€ ' + fmt(gross)"></span>
+          </div>
+          <div class="slider-wrap">
+            <div class="slider-bubble"
+                 :style="'left:clamp(16px,' + sliderPercent + '%,calc(100% - 16px))'"
+                 x-text="'€ ' + fmt(gross)">
+            </div>
+            <input type="range" class="rng"
+                   min="0" max="100000" step="500"
+                   x-model="grossInput"
+                   :style="'--pct:' + sliderPercent + '%'">
+          </div>
+          <div class="slider-ticks">
+            <span>0</span><span>25k</span><span>50k</span><span>75k</span><span>100k</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fields -->
+      <div class="card">
+        <div class="card-header"><div class="card-label">Dados</div></div>
+        <div class="card-body">
+
+          <div class="field">
+            <label>Rendimento Bruto Anual (€)</label>
+            <input type="number" min="0" step="100" placeholder="Ex: 35 000"
+                   x-model="grossInput">
+          </div>
+
+          <div class="field-row">
+            <div class="field" style="margin-bottom:0;">
+              <label>Município</label>
+              <select x-model="municipality">
+                <template x-for="m in sortedMunicipalities" :key="m">
+                  <option :value="m" x-text="titleCase(m)"></option>
+                </template>
+              </select>
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>Ano fiscal</label>
+              <div class="year-badge" x-text="year"></div>
+            </div>
+          </div>
+
+          <div style="height:.75rem;"></div>
+
+          <div class="field">
+            <label>Dedução específica (€)
+              <span class="badge badge-auto" x-show="!specificDeductionInput">auto</span>
+            </label>
+            <input type="number" min="0" step="0.01"
+                   :placeholder="gross > 0 ? 'Auto: ' + fmt(specificDeductionAuto) : 'Ex: 4 350,24'"
+                   x-model="specificDeductionInput">
+          </div>
+
+          <div class="field-row">
+            <div class="field" style="margin-bottom:0;">
+              <label>Deduções à coleta</label>
+              <input type="number" min="0" step="10" placeholder="Ex: 892"
+                     x-model="deductionsInput">
+              <div class="optional-label">opcional</div>
+            </div>
+            <div class="field" style="margin-bottom:0;">
+              <label>Retenção na fonte</label>
+              <input type="number" min="0" step="10" placeholder="Ex: 5 200"
+                     x-model="withheldInput">
+              <div class="optional-label">opcional</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /LEFT -->
+
+    <!-- ── RIGHT: Results ── -->
+    <div class="card">
+
+      <!-- Empty state -->
+      <template x-if="gross === 0">
+        <div class="results-empty">
+          <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          <span>Introduza o rendimento bruto para ver a simulação</span>
+        </div>
+      </template>
+
+      <!-- Results -->
+      <template x-if="gross > 0">
+        <div>
+
+          <!-- Hero -->
+          <div class="hero">
+            <div class="hero-label">Rendimento Líquido estimado</div>
+            <div class="hero-amount">
+              <span x-text="'€ ' + fmt(takeHome)"></span>
+              <template x-if="deltaTakeHome !== null">
+                <span :class="deltaClass(deltaTakeHome, false)"
+                      x-text="(deltaTakeHome > 0 ? '+' : '−') + ' € ' + fmt(Math.abs(deltaTakeHome))">
+                </span>
+              </template>
+            </div>
+            <div class="hero-sub" x-text="'de € ' + fmt(gross) + ' brutos · ' + year"></div>
+          </div>
+
+          <!-- Stat chips -->
+          <div class="stat-chips">
+            <div class="stat-chip chip-ss">
+              <div class="stat-chip-label">Seg. Social</div>
+              <div class="stat-chip-val" x-text="'€ ' + fmt(specificDeduction)"></div>
+              <div class="stat-chip-pct" x-text="fmtPct(specificDeduction/gross*100)"></div>
+            </div>
+            <div class="stat-chip chip-tax">
+              <div class="stat-chip-label">IRS Líquido</div>
+              <div class="stat-chip-val" x-text="'€ ' + fmt(netTax)"></div>
+              <div class="stat-chip-pct" x-text="fmtPct(netTax/gross*100)"></div>
+            </div>
+            <div class="stat-chip chip-net">
+              <div class="stat-chip-label">Líquido</div>
+              <div class="stat-chip-val" x-text="'€ ' + fmt(takeHome)"></div>
+              <div class="stat-chip-pct" x-text="fmtPct(takeHome/gross*100)"></div>
+            </div>
+          </div>
+
+          <!-- Breakdown bar -->
+          <div class="breakdown-section">
+            <div class="breakdown-bar">
+              <div class="breakdown-seg seg-ss"  :style="'width:' + Math.max(1, specificDeduction/gross*100) + '%'"></div>
+              <div class="breakdown-seg seg-tax" :style="'width:' + Math.max(0, netTax/gross*100) + '%'"></div>
+              <div class="breakdown-seg seg-net" :style="'width:' + Math.max(0, takeHome/gross*100) + '%'"></div>
+            </div>
+            <div class="breakdown-legend">
+              <div class="legend-item">
+                <div class="legend-dot" style="background:var(--amber)"></div>
+                <span>Seg. Social + Ded. Específica</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:var(--red)"></div>
+                <span>IRS</span>
+              </div>
+              <div class="legend-item">
+                <div class="legend-dot" style="background:var(--green)"></div>
+                <span>Líquido</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Detail breakdown -->
+          <div class="detail-section">
+
+            <div class="detail-row sub">
+              <span class="lbl">
+                Dedução específica
+                <span class="badge badge-auto" x-show="!specificDeductionInput">auto</span>
+              </span>
+              <span class="val" x-text="'− € ' + fmt(specificDeduction)"></span>
+            </div>
+
+            <div class="detail-row strong">
+              <span class="lbl">Rendimento Coletável</span>
+              <span class="val" x-text="'€ ' + fmt(collectableIncome)"></span>
+            </div>
+
+            <div class="detail-row sub">
+              <span class="lbl">
+                Escalão
+                <span class="badge" x-text="fmtPct(bracket.tax * 100)"></span>
+              </span>
+              <span class="val" x-text="'€ ' + fmt(amountCalculated)"></span>
+            </div>
+
+            <div class="detail-row sub">
+              <span class="lbl">Parcela a abater</span>
+              <span class="val" x-text="'− € ' + fmt(bracket.parcel)"></span>
+            </div>
+
+            <div class="detail-row">
+              <span class="lbl">Coleta (base)</span>
+              <span class="val" x-text="'€ ' + fmt(baseTax)"></span>
+            </div>
+
+            <template x-if="deductions > 0">
+              <div class="detail-row sub">
+                <span class="lbl">Deduções à coleta</span>
+                <span class="val" x-text="'− € ' + fmt(deductions)"></span>
+              </div>
+            </template>
+
+            <div class="detail-row sub">
+              <span class="lbl">
+                Benefício municipal
+                <span class="badge" x-text="titleCase(municipality) + ' ' + fmtPct(countyRate*100)"></span>
+              </span>
+              <span class="val"
+                    x-text="countyBenefit > 0 ? '− € ' + fmt(countyBenefit) : '€ ' + fmt(0)">
+              </span>
+            </div>
+
+            <div class="detail-row strong">
+              <span class="lbl">Coleta Líquida</span>
+              <span class="val" style="display:flex;align-items:baseline;gap:.35rem;">
+                <span x-text="'€ ' + fmt(netTax)"></span>
+                <template x-if="deltaNetTax !== null">
+                  <span :class="deltaClass(deltaNetTax, true)"
+                        x-text="(deltaNetTax > 0 ? '+' : '−') + ' € ' + fmt(Math.abs(deltaNetTax))">
+                  </span>
+                </template>
+              </span>
+            </div>
+
+            <template x-if="inflationAdjustedTakeHome !== null">
+              <div class="detail-row inflation-row">
+                <span class="lbl">
+                  Poder de compra em <span x-text="availableYears[availableYears.length-1]"></span>€
+                  <span class="badge" style="background:rgba(56,189,248,.15);color:var(--cyan);">inflação acum.</span>
+                </span>
+                <span class="val inflation-val" x-text="'≈ € ' + fmt(inflationAdjustedTakeHome)"></span>
+              </div>
+            </template>
+
+          </div>
+
+          <!-- TET -->
+          <div class="tet-row">
+            <span class="tet-label">Taxa Efetiva de Tributação</span>
+            <div class="tet-val-wrap">
+              <span class="tet-val" x-text="fmtPct(effectiveRate)"></span>
+              <template x-if="deltaEffectiveRate !== null">
+                <span :class="deltaClass(deltaEffectiveRate, true)"
+                      x-text="(deltaEffectiveRate > 0 ? '+' : '') + deltaEffectiveRate.toFixed(2) + ' pp'">
+                </span>
+              </template>
+            </div>
+          </div>
+
+          <!-- A pagar / A receber -->
+          <template x-if="withheld > 0">
+            <div class="assessed-row" :class="assessedTax >= 0 ? 'payment' : 'refund'">
+              <span class="assessed-label"
+                    x-text="assessedTax >= 0 ? 'A pagar ao estado' : 'Reembolso estimado'">
+              </span>
+              <span class="assessed-val"
+                    x-text="(assessedTax >= 0 ? '€ ' : '+ € ') + fmt(Math.abs(assessedTax))">
+              </span>
+            </div>
+          </template>
+
+        </div>
+      </template>
+
+      <!-- Escalões -->
+      <div class="brackets-toggle" @click="showBrackets = !showBrackets"
+           role="button" :aria-expanded="showBrackets">
+        <span>Escalões <span x-text="year"></span></span>
+        <span class="brackets-toggle-icon" x-text="showBrackets ? '−' : '+'"></span>
+      </div>
+
+      <template x-if="showBrackets">
+        <div class="brackets-section">
+          <table>
+            <thead>
+              <tr>
+                <th>Rendimento coletável</th>
+                <th>Taxa</th>
+                <th>Parcela a abater</th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="(row, idx) in bracketRows" :key="idx">
+                <tr :class="row.active ? 'bracket-active' : ''">
+                  <td>
+                    <template x-if="row.to === null">
+                      <span x-text="'Acima de € ' + fmtInt(row.from)"></span>
+                    </template>
+                    <template x-if="row.to !== null && row.from === 0">
+                      <span x-text="'Até € ' + fmtInt(row.to)"></span>
+                    </template>
+                    <template x-if="row.to !== null && row.from > 0">
+                      <span x-text="'€ ' + fmtInt(row.from) + ' – ' + fmtInt(row.to)"></span>
+                    </template>
+                  </td>
+                  <td x-text="fmtPct(row.tax * 100)"></td>
+                  <td x-text="row.parcel > 0 ? '€ ' + fmt(row.parcel) : '—'"></td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </template>
+
+    </div><!-- /RIGHT -->
+
+  </div><!-- /main-grid -->
+
+  <footer class="footer">
+    Cálculo aproximado. Não substitui declaração oficial AT.
+    Dados de 2008–2023 são aproximados.
+  </footer>
+
+</div><!-- /page -->
+
   <script>
-    const TAX_DATA = {"2024":{"specific_deduction":4350.24,"social_security_tax":0.11,"table":{"1":{"to":7703,"parcel":0,"tax":0.1325},"2":{"to":11623,"parcel":269.61,"tax":0.165},"3":{"to":16472,"parcel":908.92,"tax":0.22},"4":{"to":21321,"parcel":1403.08,"tax":0.25},"5":{"to":27146,"parcel":2895.61,"tax":0.32},"6":{"to":39791,"parcel":3845.5,"tax":0.355},"7":{"to":51997,"parcel":7029.08,"tax":0.435},"8":{"to":81199,"parcel":7673.78,"tax":0.45},"9":{"to":10000000000,"parcel":10073.6,"tax":0.48}},"county_tax":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.048,"alcobaça":0.024,"alcochete":0.04,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"alijo":0.03,"aljezur":0.0,"aljustrel":0.05,"almada":0.035,"almeida":0.0,"almeirim":0.05,"almodovar":0.04,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.025,"alvito":0.04,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.03,"angra do heroismo":0.05,"ansião":0.03,"arcos de valdevez":0.03,"arganil":0.0,"armamar":0.01,"arraiolos":0.05,"arronches":0.0,"arruda dos vinhos":0.038,"aveiro":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.0475,"barrancos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.025,"benavente":0.025,"bombarral":0.035,"borba":0.04,"boticas":0.0,"braga":0.03,"bragança":0.05,"cabeceiras de basto":0.02,"cadaval":0.025,"caldas da rainha":0.02,"calheta (açores)":0.0,"calheta (madeira)":0.0,"camara de lobos":0.035,"caminha":0.05,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.05,"castanheira de pera":0.0,"castelo branco":0.015,"castelo de paiva":0.05,"castelo de vide":0.025,"castro daire":0.03,"castro marim":0.035,"castro verde":0.04,"celorico da beira":0.04,"celorico de basto":0.04,"chamusca":0.015,"chaves":0.05,"cinfães":0.03,"coimbra":0.05,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.05,"entroncamento":0.05,"espinho":0.045,"esposende":0.05,"estarreja":0.03,"estremoz":0.035,"evora":0.035,"fafe":0.03,"faro":0.05,"felgueiras":0.0434,"ferreira do alentejo":0.05,"ferreira do zezere":0.01,"figueira da foz":0.0325,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.03,"fornos de algodres":0.05,"freixo de espada a cinta":0.05,"fronteira":0.0,"funchal":0.0,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.05,"gouveia":0.04,"grandola":0.05,"guarda":0.04,"guimarães":0.05,"horta":0.045,"idanha-a-nova":0.025,"ilhavo":0.04,"lagoa (algarve)":0.02,"lagoa (açores)":0.05,"lagos":0.0,"lajes das flores":0.02,"lajes do pico":0.05,"lamego":0.04,"leiria":0.05,"lisboa":0.005,"loule":0.0,"loures":0.0475,"lourinhã":0.0375,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.01,"machico":0.04,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.03,"marinha grande":0.05,"marvão":0.025,"matosinhos":0.05,"mação":0.04,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mertola":0.03,"mesão frio":0.03,"mira":0.05,"miranda do corvo":0.04,"miranda do douro":0.025,"mirandela":0.02,"mogadouro":0.0,"moimenta da beira":0.045,"monchique":0.025,"mondim de basto":0.035,"monforte":0.05,"montalegre":0.05,"montemor-o-novo":0.03,"montemor-o-velho":0.045,"montijo":0.04,"monção":0.02,"mora":0.05,"mortagua":0.0,"mourão":0.03,"murtosa":0.04,"murça":0.025,"nazare":0.05,"nelas":0.04,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.035,"odivelas":0.05,"oeiras":0.047,"oleiros":0.0,"olhão":0.04,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.0,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.025,"ovar":0.02,"palmela":0.05,"pampilhosa da serra":0.0,"paredes":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.01,"penacova":0.04,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.0,"penedono":0.0,"penela":0.05,"peniche":0.03,"peso da regua":0.05,"pinhel":0.05,"pombal":0.025,"ponta delgada":0.035,"ponta do sol":0.0,"ponte da barca":0.04,"ponte de lima":0.0,"ponte de sor":0.035,"portalegre":0.035,"portel":0.05,"portimão":0.05,"porto":0.035,"porto de mos":0.025,"porto moniz":0.0,"porto santo":0.0375,"povoa de lanhoso":0.045,"povoa de varzim":0.04,"povoação":0.025,"proença-a-nova":0.025,"redondo":0.03,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.05,"ribeira grande":0.0175,"rio maior":0.046,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.05,"s. pedro do sul":0.02,"s. roque do pico":0.05,"s. vicente":0.05,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.05,"santa comba dão":0.044000000000000004,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.0,"santa maria da feira":0.05,"santa marta de penaguião":0.005,"santana":0.0,"santarem":0.045,"santiago do cacem":0.05,"santo tirso":0.035,"sardoal":0.05,"satão":0.05,"seia":0.025,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.025,"sesimbra":0.05,"setubal":0.035,"sever do vouga":0.025,"sines":0.0375,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.025,"terras de bouro":0.045,"tomar":0.04,"tondela":0.025,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.0375,"trancoso":0.0,"trofa":0.048,"vagos":0.025,"vale de cambra":0.025,"valença":0.02,"valongo":0.05,"valpaços":0.05,"velas":0.0,"vendas novas":0.05,"viana do alentejo":0.025,"vidigueira":0.05,"vieira do minho":0.0,"vila de rei":0.025,"vila do bispo":0.0,"vila do porto":0.05,"vila flor":0.0,"vila franca de xira":0.0475,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.03,"vila nova de famalicão":0.045,"vila nova de foz coa":0.05,"vila nova de gaia":0.025,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.03,"vimioso":0.05,"vinhais":0.0,"viseu":0.04,"vizela":0.035,"vouzela":0.05}}};
+    const COUNTY_TAXES = {
+      "2008":{"abrantes":0.045,"albufeira":0.04,"alcacer do sal":0.05,"alcanena":0.04,"alcobaça":0.05,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.05,"alfandega da fe":0.05,"aljezur":0.05,"aljustrel":0.05,"almada":0.05,"almeida":0.02,"almeirim":0.04,"alter do chão":0.05,"alvito":0.05,"amarante":0.05,"anadia":0.05,"arcos de valdevez":0.03,"arouca":0.035,"arraiolos":0.05,"aveiro":0.05,"avis":0.05,"barcelos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.0,"benavente":0.05,"borba":0.04,"braga":0.05,"bragança":0.05,"cabeceiras de basto":0.05,"caldas da rainha":0.03,"camara de lobos":0.05,"caminha":0.05,"campo maior":0.05,"cantanhede":0.05,"carregal do sal":0.05,"cartaxo":0.025,"cascais":0.05,"castelo branco":0.05,"castro marim":0.0,"celorico de basto":0.05,"condeixa-a-nova":0.05,"coruche":0.05,"covilhã":0.05,"crato":0.0,"cuba":0.05,"espinho":0.05,"esposende":0.05,"estarreja":0.05,"fafe":0.03,"felgueiras":0.05,"figueira da foz":0.05,"figueira de castelo rodrigo":0.02,"freixo de espada a cinta":0.05,"fronteira":0.025,"funchal":0.05,"fundão":0.02,"gavião":0.0,"gois":0.05,"gouveia":0.02,"grandola":0.04,"guimarães":0.05,"idanha-a-nova":0.05,"ilhavo":0.05,"lagoa (açores)":0.05,"lajes do pico":0.05,"lamego":0.05,"lisboa":0.05,"loule":0.03,"loures":0.05,"lourinhã":0.03,"lousada":0.05,"macedo de cavaleiros":0.05,"machico":0.05,"mafra":0.05,"maia":0.05,"manteigas":0.0,"marco de canaveses":0.05,"mertola":0.05,"mesão frio":0.05,"miranda do douro":0.03,"mirandela":0.05,"mogadouro":0.05,"moimenta da beira":0.05,"moita":0.05,"mondim de basto":0.05,"montemor-o-velho":0.05,"mora":0.05,"mortagua":0.025,"moura":0.05,"murça":0.02,"nazare":0.03,"nisa":0.05,"obidos":0.02,"odemira":0.025,"odivelas":0.05,"oleiros":0.0,"olhão":0.03,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.05,"ourem":0.05,"ourique":0.05,"palmela":0.05,"paredes":0.05,"paços de ferreira":0.05,"penafiel":0.05,"penalva do castelo":0.025,"penamacor":0.05,"penedono":0.03,"peso da regua":0.05,"pombal":0.05,"ponta delgada":0.05,"ponta do sol":0.05,"ponte da barca":0.03,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.05,"portimão":0.05,"porto":0.05,"povoa de lanhoso":0.05,"povoa de varzim":0.05,"povoação":0.05,"proença-a-nova":0.05,"resende":0.03,"ribeira de pena":0.05,"ribeira grande":0.05,"s. bras de alportel":0.05,"s. joão da madeira":0.05,"s. joão da pesqueira":0.04,"s. roque do pico":0.05,"s. vicente":0.05,"salvaterra de magos":0.05,"santa cruz":0.05,"santa cruz das flores":0.05,"santa maria da feira":0.05,"santana":0.05,"santarem":0.05,"santiago do cacem":0.05,"sardoal":0.05,"satão":0.05,"seia":0.05,"sernancelhe":0.05,"serpa":0.05,"sesimbra":0.05,"setubal":0.05,"silves":0.05,"sines":0.05,"sintra":0.05,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tavira":0.05,"terras de bouro":0.0,"torre de moncorvo":0.05,"torres novas":0.04,"torres vedras":0.05,"trancoso":0.05,"trofa":0.025,"vale de cambra":0.05,"valença":0.05,"valongo":0.05,"velas":0.05,"vendas novas":0.05,"viana do alentejo":0.05,"viana do castelo":0.05,"vila de rei":0.025,"vila flor":0.02,"vila franca do campo":0.05,"vila nova de cerveira":0.05,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de gaia":0.05,"vila nova de poiares":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.05,"vimioso":0.05,"vinhais":0.025,"vizela":0.05},
+      "2009":{"abrantes":0.045,"albergaria-a-velha":0.05,"albufeira":0.0,"alcacer do sal":0.05,"alcanena":0.04,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.05,"alfandega da fe":0.0,"aljezur":0.05,"almeirim":0.04,"alter do chão":0.05,"alvaiazere":0.05,"alvito":0.05,"amadora":0.05,"amarante":0.03,"anadia":0.05,"arcos de valdevez":0.03,"arouca":0.035,"arraiolos":0.05,"arruda dos vinhos":0.05,"aveiro":0.045,"avis":0.05,"barcelos":0.05,"barreiro":0.05,"beja":0.05,"belmonte":0.0,"benavente":0.05,"borba":0.04,"bragança":0.05,"cabeceiras de basto":0.05,"caldas da rainha":0.03,"camara de lobos":0.05,"caminha":0.0,"campo maior":0.04,"cantanhede":0.05,"carregal do sal":0.05,"cartaxo":0.0175,"cascais":0.05,"castelo de vide":0.03,"castro marim":0.0,"castro verde":0.05,"celorico de basto":0.05,"cinfães":0.03,"condeixa-a-nova":0.05,"constancia":0.04,"coruche":0.05,"covilhã":0.05,"cuba":0.05,"entroncamento":0.05,"espinho":0.05,"esposende":0.05,"estarreja":0.05,"fafe":0.03,"felgueiras":0.05,"figueira da foz":0.05,"figueira de castelo rodrigo":0.02,"freixo de espada a cinta":0.05,"fronteira":0.025,"fundão":0.02,"gavião":0.0,"gois":0.05,"golegã":0.04,"gouveia":0.05,"grandola":0.04,"guimarães":0.05,"idanha-a-nova":0.05,"ilhavo":0.05,"lagos":0.03,"lamego":0.05,"leiria":0.05,"lisboa":0.05,"loule":0.03,"loures":0.05,"lourinhã":0.03,"macedo de cavaleiros":0.05,"mafra":0.05,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.05,"marinha grande":0.05,"matosinhos":0.05,"mealhada":0.04,"melgaço":0.0,"mesão frio":0.05,"mira":0.05,"moimenta da beira":0.05,"moita":0.05,"mondim de basto":0.05,"montalegre":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"mora":0.05,"mortagua":0.025,"moura":0.05,"nazare":0.02,"nelas":0.03,"nisa":0.05,"obidos":0.01,"odemira":0.025,"odivelas":0.05,"oeiras":0.045,"oleiros":0.0,"olhão":0.03,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.05,"ourem":0.05,"palmela":0.05,"pampilhosa da serra":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"penacova":0.025,"penafiel":0.05,"penalva do castelo":0.025,"penamacor":0.05,"penedono":0.02,"peniche":0.04,"peso da regua":0.05,"pombal":0.05,"ponta delgada":0.05,"ponte da barca":0.03,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.05,"portimão":0.0,"porto":0.05,"povoa de lanhoso":0.05,"povoa de varzim":0.05,"proença-a-nova":0.05,"resende":0.02,"ribeira grande":0.0,"s. joão da madeira":0.05,"s. joão da pesqueira":0.04,"salvaterra de magos":0.05,"santa cruz das flores":0.05,"santa maria da feira":0.05,"santarem":0.05,"santiago do cacem":0.05,"santo tirso":0.05,"seia":0.05,"sernancelhe":0.05,"serpa":0.05,"setubal":0.05,"sines":0.05,"sintra":0.05,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.04,"tabua":0.05,"tabuaço":0.05,"tavira":0.05,"terras de bouro":0.02,"torre de moncorvo":0.05,"torres novas":0.04,"torres vedras":0.04,"trofa":0.025,"vale de cambra":0.05,"valença":0.05,"valongo":0.05,"vendas novas":0.05,"viana do alentejo":0.05,"vila de rei":0.025,"vila do bispo":0.0,"vila flor":0.02,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.025,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de gaia":0.05,"vila nova de paiva":0.05,"vila nova de poiares":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.05,"vimioso":0.05,"vinhais":0.025,"vizela":0.05},
+      "2010":{"abrantes":0.045,"albergaria-a-velha":0.05,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.04,"alcobaça":0.05,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.05,"alfandega da fe":0.05,"aljezur":0.05,"almada":0.05,"almeida":0.02,"almeirim":0.04,"alpiarça":0.05,"alter do chão":0.05,"alvaiazere":0.05,"alvito":0.05,"anadia":0.05,"arcos de valdevez":0.03,"armamar":0.02,"arouca":0.05,"arraiolos":0.05,"arruda dos vinhos":0.05,"aveiro":0.045,"avis":0.05,"barcelos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.0,"benavente":0.05,"braga":0.05,"bragança":0.05,"cabeceiras de basto":0.05,"caldas da rainha":0.03,"caminha":0.045,"campo maior":0.04,"cantanhede":0.05,"carregal do sal":0.05,"cartaxo":0.04,"cascais":0.05,"castelo de vide":0.05,"castro marim":0.05,"castro verde":0.05,"celorico da beira":0.05,"chamusca":0.05,"cinfães":0.03,"condeixa-a-nova":0.05,"constancia":0.04,"coruche":0.05,"covilhã":0.05,"cuba":0.03,"elvas":0.03,"entroncamento":0.05,"espinho":0.05,"esposende":0.05,"estarreja":0.05,"estremoz":0.045,"fafe":0.03,"ferreira do zezere":0.05,"figueira de castelo rodrigo":0.02,"freixo de espada a cinta":0.05,"fronteira":0.025,"funchal":0.05,"fundão":0.02,"gavião":0.0,"gois":0.025,"golegã":0.05,"gouveia":0.05,"grandola":0.04,"guimarães":0.05,"idanha-a-nova":0.05,"ilhavo":0.05,"lagos":0.03,"lamego":0.05,"leiria":0.04,"lisboa":0.05,"loule":0.03,"loures":0.05,"lourinhã":0.05,"lousada":0.05,"macedo de cavaleiros":0.05,"mafra":0.05,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.05,"marinha grande":0.04,"mealhada":0.03,"melgaço":0.0,"mesão frio":0.05,"mira":0.05,"miranda do douro":0.025,"mirandela":0.0,"moimenta da beira":0.05,"moita":0.05,"mondim de basto":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"mora":0.05,"mortagua":0.025,"moura":0.05,"nazare":0.02,"nelas":0.03,"nisa":0.05,"obidos":0.01,"odemira":0.035,"odivelas":0.05,"oeiras":0.045,"oleiros":0.0,"olhão":0.05,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.05,"ourem":0.05,"palmela":0.05,"pampilhosa da serra":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"penacova":0.025,"penalva do castelo":0.025,"penamacor":0.05,"penedono":0.02,"peniche":0.04,"peso da regua":0.05,"pombal":0.05,"ponta delgada":0.04,"ponte da barca":0.03,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.05,"portimão":0.05,"porto":0.05,"porto de mos":0.05,"povoa de lanhoso":0.05,"povoa de varzim":0.05,"proença-a-nova":0.05,"resende":0.02,"ribeira brava":0.05,"s. bras de alportel":0.05,"s. joão da madeira":0.05,"s. joão da pesqueira":0.04,"salvaterra de magos":0.05,"santa comba dão":0.05,"santa cruz das flores":0.05,"santa maria da feira":0.05,"santa marta de penaguião":0.05,"santarem":0.05,"santiago do cacem":0.05,"santo tirso":0.05,"sernancelhe":0.05,"serpa":0.05,"setubal":0.05,"sines":0.045,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"tabuaço":0.05,"tavira":0.05,"terras de bouro":0.05,"tondela":0.05,"torres novas":0.04,"torres vedras":0.04,"trofa":0.025,"vale de cambra":0.05,"valença":0.05,"valongo":0.05,"vendas novas":0.05,"viana do alentejo":0.05,"vieira do minho":0.0,"vila de rei":0.025,"vila do bispo":0.05,"vila flor":0.02,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.025,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de gaia":0.05,"vila nova de poiares":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vimioso":0.05,"vinhais":0.025,"vizela":0.045,"vouzela":0.05},
+      "2011":{"abrantes":0.045,"aguiar da beira":0.05,"albergaria-a-velha":0.05,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.05,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.05,"alfandega da fe":0.05,"aljezur":0.05,"almeirim":0.04,"alpiarça":0.05,"alter do chão":0.05,"alvaiazere":0.05,"alvito":0.05,"amadora":0.04,"anadia":0.05,"arcos de valdevez":0.03,"armamar":0.02,"arraiolos":0.05,"arruda dos vinhos":0.05,"aveiro":0.045,"avis":0.05,"barcelos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.0,"benavente":0.05,"boticas":0.0,"cabeceiras de basto":0.05,"caldas da rainha":0.03,"calheta (açores)":0.05,"caminha":0.05,"campo maior":0.05,"cantanhede":0.05,"carregal do sal":0.05,"cartaxo":0.04,"cascais":0.05,"castelo de vide":0.05,"castro marim":0.05,"castro verde":0.05,"chamusca":0.05,"cinfães":0.03,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.05,"covilhã":0.05,"cuba":0.05,"elvas":0.03,"entroncamento":0.05,"espinho":0.0495,"esposende":0.05,"estarreja":0.05,"estremoz":0.05,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do zezere":0.05,"figueira da foz":0.05,"figueira de castelo rodrigo":0.02,"fronteira":0.025,"funchal":0.05,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gouveia":0.05,"grandola":0.04,"guimarães":0.05,"idanha-a-nova":0.05,"ilhavo":0.05,"lagos":0.05,"lamego":0.05,"leiria":0.04,"lisboa":0.05,"loule":0.05,"loures":0.05,"lourinhã":0.05,"lousã":0.05,"macedo de cavaleiros":0.05,"mafra":0.05,"maia":0.05,"mangualde":0.04,"marco de canaveses":0.05,"marinha grande":0.04,"matosinhos":0.05,"mealhada":0.03,"melgaço":0.05,"mesão frio":0.05,"mira":0.05,"miranda do douro":0.025,"mirandela":0.05,"moimenta da beira":0.05,"moita":0.05,"mondim de basto":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"mora":0.05,"mortagua":0.025,"nelas":0.05,"nisa":0.03,"obidos":0.01,"odemira":0.05,"odivelas":0.05,"oeiras":0.0475,"oleiros":0.0,"olhão":0.05,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.05,"ourem":0.05,"palmela":0.05,"pampilhosa da serra":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"penacova":0.025,"penafiel":0.05,"penalva do castelo":0.025,"penamacor":0.05,"penedono":0.02,"peniche":0.05,"peso da regua":0.05,"pombal":0.05,"ponta delgada":0.05,"ponte da barca":0.03,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.05,"portimão":0.05,"porto":0.05,"porto de mos":0.05,"povoa de lanhoso":0.05,"povoa de varzim":0.05,"proença-a-nova":0.05,"redondo":0.05,"resende":0.01,"s. bras de alportel":0.05,"s. joão da madeira":0.05,"s. joão da pesqueira":0.04,"salvaterra de magos":0.05,"santa cruz da graciosa":0.005,"santa maria da feira":0.05,"santa marta de penaguião":0.05,"santarem":0.05,"santiago do cacem":0.05,"sardoal":0.05,"sernancelhe":0.05,"serpa":0.05,"setubal":0.05,"silves":0.05,"sines":0.045,"sintra":0.05,"sobral de monte agraço":0.05,"soure":0.05,"tabua":0.05,"tabuaço":0.05,"tavira":0.05,"terras de bouro":0.05,"tondela":0.05,"torre de moncorvo":0.05,"torres novas":0.04,"torres vedras":0.04,"trancoso":0.04,"trofa":0.05,"vale de cambra":0.05,"valença":0.05,"valongo":0.05,"vendas novas":0.05,"viana do alentejo":0.05,"vieira do minho":0.0,"vila de rei":0.025,"vila do bispo":0.05,"vila flor":0.02,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.05,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de poiares":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.04,"vimioso":0.05,"vizela":0.045,"vouzela":0.05},
+      "2012":{"abrantes":0.045,"albergaria-a-velha":0.05,"albufeira":0.05,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.05,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.05,"alfandega da fe":0.05,"aljezur":0.05,"almada":0.05,"almeirim":0.05,"alpiarça":0.05,"alter do chão":0.05,"alvaiazere":0.05,"alvito":0.05,"amadora":0.045,"anadia":0.05,"armamar":0.02,"arouca":0.05,"arraiolos":0.05,"arruda dos vinhos":0.05,"aveiro":0.045,"avis":0.05,"barcelos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.025,"benavente":0.05,"boticas":0.025,"bragança":0.05,"cabeceiras de basto":0.05,"caldas da rainha":0.025,"calheta (açores)":0.05,"caminha":0.05,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.05,"carregal do sal":0.05,"cartaxo":0.04,"cascais":0.0375,"castelo de paiva":0.04,"castelo de vide":0.05,"castro marim":0.05,"castro verde":0.05,"chamusca":0.05,"chaves":0.05,"cinfães":0.03,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.05,"covilhã":0.05,"cuba":0.05,"elvas":0.03,"entroncamento":0.05,"espinho":0.0495,"estarreja":0.05,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do zezere":0.05,"figueira da foz":0.05,"figueira de castelo rodrigo":0.02,"freixo de espada a cinta":0.05,"fronteira":0.05,"funchal":0.05,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gouveia":0.05,"grandola":0.045,"guimarães":0.05,"idanha-a-nova":0.05,"ilhavo":0.05,"lagos":0.05,"lajes do pico":0.05,"lamego":0.05,"leiria":0.05,"lisboa":0.05,"loule":0.05,"loures":0.05,"lourinhã":0.05,"lousã":0.05,"macedo de cavaleiros":0.05,"mafra":0.05,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.05,"matosinhos":0.05,"mealhada":0.03,"melgaço":0.05,"mesão frio":0.05,"mira":0.05,"miranda do douro":0.05,"mirandela":0.05,"mondim de basto":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"mora":0.05,"mortagua":0.025,"moura":0.05,"nazare":0.02,"nelas":0.05,"nisa":0.03,"obidos":0.01,"odemira":0.05,"odivelas":0.05,"oeiras":0.05,"oleiros":0.0,"olhão":0.05,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.05,"ourem":0.05,"ourique":0.05,"palmela":0.05,"pampilhosa da serra":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"penacova":0.05,"penafiel":0.05,"penalva do castelo":0.025,"penamacor":0.05,"penedono":0.02,"peniche":0.05,"peso da regua":0.05,"pombal":0.05,"ponta delgada":0.05,"ponta do sol":0.05,"ponte da barca":0.05,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.05,"portimão":0.05,"porto":0.05,"porto de mos":0.05,"povoa de lanhoso":0.05,"povoa de varzim":0.05,"proença-a-nova":0.05,"redondo":0.05,"resende":0.01,"ribeira brava":0.05,"s. bras de alportel":0.05,"s. joão da madeira":0.05,"s. joão da pesqueira":0.04,"sabugal":0.05,"salvaterra de magos":0.05,"santa cruz da graciosa":0.0,"santa maria da feira":0.05,"santarem":0.05,"santiago do cacem":0.05,"sardoal":0.05,"seia":0.05,"sernancelhe":0.05,"serpa":0.05,"setubal":0.05,"silves":0.05,"sines":0.05,"sintra":0.05,"sobral de monte agraço":0.05,"soure":0.05,"tabua":0.05,"tabuaço":0.05,"tavira":0.05,"terras de bouro":0.05,"tondela":0.05,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.05,"trancoso":0.03,"trofa":0.05,"vale de cambra":0.05,"valença":0.05,"valongo":0.05,"valpaços":0.05,"vendas novas":0.05,"viana do alentejo":0.05,"vidigueira":0.05,"vieira do minho":0.0,"vila de rei":0.025,"vila flor":0.02,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.05,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de poiares":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.04,"vimioso":0.05,"vinhais":0.025,"vizela":0.045,"vouzela":0.05},
+      "2013":{"abrantes":0.045,"agueda":0.02,"aguiar da beira":0.05,"albergaria-a-velha":0.04,"albufeira":0.05,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.04,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.05,"alfandega da fe":0.05,"alijo":0.05,"aljezur":0.05,"almeirim":0.05,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.05,"alvito":0.05,"amadora":0.038,"anadia":0.05,"armamar":0.02,"arraiolos":0.05,"arronches":0.025,"arruda dos vinhos":0.05,"aveiro":0.043,"avis":0.05,"barcelos":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.025,"benavente":0.05,"boticas":0.0,"bragança":0.05,"cabeceiras de basto":0.05,"caldas da rainha":0.02,"calheta (açores)":0.05,"caminha":0.03,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.03,"cartaxo":0.05,"cascais":0.0375,"castelo de vide":0.035,"castro marim":0.05,"castro verde":0.05,"chamusca":0.05,"cinfães":0.03,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"covilhã":0.05,"crato":0.0,"cuba":0.05,"elvas":0.03,"entroncamento":0.05,"espinho":0.05,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do zezere":0.05,"figueira da foz":0.05,"figueira de castelo rodrigo":0.02,"freixo de espada a cinta":0.05,"fronteira":0.025,"funchal":0.05,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.04,"gouveia":0.05,"grandola":0.04,"guimarães":0.05,"idanha-a-nova":0.05,"ilhavo":0.05,"lagos":0.05,"lajes do pico":0.05,"lamego":0.05,"leiria":0.05,"lisboa":0.025,"loule":0.05,"loures":0.05,"lourinhã":0.05,"lousada":0.04,"lousã":0.05,"macedo de cavaleiros":0.05,"mafra":0.05,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.05,"matosinhos":0.04,"mação":0.04,"mealhada":0.0,"melgaço":0.05,"mesão frio":0.05,"miranda do corvo":0.04,"miranda do douro":0.05,"mirandela":0.05,"mogadouro":0.025,"moimenta da beira":0.05,"monchique":0.025,"mondim de basto":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"montijo":0.04,"mora":0.05,"mortagua":0.025,"nazare":0.05,"nelas":0.05,"nisa":0.03,"obidos":0.01,"odemira":0.05,"odivelas":0.05,"oeiras":0.05,"oleiros":0.0,"olhão":0.05,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.05,"ourem":0.05,"ovar":0.03,"palmela":0.05,"pampilhosa da serra":0.05,"paredes":0.04,"paredes de coura":0.03,"paços de ferreira":0.05,"penacova":0.05,"penalva do castelo":0.025,"penamacor":0.025,"penedono":0.02,"peniche":0.05,"peso da regua":0.05,"pombal":0.05,"ponta delgada":0.05,"ponta do sol":0.05,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.05,"portimão":0.05,"porto":0.05,"povoa de lanhoso":0.05,"povoa de varzim":0.04,"proença-a-nova":0.05,"resende":0.0,"ribeira brava":0.05,"s. bras de alportel":0.05,"s. joão da madeira":0.05,"s. joão da pesqueira":0.04,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.04,"santa cruz":0.05,"santa cruz da graciosa":0.0,"santa maria da feira":0.05,"santarem":0.05,"santiago do cacem":0.05,"santo tirso":0.05,"sardoal":0.05,"seia":0.05,"sernancelhe":0.05,"serpa":0.05,"setubal":0.05,"silves":0.05,"sines":0.05,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.015,"tabua":0.05,"tabuaço":0.05,"tavira":0.05,"terras de bouro":0.025,"tondela":0.05,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.05,"trancoso":0.025,"trofa":0.05,"vale de cambra":0.04,"valença":0.05,"valongo":0.05,"vendas novas":0.05,"viana do alentejo":0.05,"vidigueira":0.05,"vieira do minho":0.0,"vila de rei":0.025,"vila flor":0.02,"vila franca do campo":0.0,"vila nova da barquinha":0.045,"vila nova de cerveira":0.03,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de poiares":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.04,"vimioso":0.05,"vinhais":0.025,"viseu":0.04,"vizela":0.05,"vouzela":0.05},
+      "2014":{"abrantes":0.045,"agueda":0.02,"aguiar da beira":0.025,"albergaria-a-velha":0.04,"albufeira":0.05,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.0375,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"aljezur":0.05,"almeirim":0.05,"almodovar":0.05,"alpiarça":0.05,"alter do chão":0.025,"alvito":0.05,"amadora":0.038,"anadia":0.05,"arganil":0.0,"armamar":0.01,"arraiolos":0.05,"arronches":0.025,"arruda dos vinhos":0.0475,"aveiro":0.05,"avis":0.05,"barcelos":0.05,"barrancos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.025,"benavente":0.05,"bombarral":0.04,"borba":0.05,"boticas":0.0,"braga":0.048499999999999995,"bragança":0.05,"cabeceiras de basto":0.05,"cadaval":0.05,"caldas da rainha":0.03,"calheta (açores)":0.05,"calheta (madeira)":0.05,"caminha":0.02,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.0375,"castelo de paiva":0.04,"castelo de vide":0.035,"castro marim":0.05,"castro verde":0.05,"celorico da beira":0.05,"celorico de basto":0.05,"chamusca":0.05,"cinfães":0.03,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"covilhã":0.05,"cuba":0.05,"elvas":0.03,"entroncamento":0.05,"espinho":0.05,"estarreja":0.05,"evora":0.05,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do zezere":0.05,"figueira da foz":0.05,"figueira de castelo rodrigo":0.02,"freixo de espada a cinta":0.05,"fronteira":0.02,"funchal":0.04,"fundão":0.05,"gavião":0.0,"gois":0.0,"gondomar":0.05,"gouveia":0.05,"guimarães":0.05,"idanha-a-nova":0.0,"ilhavo":0.05,"lagos":0.05,"lajes do pico":0.05,"lamego":0.05,"leiria":0.05,"lisboa":0.025,"loule":0.05,"lourinhã":0.05,"lousada":0.04,"lousã":0.05,"macedo de cavaleiros":0.04,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.05,"matosinhos":0.05,"mação":0.04,"mealhada":0.0,"melgaço":0.05,"mesão frio":0.05,"miranda do corvo":0.04,"miranda do douro":0.05,"mirandela":0.05,"mogadouro":0.025,"moimenta da beira":0.05,"monchique":0.025,"mondim de basto":0.05,"montalegre":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"montijo":0.04,"mora":0.05,"mortagua":0.025,"moura":0.05,"mourão":0.05,"nelas":0.05,"nisa":0.03,"nordeste":0.05,"obidos":0.01,"odemira":0.0475,"odivelas":0.05,"oeiras":0.05,"oleiros":0.0,"olhão":0.05,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.05,"ourem":0.05,"ourique":0.05,"ovar":0.03,"palmela":0.05,"pampilhosa da serra":0.05,"paredes":0.04,"paredes de coura":0.03,"penacova":0.05,"penafiel":0.05,"penalva do castelo":0.01,"penamacor":0.025,"penedono":0.02,"peniche":0.05,"peso da regua":0.05,"pombal":0.05,"ponta do sol":0.05,"ponte da barca":0.05,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.05,"portel":0.05,"portimão":0.05,"porto":0.05,"porto de mos":0.05,"porto moniz":0.05,"povoa de lanhoso":0.05,"povoa de varzim":0.04,"proença-a-nova":0.05,"redondo":0.05,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira grande":0.05,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.04,"s. roque do pico":0.05,"s. vicente":0.05,"sabugal":0.0,"salvaterra de magos":0.04,"santa cruz":0.05,"santa cruz da graciosa":0.05,"santa cruz das flores":0.04,"santa maria da feira":0.05,"santana":0.025,"santarem":0.05,"santiago do cacem":0.05,"sardoal":0.05,"seia":0.05,"sernancelhe":0.05,"serpa":0.05,"setubal":0.05,"silves":0.05,"sines":0.049,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tavira":0.05,"terras de bouro":0.025,"tondela":0.05,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.05,"trofa":0.05,"vale de cambra":0.04,"valença":0.025,"vendas novas":0.05,"viana do alentejo":0.05,"vidigueira":0.05,"vila de rei":0.025,"vila do bispo":0.05,"vila do porto":0.05,"vila flor":0.02,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.015,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de gaia":0.05,"vila nova de poiares":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.04,"vimioso":0.05,"vinhais":0.025,"viseu":0.04,"vizela":0.05,"vouzela":0.05},
+      "2015":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.025,"alandroal":0.05,"albergaria-a-velha":0.04,"albufeira":0.05,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.0375,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"alijo":0.05,"aljezur":0.03,"aljustrel":0.05,"almada":0.05,"almeida":0.05,"almeirim":0.05,"almodovar":0.05,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.05,"alvito":0.045,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.05,"angra do heroismo":0.05,"ansião":0.05,"arcos de valdevez":0.045,"arganil":0.0,"armamar":0.0,"arouca":0.05,"arraiolos":0.05,"arronches":0.025,"arruda dos vinhos":0.045,"aveiro":0.05,"avis":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.05,"barrancos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.025,"benavente":0.05,"bombarral":0.035,"borba":0.05,"boticas":0.0,"braga":0.047,"bragança":0.05,"cabeceiras de basto":0.05,"cadaval":0.05,"caldas da rainha":0.03,"calheta (açores)":0.05,"calheta (madeira)":0.05,"camara de lobos":0.05,"caminha":0.015,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.0375,"castanheira de pera":0.05,"castelo branco":0.05,"castelo de paiva":0.04,"castelo de vide":0.035,"castro daire":0.05,"castro marim":0.05,"castro verde":0.05,"celorico da beira":0.05,"celorico de basto":0.05,"chamusca":0.05,"chaves":0.05,"cinfães":0.03,"coimbra":0.05,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.03,"entroncamento":0.05,"espinho":0.05,"esposende":0.05,"estarreja":0.035,"estremoz":0.05,"evora":0.05,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do alentejo":0.05,"ferreira do zezere":0.05,"figueira da foz":0.045,"figueira de castelo rodrigo":0.02,"figueiro dos vinhos":0.05,"fornos de algodres":0.05,"freixo de espada a cinta":0.05,"fronteira":0.02,"funchal":0.04,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.05,"gouveia":0.05,"grandola":0.05,"guarda":0.05,"guimarães":0.05,"horta":0.05,"ilhavo":0.05,"lagoa (algarve)":0.05,"lagoa (açores)":0.05,"lagos":0.05,"lajes das flores":0.05,"lajes do pico":0.05,"lamego":0.05,"leiria":0.05,"lisboa":0.025,"loule":0.04,"loures":0.05,"lourinhã":0.045,"lousada":0.04,"lousã":0.05,"machico":0.05,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.05,"marinha grande":0.05,"marvão":0.05,"matosinhos":0.05,"mação":0.035,"mealhada":0.0,"meda":0.05,"melgaço":0.05,"mertola":0.035,"mesão frio":0.05,"mira":0.05,"miranda do corvo":0.05,"miranda do douro":0.05,"mirandela":0.05,"mogadouro":0.025,"moimenta da beira":0.05,"moita":0.05,"monchique":0.025,"mondim de basto":0.05,"monforte":0.05,"montalegre":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"montijo":0.04,"monção":0.045,"mora":0.05,"mortagua":0.0,"moura":0.03,"mourão":0.05,"murtosa":0.04,"murça":0.05,"nazare":0.05,"nelas":0.05,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.0475,"odivelas":0.05,"oeiras":0.05,"oleiros":0.0,"olhão":0.05,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.05,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.05,"ovar":0.03,"palmela":0.05,"pampilhosa da serra":0.05,"paredes":0.04,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.03,"penacova":0.05,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.05,"penedono":0.02,"penela":0.05,"peniche":0.05,"peso da regua":0.05,"pinhel":0.05,"pombal":0.05,"ponta delgada":0.05,"ponta do sol":0.05,"ponte da barca":0.05,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.05,"portel":0.05,"portimão":0.05,"porto":0.05,"porto de mos":0.05,"porto moniz":0.05,"porto santo":0.05,"povoa de lanhoso":0.05,"povoa de varzim":0.04,"povoação":0.05,"proença-a-nova":0.05,"redondo":0.05,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.05,"ribeira grande":0.05,"rio maior":0.05,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.04,"s. pedro do sul":0.05,"s. roque do pico":0.05,"s. vicente":0.05,"sabugal":0.0,"salvaterra de magos":0.04,"santa comba dão":0.05,"santa cruz":0.05,"santa cruz da graciosa":0.05,"santa cruz das flores":0.04,"santa maria da feira":0.05,"santa marta de penaguião":0.025,"santana":0.01,"santarem":0.05,"santiago do cacem":0.05,"santo tirso":0.0475,"sardoal":0.05,"satão":0.05,"seia":0.05,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.05,"sesimbra":0.05,"setubal":0.05,"sever do vouga":0.05,"silves":0.05,"sines":0.049,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.05,"terras de bouro":0.05,"tomar":0.045,"tondela":0.05,"torre de moncorvo":0.05,"torres novas":0.04,"torres vedras":0.05,"trancoso":0.025,"trofa":0.05,"vagos":0.045,"vale de cambra":0.04,"valença":0.025,"valongo":0.05,"valpaços":0.05,"velas":0.05,"vendas novas":0.05,"viana do alentejo":0.05,"viana do castelo":0.05,"vidigueira":0.05,"vieira do minho":0.05,"vila de rei":0.025,"vila do conde":0.05,"vila do porto":0.05,"vila flor":0.02,"vila franca de xira":0.05,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.015,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de gaia":0.05,"vila nova de paiva":0.05,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila verde":0.05,"vila viçosa":0.04,"vimioso":0.05,"vinhais":0.025,"viseu":0.04,"vizela":0.05,"vouzela":0.05},
+      "2016":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.025,"alandroal":0.05,"albergaria-a-velha":0.03,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.0375,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"alijo":0.05,"aljezur":0.03,"aljustrel":0.05,"almada":0.05,"almeida":0.03,"almeirim":0.05,"almodovar":0.05,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.05,"alvito":0.045,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.05,"angra do heroismo":0.05,"ansião":0.05,"arcos de valdevez":0.0425,"arganil":0.0,"armamar":0.0,"arouca":0.05,"arraiolos":0.05,"arronches":0.025,"arruda dos vinhos":0.0425,"aveiro":0.05,"avis":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.05,"barrancos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.025,"benavente":0.05,"bombarral":0.035,"borba":0.05,"boticas":0.0,"braga":0.0455,"bragança":0.05,"cabeceiras de basto":0.045,"cadaval":0.05,"caldas da rainha":0.03,"calheta (açores)":0.05,"calheta (madeira)":0.05,"camara de lobos":0.05,"caminha":0.015,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.02,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.0375,"castanheira de pera":0.05,"castelo branco":0.05,"castelo de paiva":0.04,"castelo de vide":0.035,"castro daire":0.05,"castro marim":0.05,"castro verde":0.05,"celorico da beira":0.05,"celorico de basto":0.05,"chamusca":0.05,"chaves":0.05,"cinfães":0.03,"coimbra":0.045,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.03,"entroncamento":0.05,"espinho":0.05,"esposende":0.05,"estarreja":0.035,"estremoz":0.05,"evora":0.05,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do alentejo":0.05,"ferreira do zezere":0.05,"figueira da foz":0.045,"figueira de castelo rodrigo":0.02,"figueiro dos vinhos":0.05,"fornos de algodres":0.05,"freixo de espada a cinta":0.05,"fronteira":0.02,"funchal":0.04,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.05,"gouveia":0.05,"grandola":0.05,"guarda":0.05,"guimarães":0.05,"horta":0.05,"idanha-a-nova":0.0,"ilhavo":0.05,"lagoa (algarve)":0.03,"lagoa (açores)":0.05,"lagos":0.05,"lajes das flores":0.04,"lajes do pico":0.05,"lamego":0.05,"leiria":0.05,"lisboa":0.025,"loule":0.04,"loures":0.05,"lourinhã":0.04,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.02,"machico":0.05,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.05,"marinha grande":0.05,"matosinhos":0.05,"mação":0.04,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mertola":0.035,"mesão frio":0.05,"mira":0.05,"miranda do corvo":0.05,"miranda do douro":0.05,"mirandela":0.05,"mogadouro":0.025,"moimenta da beira":0.05,"moita":0.05,"monchique":0.025,"mondim de basto":0.05,"monforte":0.05,"montalegre":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"montijo":0.04,"monção":0.04,"mora":0.05,"mortagua":0.0,"moura":0.03,"mourão":0.05,"murtosa":0.04,"murça":0.05,"nazare":0.05,"nelas":0.05,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.0475,"odivelas":0.05,"oeiras":0.05,"oleiros":0.0,"olhão":0.05,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.05,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.05,"ovar":0.03,"palmela":0.05,"pampilhosa da serra":0.05,"paredes":0.04,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.03,"penacova":0.05,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.04,"penedono":0.02,"penela":0.05,"peniche":0.05,"peso da regua":0.05,"pinhel":0.05,"pombal":0.05,"ponta delgada":0.05,"ponta do sol":0.045,"ponte da barca":0.05,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.05,"portel":0.05,"portimão":0.05,"porto":0.05,"porto de mos":0.05,"porto moniz":0.0,"porto santo":0.05,"povoa de lanhoso":0.05,"povoa de varzim":0.04,"povoação":0.05,"proença-a-nova":0.05,"redondo":0.05,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.0,"ribeira grande":0.05,"rio maior":0.048,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.04,"s. pedro do sul":0.05,"s. roque do pico":0.05,"s. vicente":0.05,"sabrosa":0.05,"sabugal":0.0,"salvaterra de magos":0.04,"santa comba dão":0.05,"santa cruz":0.05,"santa cruz da graciosa":0.05,"santa cruz das flores":0.04,"santa maria da feira":0.05,"santa marta de penaguião":0.02,"santana":0.0,"santarem":0.05,"santiago do cacem":0.05,"santo tirso":0.0475,"sardoal":0.05,"satão":0.05,"seia":0.05,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.05,"sesimbra":0.05,"setubal":0.05,"sever do vouga":0.05,"silves":0.05,"sines":0.049,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.05,"terras de bouro":0.05,"tomar":0.05,"tondela":0.05,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.05,"trancoso":0.0,"trofa":0.05,"vagos":0.045,"vale de cambra":0.04,"valença":0.025,"valongo":0.05,"valpaços":0.05,"velas":0.025,"vendas novas":0.05,"viana do alentejo":0.05,"viana do castelo":0.05,"vidigueira":0.05,"vieira do minho":0.05,"vila de rei":0.025,"vila do conde":0.05,"vila do porto":0.05,"vila flor":0.02,"vila franca de xira":0.05,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.025,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de gaia":0.05,"vila nova de paiva":0.05,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila verde":0.05,"vila viçosa":0.03,"vimioso":0.05,"vinhais":0.025,"viseu":0.04,"vizela":0.05,"vouzela":0.05},
+      "2017":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.0375,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"alijo":0.05,"aljezur":0.025,"aljustrel":0.05,"almada":0.05,"almeida":0.03,"almeirim":0.05,"almodovar":0.05,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.05,"alvito":0.045,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.04,"angra do heroismo":0.05,"ansião":0.05,"arcos de valdevez":0.04,"arganil":0.0,"armamar":0.0,"arraiolos":0.05,"arronches":0.025,"arruda dos vinhos":0.040999999999999995,"aveiro":0.05,"avis":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.05,"barrancos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.025,"benavente":0.05,"bombarral":0.035,"borba":0.05,"boticas":0.0,"braga":0.044000000000000004,"bragança":0.05,"cabeceiras de basto":0.04,"cadaval":0.04,"caldas da rainha":0.03,"calheta (açores)":0.05,"calheta (madeira)":0.05,"camara de lobos":0.04,"caminha":0.015,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.02,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.05,"castanheira de pera":0.05,"castelo branco":0.05,"castelo de paiva":0.04,"castelo de vide":0.035,"castro daire":0.04,"castro marim":0.05,"castro verde":0.05,"celorico da beira":0.05,"celorico de basto":0.05,"chamusca":0.05,"chaves":0.05,"cinfães":0.03,"coimbra":0.045,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.03,"entroncamento":0.05,"espinho":0.05,"esposende":0.05,"estarreja":0.03,"estremoz":0.05,"evora":0.05,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do alentejo":0.05,"ferreira do zezere":0.025,"figueira da foz":0.04,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.04,"fornos de algodres":0.05,"freixo de espada a cinta":0.05,"fronteira":0.02,"funchal":0.035,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.05,"gouveia":0.05,"grandola":0.05,"guarda":0.05,"guimarães":0.05,"horta":0.05,"idanha-a-nova":0.0,"ilhavo":0.05,"lagoa (algarve)":0.03,"lagoa (açores)":0.05,"lagos":0.05,"lajes das flores":0.04,"lajes do pico":0.05,"lamego":0.05,"leiria":0.05,"lisboa":0.025,"loule":0.025,"loures":0.05,"lourinhã":0.0375,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.01,"machico":0.05,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.05,"marinha grande":0.05,"marvão":0.025,"matosinhos":0.05,"mação":0.04,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mertola":0.035,"mesão frio":0.05,"mira":0.05,"miranda do corvo":0.05,"miranda do douro":0.05,"mirandela":0.05,"mogadouro":0.025,"moimenta da beira":0.05,"moita":0.05,"monchique":0.025,"mondim de basto":0.05,"monforte":0.05,"montalegre":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"montijo":0.04,"monção":0.04,"mora":0.05,"mortagua":0.0,"moura":0.03,"mourão":0.05,"murtosa":0.04,"murça":0.05,"nazare":0.05,"nelas":0.05,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.045,"odivelas":0.05,"oeiras":0.05,"oleiros":0.0,"olhão":0.05,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.0475,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.05,"ovar":0.03,"palmela":0.05,"pampilhosa da serra":0.05,"paredes":0.04,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.03,"penacova":0.05,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.04,"penedono":0.01,"penela":0.05,"peniche":0.05,"peso da regua":0.05,"pinhel":0.05,"pombal":0.05,"ponta delgada":0.05,"ponta do sol":0.05,"ponte da barca":0.04,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.05,"portel":0.05,"portimão":0.05,"porto":0.05,"porto de mos":0.05,"porto moniz":0.0,"povoa de lanhoso":0.05,"povoa de varzim":0.04,"povoação":0.05,"proença-a-nova":0.05,"redondo":0.05,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.0,"ribeira grande":0.05,"rio maior":0.048,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.04,"s. pedro do sul":0.05,"s. roque do pico":0.05,"s. vicente":0.05,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.04,"santa comba dão":0.05,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.04,"santa maria da feira":0.05,"santa marta de penaguião":0.01,"santarem":0.05,"santiago do cacem":0.05,"santo tirso":0.0475,"sardoal":0.05,"satão":0.05,"seia":0.05,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.05,"sesimbra":0.05,"setubal":0.05,"sever do vouga":0.05,"silves":0.05,"sines":0.045,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.05,"terras de bouro":0.04,"tomar":0.05,"tondela":0.05,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.05,"trancoso":0.025,"trofa":0.05,"vagos":0.045,"vale de cambra":0.038,"valença":0.02,"valongo":0.05,"valpaços":0.05,"velas":0.025,"vendas novas":0.05,"viana do alentejo":0.05,"viana do castelo":0.05,"vidigueira":0.05,"vieira do minho":0.05,"vila de rei":0.025,"vila do conde":0.05,"vila do porto":0.05,"vila flor":0.02,"vila franca de xira":0.05,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.025,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de gaia":0.05,"vila nova de paiva":0.05,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila verde":0.05,"vila viçosa":0.03,"vimioso":0.05,"vinhais":0.025,"viseu":0.04,"vizela":0.05,"vouzela":0.05},
+      "2018":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.0375,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"alijo":0.05,"aljezur":0.025,"aljustrel":0.05,"almada":0.05,"almeida":0.03,"almeirim":0.05,"almodovar":0.05,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.05,"alvito":0.05,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.04,"angra do heroismo":0.05,"ansião":0.05,"arcos de valdevez":0.04,"arganil":0.0,"armamar":0.0,"arouca":0.05,"arraiolos":0.05,"arronches":0.025,"arruda dos vinhos":0.04,"aveiro":0.05,"avis":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.05,"barrancos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.025,"benavente":0.05,"bombarral":0.035,"borba":0.045,"boticas":0.0,"braga":0.0425,"bragança":0.05,"cabeceiras de basto":0.04,"cadaval":0.04,"caldas da rainha":0.03,"calheta (açores)":0.05,"calheta (madeira)":0.03,"camara de lobos":0.03,"caminha":0.015,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.05,"castanheira de pera":0.025,"castelo branco":0.05,"castelo de paiva":0.04,"castelo de vide":0.035,"castro daire":0.04,"castro marim":0.0,"castro verde":0.05,"celorico da beira":0.04,"celorico de basto":0.05,"chamusca":0.05,"chaves":0.05,"cinfães":0.03,"coimbra":0.045,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.05,"entroncamento":0.05,"espinho":0.0475,"esposende":0.05,"estarreja":0.03,"estremoz":0.05,"evora":0.05,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do alentejo":0.05,"ferreira do zezere":0.025,"figueira da foz":0.04,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.04,"fornos de algodres":0.05,"freixo de espada a cinta":0.05,"fronteira":0.02,"funchal":0.035,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.045,"gouveia":0.03,"grandola":0.05,"guarda":0.05,"guimarães":0.05,"horta":0.0475,"idanha-a-nova":0.025,"ilhavo":0.05,"lagoa (algarve)":0.03,"lagoa (açores)":0.05,"lagos":0.045,"lajes das flores":0.04,"lajes do pico":0.05,"lamego":0.04,"leiria":0.05,"lisboa":0.025,"loule":0.0,"loures":0.05,"lourinhã":0.0375,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.01,"machico":0.04,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.04,"marinha grande":0.05,"marvão":0.025,"matosinhos":0.05,"mação":0.04,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mesão frio":0.05,"mira":0.05,"miranda do corvo":0.05,"miranda do douro":0.05,"mirandela":0.04,"mogadouro":0.025,"moimenta da beira":0.05,"moita":0.05,"monchique":0.025,"mondim de basto":0.05,"monforte":0.05,"montalegre":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"montijo":0.04,"monção":0.03,"mora":0.05,"mortagua":0.0,"moura":0.03,"mourão":0.05,"murtosa":0.04,"murça":0.05,"nazare":0.05,"nelas":0.05,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.045,"odivelas":0.05,"oeiras":0.048,"oleiros":0.0,"olhão":0.05,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.045,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.05,"ovar":0.03,"palmela":0.05,"pampilhosa da serra":0.05,"paredes":0.04,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.05,"penacova":0.05,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.04,"penedono":0.01,"penela":0.05,"peniche":0.05,"peso da regua":0.05,"pinhel":0.05,"pombal":0.05,"ponta delgada":0.05,"ponta do sol":0.025,"ponte da barca":0.0,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.05,"portel":0.05,"portimão":0.05,"porto":0.05,"porto de mos":0.0475,"porto moniz":0.0,"porto santo":0.04,"povoa de lanhoso":0.05,"povoa de varzim":0.04,"povoação":0.05,"proença-a-nova":0.05,"redondo":0.03,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.0,"ribeira grande":0.04,"rio maior":0.048,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.05,"s. pedro do sul":0.04,"s. roque do pico":0.05,"s. vicente":0.05,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.05,"santa comba dão":0.05,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.04,"santa maria da feira":0.05,"santa marta de penaguião":0.005,"santana":0.0,"santarem":0.05,"santiago do cacem":0.05,"santo tirso":0.0475,"sardoal":0.05,"satão":0.05,"seia":0.05,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.05,"sesimbra":0.05,"setubal":0.05,"sever do vouga":0.05,"silves":0.05,"sines":0.045,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.05,"terras de bouro":0.05,"tomar":0.05,"tondela":0.05,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.05,"trancoso":0.025,"trofa":0.05,"vagos":0.045,"vale de cambra":0.038,"valença":0.02,"valongo":0.05,"valpaços":0.05,"velas":0.025,"vendas novas":0.05,"viana do alentejo":0.05,"viana do castelo":0.05,"vidigueira":0.05,"vieira do minho":0.05,"vila de rei":0.025,"vila do bispo":0.05,"vila do conde":0.05,"vila do porto":0.05,"vila flor":0.0,"vila franca de xira":0.05,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.025,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de gaia":0.05,"vila nova de paiva":0.05,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila verde":0.05,"vila viçosa":0.03,"vimioso":0.05,"vinhais":0.03,"viseu":0.04,"vizela":0.05,"vouzela":0.05},
+      "2019":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.0375,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"alijo":0.05,"aljezur":0.025,"aljustrel":0.05,"almada":0.045,"almeida":0.03,"almeirim":0.05,"almodovar":0.05,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.05,"alvito":0.05,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.03,"angra do heroismo":0.05,"ansião":0.05,"arcos de valdevez":0.04,"arganil":0.0,"armamar":0.01,"arouca":0.05,"arraiolos":0.05,"arronches":0.025,"arruda dos vinhos":0.04,"aveiro":0.05,"avis":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.05,"barrancos":0.05,"barreiro":0.05,"batalha":0.04,"beja":0.05,"belmonte":0.025,"benavente":0.05,"bombarral":0.035,"borba":0.045,"boticas":0.0,"braga":0.040999999999999995,"bragança":0.05,"cabeceiras de basto":0.04,"cadaval":0.04,"caldas da rainha":0.03,"calheta (açores)":0.05,"calheta (madeira)":0.03,"camara de lobos":0.03,"caminha":0.05,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.05,"castanheira de pera":0.025,"castelo branco":0.05,"castelo de paiva":0.04,"castelo de vide":0.035,"castro daire":0.04,"castro marim":0.0,"castro verde":0.045,"celorico da beira":0.04,"celorico de basto":0.05,"chamusca":0.05,"chaves":0.05,"cinfães":0.03,"coimbra":0.045,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.05,"entroncamento":0.05,"espinho":0.045,"esposende":0.05,"estarreja":0.03,"estremoz":0.05,"evora":0.05,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do alentejo":0.05,"ferreira do zezere":0.025,"figueira da foz":0.035,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.04,"fornos de algodres":0.05,"freixo de espada a cinta":0.05,"fronteira":0.02,"funchal":0.035,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.045,"gouveia":0.03,"grandola":0.05,"guarda":0.05,"guimarães":0.05,"horta":0.045,"idanha-a-nova":0.025,"ilhavo":0.05,"lagoa (algarve)":0.03,"lagoa (açores)":0.05,"lagos":0.045,"lajes das flores":0.04,"lajes do pico":0.05,"lamego":0.04,"leiria":0.05,"lisboa":0.025,"loule":0.0,"loures":0.05,"lourinhã":0.0375,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.01,"machico":0.04,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.04,"marinha grande":0.05,"marvão":0.025,"matosinhos":0.05,"mação":0.035,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mertola":0.035,"mesão frio":0.05,"mira":0.05,"miranda do corvo":0.05,"miranda do douro":0.05,"mirandela":0.03,"mogadouro":0.025,"moimenta da beira":0.05,"moita":0.05,"monchique":0.025,"mondim de basto":0.05,"monforte":0.05,"montalegre":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"montijo":0.04,"monção":0.02,"mora":0.05,"mortagua":0.0,"moura":0.03,"mourão":0.05,"murtosa":0.04,"murça":0.05,"nazare":0.05,"nelas":0.05,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.045,"odivelas":0.05,"oeiras":0.048,"oleiros":0.0,"olhão":0.05,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.045,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.05,"ovar":0.03,"palmela":0.05,"pampilhosa da serra":0.05,"paredes":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.0,"penacova":0.05,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.04,"penedono":0.01,"penela":0.05,"peniche":0.05,"peso da regua":0.05,"pinhel":0.05,"pombal":0.04,"ponta delgada":0.05,"ponta do sol":0.0,"ponte da barca":0.0,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.025,"portel":0.05,"portimão":0.05,"porto":0.05,"porto de mos":0.04,"porto moniz":0.0,"porto santo":0.04,"povoa de lanhoso":0.05,"povoa de varzim":0.04,"povoação":0.05,"proença-a-nova":0.05,"redondo":0.03,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.05,"ribeira grande":0.0375,"rio maior":0.048,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.05,"s. pedro do sul":0.04,"s. roque do pico":0.05,"s. vicente":0.05,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.05,"santa comba dão":0.05,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.04,"santa maria da feira":0.05,"santa marta de penaguião":0.005,"santana":0.0,"santarem":0.05,"santiago do cacem":0.05,"santo tirso":0.0475,"sardoal":0.05,"satão":0.05,"seia":0.05,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.05,"sesimbra":0.05,"setubal":0.05,"sever do vouga":0.04,"silves":0.05,"sines":0.044000000000000004,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.05,"terras de bouro":0.05,"tomar":0.05,"tondela":0.05,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.05,"trancoso":0.025,"trofa":0.05,"vagos":0.05,"vale de cambra":0.034,"valença":0.02,"valongo":0.05,"valpaços":0.05,"velas":0.025,"vendas novas":0.05,"viana do alentejo":0.05,"viana do castelo":0.05,"vidigueira":0.05,"vieira do minho":0.05,"vila de rei":0.025,"vila do bispo":0.05,"vila do conde":0.05,"vila do porto":0.05,"vila flor":0.0,"vila franca de xira":0.05,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de gaia":0.05,"vila nova de paiva":0.05,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila verde":0.05,"vila viçosa":0.035,"vimioso":0.05,"vinhais":0.03,"viseu":0.04,"vizela":0.045,"vouzela":0.05},
+      "2020":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.0375,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.045,"alijo":0.05,"aljezur":0.025,"aljustrel":0.05,"almada":0.04,"almeida":0.03,"almeirim":0.05,"almodovar":0.05,"alpiarça":0.05,"alvaiazere":0.05,"alvito":0.05,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.03,"angra do heroismo":0.05,"arcos de valdevez":0.04,"arganil":0.0,"armamar":0.01,"arraiolos":0.05,"arronches":0.025,"arruda dos vinhos":0.04,"aveiro":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.05,"barrancos":0.05,"barreiro":0.05,"batalha":0.04,"beja":0.05,"belmonte":0.025,"benavente":0.05,"bombarral":0.035,"borba":0.045,"boticas":0.0,"braga":0.04,"cabeceiras de basto":0.04,"cadaval":0.04,"caldas da rainha":0.03,"calheta (açores)":0.05,"calheta (madeira)":0.02,"camara de lobos":0.035,"caminha":0.05,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.05,"castanheira de pera":0.025,"castelo branco":0.05,"castelo de vide":0.035,"castro daire":0.04,"castro marim":0.025,"castro verde":0.04,"celorico da beira":0.04,"celorico de basto":0.045,"chamusca":0.05,"cinfães":0.03,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.05,"entroncamento":0.05,"esposende":0.05,"estarreja":0.03,"estremoz":0.05,"evora":0.05,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do zezere":0.0,"figueira da foz":0.035,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.04,"fornos de algodres":0.05,"freixo de espada a cinta":0.05,"fronteira":0.02,"funchal":0.025,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.05,"gouveia":0.05,"grandola":0.05,"guarda":0.05,"guimarães":0.05,"horta":0.045,"idanha-a-nova":0.025,"ilhavo":0.05,"lagoa (algarve)":0.03,"lagoa (açores)":0.05,"lagos":0.035,"lajes das flores":0.03,"lajes do pico":0.05,"lamego":0.04,"leiria":0.05,"lisboa":0.025,"loule":0.0,"loures":0.05,"lourinhã":0.0375,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.01,"machico":0.04,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.04,"marinha grande":0.05,"marvão":0.025,"matosinhos":0.05,"mação":0.03,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mertola":0.035,"mesão frio":0.05,"miranda do corvo":0.05,"miranda do douro":0.05,"mirandela":0.025,"mogadouro":0.025,"moimenta da beira":0.05,"monchique":0.025,"mondim de basto":0.05,"monforte":0.05,"montalegre":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.05,"montijo":0.04,"monção":0.02,"mora":0.05,"mortagua":0.0,"moura":0.05,"mourão":0.05,"murtosa":0.04,"murça":0.05,"nazare":0.05,"nelas":0.05,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.0425,"odivelas":0.05,"oeiras":0.047,"oleiros":0.0,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.0425,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.05,"ovar":0.03,"palmela":0.05,"pampilhosa da serra":0.05,"paredes":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.0,"penacova":0.05,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.04,"penedono":0.01,"penela":0.05,"peniche":0.05,"peso da regua":0.05,"pinhel":0.05,"pombal":0.035,"ponta delgada":0.05,"ponta do sol":0.0,"ponte da barca":0.0,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.0375,"portel":0.05,"portimão":0.05,"porto":0.05,"porto de mos":0.035,"porto moniz":0.0,"porto santo":0.04,"povoa de lanhoso":0.05,"povoa de varzim":0.04,"povoação":0.05,"proença-a-nova":0.05,"redondo":0.03,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.05,"ribeira grande":0.035,"rio maior":0.048,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.05,"s. pedro do sul":0.04,"s. roque do pico":0.05,"s. vicente":0.05,"sabrosa":0.05,"sabugal":0.0,"salvaterra de magos":0.05,"santa comba dão":0.05,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.04,"santa maria da feira":0.05,"santa marta de penaguião":0.005,"santana":0.0,"santarem":0.05,"santiago do cacem":0.05,"santo tirso":0.0475,"sardoal":0.05,"satão":0.05,"seia":0.05,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.045,"sesimbra":0.05,"setubal":0.05,"sever do vouga":0.035,"silves":0.05,"sines":0.0435,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.05,"tomar":0.05,"tondela":0.05,"torre de moncorvo":0.005,"torres novas":0.05,"torres vedras":0.05,"trancoso":0.025,"trofa":0.05,"vale de cambra":0.03,"valença":0.015,"valongo":0.05,"valpaços":0.05,"velas":0.015,"vendas novas":0.05,"viana do alentejo":0.05,"vidigueira":0.05,"vieira do minho":0.05,"vila de rei":0.025,"vila do bispo":0.0,"vila do porto":0.05,"vila flor":0.0,"vila franca de xira":0.05,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.05,"vila nova de famalicão":0.05,"vila nova de foz coa":0.05,"vila nova de gaia":0.05,"vila nova de paiva":0.05,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.04,"vimioso":0.05,"vinhais":0.015,"viseu":0.04,"vizela":0.04,"vouzela":0.05},
+      "2021":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.035,"alcochete":0.04,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.044000000000000004,"alijo":0.035,"aljezur":0.02,"aljustrel":0.05,"almada":0.035,"almeida":0.03,"almeirim":0.05,"almodovar":0.04,"alpiarça":0.05,"alvaiazere":0.03,"alvito":0.04,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.03,"angra do heroismo":0.05,"arcos de valdevez":0.03,"arganil":0.0,"armamar":0.01,"arraiolos":0.05,"arronches":0.0,"arruda dos vinhos":0.039,"aveiro":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.05,"barrancos":0.05,"barreiro":0.05,"batalha":0.04,"beja":0.05,"belmonte":0.025,"benavente":0.05,"bombarral":0.035,"borba":0.045,"boticas":0.0,"braga":0.04,"bragança":0.05,"cabeceiras de basto":0.02,"cadaval":0.04,"caldas da rainha":0.03,"calheta (açores)":0.05,"calheta (madeira)":0.0,"camara de lobos":0.035,"caminha":0.05,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.05,"castanheira de pera":0.025,"castelo branco":0.05,"castelo de paiva":0.05,"castelo de vide":0.025,"castro daire":0.03,"castro marim":0.025,"castro verde":0.04,"celorico da beira":0.04,"celorico de basto":0.04,"chamusca":0.03,"chaves":0.05,"cinfães":0.03,"coimbra":0.05,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.05,"entroncamento":0.05,"esposende":0.05,"estarreja":0.0,"estremoz":0.05,"evora":0.05,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do alentejo":0.05,"ferreira do zezere":0.0,"figueira da foz":0.035,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.04,"fornos de algodres":0.05,"freixo de espada a cinta":0.025,"fronteira":0.02,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.05,"gouveia":0.05,"grandola":0.05,"guarda":0.045,"guimarães":0.05,"horta":0.045,"idanha-a-nova":0.025,"ilhavo":0.04,"lagoa (algarve)":0.03,"lagoa (açores)":0.05,"lagos":0.03,"lajes das flores":0.02,"lamego":0.04,"leiria":0.05,"lisboa":0.025,"loule":0.0,"loures":0.05,"lourinhã":0.0375,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.0,"machico":0.04,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.04,"marinha grande":0.05,"marvão":0.0,"matosinhos":0.05,"mação":0.025,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mesão frio":0.05,"mira":0.05,"miranda do corvo":0.05,"miranda do douro":0.05,"mirandela":0.02,"mogadouro":0.025,"moimenta da beira":0.045,"monchique":0.025,"mondim de basto":0.05,"monforte":0.05,"montalegre":0.05,"montemor-o-novo":0.05,"montemor-o-velho":0.045,"montijo":0.04,"monção":0.02,"mora":0.05,"mortagua":0.0,"moura":0.05,"mourão":0.05,"murtosa":0.04,"murça":0.05,"nazare":0.05,"nelas":0.04,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.035,"odivelas":0.05,"oeiras":0.047,"oleiros":0.0,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.04,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.05,"ovar":0.02,"palmela":0.05,"pampilhosa da serra":0.05,"paredes":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.0,"penacova":0.05,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.04,"penedono":0.01,"penela":0.05,"peniche":0.04,"peso da regua":0.05,"pinhel":0.05,"pombal":0.025,"ponta delgada":0.04,"ponta do sol":0.0,"ponte da barca":0.0,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.0375,"portel":0.05,"portimão":0.05,"porto":0.05,"porto de mos":0.03,"porto moniz":0.0,"porto santo":0.04,"povoa de lanhoso":0.05,"povoa de varzim":0.04,"povoação":0.05,"proença-a-nova":0.025,"redondo":0.03,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.05,"ribeira grande":0.025,"rio maior":0.048,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. pedro do sul":0.02,"s. roque do pico":0.05,"s. vicente":0.05,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.05,"santa comba dão":0.045,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.04,"santa maria da feira":0.05,"santa marta de penaguião":0.005,"santana":0.0,"santarem":0.05,"santiago do cacem":0.05,"santo tirso":0.0475,"sardoal":0.05,"satão":0.05,"seia":0.04,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.045,"sesimbra":0.05,"setubal":0.05,"sever do vouga":0.025,"silves":0.05,"sines":0.04,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.035,"tomar":0.05,"tondela":0.04,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.05,"trancoso":0.0,"trofa":0.048,"vale de cambra":0.03,"valença":0.0,"valongo":0.05,"valpaços":0.05,"velas":0.0,"vendas novas":0.05,"viana do alentejo":0.05,"vidigueira":0.05,"vieira do minho":0.0,"vila de rei":0.025,"vila do bispo":0.0,"vila do porto":0.05,"vila flor":0.0,"vila franca de xira":0.05,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.0,"vila nova de famalicão":0.045,"vila nova de foz coa":0.05,"vila nova de gaia":0.04,"vila nova de paiva":0.05,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.03,"vimioso":0.05,"vinhais":0.0,"viseu":0.04,"vizela":0.035,"vouzela":0.05},
+      "2022":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.035,"alcochete":0.04,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"alijo":0.035,"aljezur":0.0,"aljustrel":0.05,"almada":0.035,"almeida":0.0,"almeirim":0.05,"almodovar":0.04,"alpiarça":0.05,"alter do chão":0.0,"alvaiazere":0.03,"alvito":0.04,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.03,"angra do heroismo":0.05,"arcos de valdevez":0.03,"arganil":0.0,"armamar":0.01,"arraiolos":0.05,"arronches":0.0,"arruda dos vinhos":0.039,"aveiro":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.05,"barrancos":0.05,"barreiro":0.05,"batalha":0.04,"beja":0.05,"belmonte":0.025,"benavente":0.05,"bombarral":0.035,"borba":0.04,"boticas":0.0,"braga":0.0375,"cabeceiras de basto":0.02,"cadaval":0.0375,"caldas da rainha":0.03,"calheta (açores)":0.05,"calheta (madeira)":0.0,"camara de lobos":0.035,"caminha":0.05,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.05,"castanheira de pera":0.02,"castelo branco":0.025,"castelo de paiva":0.05,"castelo de vide":0.025,"castro daire":0.03,"castro marim":0.025,"castro verde":0.04,"celorico da beira":0.04,"celorico de basto":0.04,"chamusca":0.015,"chaves":0.05,"cinfães":0.03,"coimbra":0.05,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.05,"entroncamento":0.05,"espinho":0.045,"esposende":0.05,"estarreja":0.03,"estremoz":0.045,"evora":0.045,"fafe":0.03,"faro":0.05,"felgueiras":0.05,"ferreira do alentejo":0.05,"ferreira do zezere":0.0,"figueira da foz":0.035,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.03,"fornos de algodres":0.05,"freixo de espada a cinta":0.025,"fronteira":0.02,"funchal":0.025,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.05,"gouveia":0.05,"grandola":0.05,"guarda":0.045,"guimarães":0.05,"horta":0.045,"idanha-a-nova":0.025,"ilhavo":0.04,"lagoa (algarve)":0.03,"lagoa (açores)":0.05,"lagos":0.015,"lajes das flores":0.02,"lajes do pico":0.05,"lamego":0.04,"leiria":0.05,"lisboa":0.02,"loule":0.0,"loures":0.049,"lourinhã":0.0375,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.01,"machico":0.04,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.04,"marinha grande":0.05,"marvão":0.025,"matosinhos":0.05,"mação":0.04,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mertola":0.035,"mesão frio":0.03,"miranda do corvo":0.05,"miranda do douro":0.025,"mirandela":0.02,"mogadouro":0.025,"moimenta da beira":0.045,"monchique":0.025,"mondim de basto":0.045,"montalegre":0.05,"montemor-o-novo":0.04,"montemor-o-velho":0.045,"montijo":0.04,"monção":0.02,"mora":0.05,"mortagua":0.0,"moura":0.05,"mourão":0.04,"murtosa":0.04,"murça":0.05,"nazare":0.05,"nelas":0.04,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.035,"odivelas":0.05,"oeiras":0.047,"oleiros":0.0,"olhão":0.05,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.03,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.03,"ovar":0.02,"palmela":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.025,"penacova":0.04,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.04,"penedono":0.0,"penela":0.05,"peniche":0.04,"peso da regua":0.05,"pinhel":0.05,"pombal":0.025,"ponta delgada":0.035,"ponta do sol":0.0,"ponte da barca":0.04,"ponte de lima":0.0,"ponte de sor":0.05,"portalegre":0.0375,"portel":0.05,"portimão":0.05,"porto":0.045,"porto de mos":0.025,"porto moniz":0.0,"porto santo":0.0375,"povoa de lanhoso":0.05,"povoa de varzim":0.04,"povoação":0.025,"proença-a-nova":0.05,"redondo":0.03,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira grande":0.0225,"rio maior":0.048,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.05,"s. pedro do sul":0.02,"s. roque do pico":0.05,"s. vicente":0.05,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.05,"santa comba dão":0.044000000000000004,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.0,"santa maria da feira":0.05,"santa marta de penaguião":0.005,"santana":0.0,"santarem":0.0475,"santiago do cacem":0.05,"santo tirso":0.0475,"sardoal":0.05,"satão":0.05,"seia":0.035,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.04,"sesimbra":0.05,"setubal":0.04,"sever do vouga":0.025,"sines":0.04,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.035,"tomar":0.05,"tondela":0.04,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.05,"trancoso":0.025,"trofa":0.048,"vale de cambra":0.025,"valença":0.025,"valongo":0.05,"valpaços":0.05,"velas":0.0,"vendas novas":0.05,"viana do alentejo":0.025,"vidigueira":0.05,"vieira do minho":0.0,"vila de rei":0.025,"vila do bispo":0.0,"vila do porto":0.05,"vila flor":0.0,"vila franca de xira":0.05,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.03,"vila nova de famalicão":0.045,"vila nova de foz coa":0.05,"vila nova de gaia":0.04,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.04,"vimioso":0.05,"vinhais":0.0,"viseu":0.04,"vizela":0.035,"vouzela":0.05},
+      "2023":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.05,"alcobaça":0.025,"alcochete":0.04,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"alijo":0.033,"aljezur":0.0,"aljustrel":0.05,"almada":0.035,"almeida":0.0,"almeirim":0.05,"almodovar":0.04,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.025,"alvito":0.04,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.03,"angra do heroismo":0.05,"ansião":0.04,"arcos de valdevez":0.03,"arganil":0.0,"armamar":0.01,"arraiolos":0.05,"arronches":0.0,"arruda dos vinhos":0.039,"aveiro":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.0475,"barrancos":0.05,"barreiro":0.05,"batalha":0.04,"beja":0.05,"belmonte":0.025,"benavente":0.05,"bombarral":0.035,"borba":0.04,"boticas":0.0,"braga":0.0325,"bragança":0.05,"cabeceiras de basto":0.02,"cadaval":0.0375,"caldas da rainha":0.025,"calheta (açores)":0.05,"calheta (madeira)":0.0,"camara de lobos":0.035,"caminha":0.05,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.05,"castanheira de pera":0.0,"castelo branco":0.02,"castelo de paiva":0.05,"castelo de vide":0.025,"castro daire":0.03,"castro marim":0.025,"castro verde":0.04,"celorico da beira":0.04,"celorico de basto":0.04,"chamusca":0.015,"chaves":0.05,"cinfães":0.03,"coimbra":0.05,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.03,"cuba":0.05,"elvas":0.05,"entroncamento":0.05,"espinho":0.045,"esposende":0.05,"estarreja":0.03,"estremoz":0.04,"evora":0.04,"fafe":0.03,"faro":0.05,"felgueiras":0.0467,"ferreira do alentejo":0.05,"ferreira do zezere":0.01,"figueira da foz":0.035,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.03,"fornos de algodres":0.05,"freixo de espada a cinta":0.025,"fronteira":0.0,"funchal":0.02,"fundão":0.05,"gavião":0.0,"gois":0.025,"gondomar":0.05,"gouveia":0.05,"grandola":0.05,"guarda":0.045,"guimarães":0.05,"horta":0.045,"idanha-a-nova":0.025,"ilhavo":0.04,"lagoa (algarve)":0.02,"lagoa (açores)":0.05,"lagos":0.0,"lajes das flores":0.02,"lajes do pico":0.05,"lamego":0.04,"leiria":0.05,"lisboa":0.015,"loule":0.0,"loures":0.048,"lourinhã":0.0375,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.01,"machico":0.04,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.03,"marinha grande":0.05,"marvão":0.025,"matosinhos":0.05,"mação":0.04,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mertola":0.0325,"mesão frio":0.03,"mira":0.05,"miranda do corvo":0.05,"miranda do douro":0.025,"mirandela":0.02,"moimenta da beira":0.045,"monchique":0.025,"mondim de basto":0.04,"monforte":0.05,"montalegre":0.05,"montemor-o-novo":0.035,"montemor-o-velho":0.045,"montijo":0.04,"monção":0.02,"mora":0.05,"mortagua":0.0,"moura":0.025,"mourão":0.03,"murtosa":0.04,"murça":0.025,"nazare":0.05,"nelas":0.04,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.035,"odivelas":0.05,"oeiras":0.047,"oleiros":0.0,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.02,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.025,"ovar":0.02,"palmela":0.05,"pampilhosa da serra":0.0,"paredes":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.025,"penacova":0.04,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.025,"penedono":0.0,"penela":0.05,"peniche":0.04,"peso da regua":0.05,"pinhel":0.05,"pombal":0.025,"ponta delgada":0.035,"ponta do sol":0.0,"ponte da barca":0.04,"ponte de lima":0.0,"ponte de sor":0.035,"portalegre":0.0375,"portel":0.05,"portimão":0.05,"porto":0.04,"porto de mos":0.025,"porto moniz":0.0,"porto santo":0.0375,"povoa de lanhoso":0.0475,"povoa de varzim":0.04,"povoação":0.025,"proença-a-nova":0.025,"redondo":0.03,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.05,"ribeira grande":0.02,"rio maior":0.048,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.05,"s. pedro do sul":0.02,"s. vicente":0.05,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.05,"santa comba dão":0.044000000000000004,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.0,"santa maria da feira":0.05,"santa marta de penaguião":0.005,"santana":0.0,"santarem":0.045,"santiago do cacem":0.05,"santo tirso":0.0475,"sardoal":0.05,"satão":0.05,"seia":0.03,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.035,"sesimbra":0.05,"setubal":0.04,"sever do vouga":0.025,"sines":0.0375,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.025,"terras de bouro":0.045,"tomar":0.04,"tondela":0.025,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.0375,"trancoso":0.0,"trofa":0.048,"vagos":0.025,"vale de cambra":0.025,"valença":0.025,"valongo":0.05,"valpaços":0.05,"velas":0.0,"vendas novas":0.05,"viana do alentejo":0.025,"vidigueira":0.05,"vieira do minho":0.0,"vila de rei":0.025,"vila do bispo":0.0,"vila do porto":0.05,"vila flor":0.0,"vila franca de xira":0.05,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.03,"vila nova de famalicão":0.045,"vila nova de foz coa":0.05,"vila nova de gaia":0.04,"vila nova de paiva":0.05,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.04,"vimioso":0.05,"vinhais":0.0,"viseu":0.04,"vizela":0.035,"vouzela":0.05},
+      "2024":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.048,"alcobaça":0.024,"alcochete":0.04,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"alijo":0.03,"aljezur":0.0,"aljustrel":0.05,"almada":0.035,"almeida":0.0,"almeirim":0.05,"almodovar":0.04,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.025,"alvito":0.04,"amadora":0.038,"amarante":0.05,"amares":0.05,"anadia":0.03,"angra do heroismo":0.05,"ansião":0.03,"arcos de valdevez":0.03,"arganil":0.0,"armamar":0.01,"arraiolos":0.05,"arronches":0.0,"arruda dos vinhos":0.038,"aveiro":0.05,"azambuja":0.05,"baião":0.05,"barcelos":0.0475,"barrancos":0.05,"barreiro":0.05,"batalha":0.05,"beja":0.05,"belmonte":0.025,"benavente":0.025,"bombarral":0.035,"borba":0.04,"boticas":0.0,"braga":0.03,"bragança":0.05,"cabeceiras de basto":0.02,"cadaval":0.025,"caldas da rainha":0.02,"calheta (açores)":0.0,"calheta (madeira)":0.0,"camara de lobos":0.035,"caminha":0.05,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.05,"castanheira de pera":0.0,"castelo branco":0.015,"castelo de paiva":0.05,"castelo de vide":0.025,"castro daire":0.03,"castro marim":0.035,"castro verde":0.04,"celorico da beira":0.04,"celorico de basto":0.04,"chamusca":0.015,"chaves":0.05,"cinfães":0.03,"coimbra":0.05,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.05,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.05,"entroncamento":0.05,"espinho":0.045,"esposende":0.05,"estarreja":0.03,"estremoz":0.035,"evora":0.035,"fafe":0.03,"faro":0.05,"felgueiras":0.0434,"ferreira do alentejo":0.05,"ferreira do zezere":0.01,"figueira da foz":0.0325,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.03,"fornos de algodres":0.05,"freixo de espada a cinta":0.05,"fronteira":0.0,"funchal":0.0,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.05,"gouveia":0.04,"grandola":0.05,"guarda":0.04,"guimarães":0.05,"horta":0.045,"idanha-a-nova":0.025,"ilhavo":0.04,"lagoa (algarve)":0.02,"lagoa (açores)":0.05,"lagos":0.0,"lajes das flores":0.02,"lajes do pico":0.05,"lamego":0.04,"leiria":0.05,"lisboa":0.005,"loule":0.0,"loures":0.0475,"lourinhã":0.0375,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.01,"machico":0.04,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.03,"marinha grande":0.05,"marvão":0.025,"matosinhos":0.05,"mação":0.04,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mertola":0.03,"mesão frio":0.03,"mira":0.05,"miranda do corvo":0.04,"miranda do douro":0.025,"mirandela":0.02,"mogadouro":0.0,"moimenta da beira":0.045,"monchique":0.025,"mondim de basto":0.035,"monforte":0.05,"montalegre":0.05,"montemor-o-novo":0.03,"montemor-o-velho":0.045,"montijo":0.04,"monção":0.02,"mora":0.05,"mortagua":0.0,"mourão":0.03,"murtosa":0.04,"murça":0.025,"nazare":0.05,"nelas":0.04,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.035,"odivelas":0.05,"oeiras":0.047,"oleiros":0.0,"olhão":0.04,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.0,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.025,"ovar":0.02,"palmela":0.05,"pampilhosa da serra":0.0,"paredes":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.01,"penacova":0.04,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.0,"penedono":0.0,"penela":0.05,"peniche":0.03,"peso da regua":0.05,"pinhel":0.05,"pombal":0.025,"ponta delgada":0.035,"ponta do sol":0.0,"ponte da barca":0.04,"ponte de lima":0.0,"ponte de sor":0.035,"portalegre":0.035,"portel":0.05,"portimão":0.05,"porto":0.035,"porto de mos":0.025,"porto moniz":0.0,"porto santo":0.0375,"povoa de lanhoso":0.045,"povoa de varzim":0.04,"povoação":0.025,"proença-a-nova":0.025,"redondo":0.03,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.05,"ribeira grande":0.0175,"rio maior":0.046,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.05,"s. pedro do sul":0.02,"s. roque do pico":0.05,"s. vicente":0.05,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.05,"santa comba dão":0.044000000000000004,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.0,"santa maria da feira":0.05,"santa marta de penaguião":0.005,"santana":0.0,"santarem":0.045,"santiago do cacem":0.05,"santo tirso":0.035,"sardoal":0.05,"satão":0.05,"seia":0.025,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.025,"sesimbra":0.05,"setubal":0.035,"sever do vouga":0.025,"sines":0.0375,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.05,"tarouca":0.05,"tavira":0.025,"terras de bouro":0.045,"tomar":0.04,"tondela":0.025,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.0375,"trancoso":0.0,"trofa":0.048,"vagos":0.025,"vale de cambra":0.025,"valença":0.02,"valongo":0.05,"valpaços":0.05,"velas":0.0,"vendas novas":0.05,"viana do alentejo":0.025,"vidigueira":0.05,"vieira do minho":0.0,"vila de rei":0.025,"vila do bispo":0.0,"vila do porto":0.05,"vila flor":0.0,"vila franca de xira":0.0475,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.03,"vila nova de famalicão":0.045,"vila nova de foz coa":0.05,"vila nova de gaia":0.025,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.05,"vila real":0.05,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.03,"vimioso":0.05,"vinhais":0.0,"viseu":0.04,"vizela":0.035,"vouzela":0.05},
+      "2025":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.047,"alcobaça":0.022000000000000002,"alcochete":0.04,"alcoutim":0.0,"alenquer":0.048,"alfandega da fe":0.05,"alijo":0.025,"aljezur":0.0,"aljustrel":0.05,"almada":0.035,"almeida":0.0,"almeirim":0.05,"almodovar":0.04,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.025,"alvito":0.04,"amadora":0.035,"amarante":0.05,"amares":0.05,"anadia":0.03,"angra do heroismo":0.05,"ansião":0.02,"arcos de valdevez":0.03,"arganil":0.0,"armamar":0.01,"arraiolos":0.05,"arronches":0.0,"arruda dos vinhos":0.037000000000000005,"aveiro":0.05,"baião":0.05,"barcelos":0.0475,"barrancos":0.03,"batalha":0.05,"beja":0.05,"belmonte":0.025,"benavente":0.025,"bombarral":0.035,"boticas":0.0,"braga":0.03,"bragança":0.05,"cabeceiras de basto":0.02,"cadaval":0.01,"caldas da rainha":0.02,"calheta (açores)":0.0,"calheta (madeira)":0.0,"camara de lobos":0.03,"caminha":0.045,"campo maior":0.05,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.05,"castanheira de pera":0.0,"castelo branco":0.01,"castelo de paiva":0.05,"castelo de vide":0.025,"castro daire":0.03,"castro marim":0.03,"castro verde":0.04,"celorico da beira":0.03,"celorico de basto":0.04,"chamusca":0.01,"chaves":0.05,"cinfães":0.03,"coimbra":0.05,"condeixa-a-nova":0.05,"constancia":0.05,"coruche":0.03,"corvo":0.02,"covilhã":0.05,"crato":0.05,"cuba":0.05,"elvas":0.04,"entroncamento":0.05,"espinho":0.045,"esposende":0.05,"estarreja":0.03,"estremoz":0.03,"evora":0.04,"fafe":0.03,"faro":0.045,"felgueiras":0.04,"ferreira do alentejo":0.05,"ferreira do zezere":0.01,"figueira da foz":0.0325,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.03,"fornos de algodres":0.05,"freixo de espada a cinta":0.05,"fronteira":0.0,"funchal":0.0,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.05,"gouveia":0.04,"grandola":0.05,"guarda":0.0375,"guimarães":0.05,"horta":0.045,"idanha-a-nova":0.025,"ilhavo":0.04,"lagoa (algarve)":0.02,"lagoa (açores)":0.05,"lagos":0.0,"lajes das flores":0.01,"lamego":0.04,"leiria":0.05,"lisboa":0.0,"loule":0.0,"loures":0.047,"lourinhã":0.0375,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.01,"machico":0.04,"madalena":0.05,"mafra":0.0475,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.03,"marinha grande":0.05,"marvão":0.025,"matosinhos":0.0475,"mação":0.04,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mertola":0.03,"mesão frio":0.03,"mira":0.05,"miranda do corvo":0.04,"miranda do douro":0.025,"mirandela":0.02,"mogadouro":0.025,"moimenta da beira":0.03,"monchique":0.025,"mondim de basto":0.03,"monforte":0.05,"montalegre":0.0,"montemor-o-novo":0.025,"montemor-o-velho":0.045,"montijo":0.04,"monção":0.02,"mora":0.05,"mortagua":0.0,"moura":0.025,"mourão":0.025,"murtosa":0.04,"murça":0.025,"nazare":0.05,"nelas":0.04,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.035,"odivelas":0.05,"oeiras":0.047,"oleiros":0.0,"olhão":0.04,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.0,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.025,"ovar":0.01,"palmela":0.05,"pampilhosa da serra":0.0,"paredes":0.05,"paredes de coura":0.03,"paços de ferreira":0.05,"pedrogão grande":0.01,"penacova":0.035,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.0,"penedono":0.0,"penela":0.05,"peniche":0.03,"peso da regua":0.05,"pinhel":0.05,"pombal":0.025,"ponta delgada":0.035,"ponta do sol":0.0,"ponte da barca":0.04,"ponte de lima":0.0,"ponte de sor":0.035,"portalegre":0.0325,"portel":0.05,"portimão":0.04,"porto":0.03,"porto de mos":0.025,"porto moniz":0.0,"porto santo":0.0375,"povoa de lanhoso":0.04,"povoa de varzim":0.04,"povoação":0.025,"proença-a-nova":0.025,"redondo":0.03,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira grande":0.015,"rio maior":0.044000000000000004,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.05,"s. pedro do sul":0.02,"s. roque do pico":0.05,"s. vicente":0.05,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.05,"santa comba dão":0.044000000000000004,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.0,"santa maria da feira":0.05,"santa marta de penaguião":0.005,"santana":0.0,"santarem":0.045,"santiago do cacem":0.05,"santo tirso":0.035,"sardoal":0.05,"satão":0.05,"seia":0.025,"seixal":0.05,"sernancelhe":0.05,"serpa":0.05,"sertã":0.025,"sesimbra":0.05,"setubal":0.033,"sever do vouga":0.025,"sines":0.0375,"sintra":0.04,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.04,"tarouca":0.05,"tavira":0.025,"terras de bouro":0.045,"tomar":0.04,"tondela":0.025,"torre de moncorvo":0.05,"torres novas":0.05,"torres vedras":0.0375,"trancoso":0.0,"trofa":0.04,"vagos":0.025,"vale de cambra":0.025,"valença":0.0,"valongo":0.05,"valpaços":0.05,"velas":0.0,"vendas novas":0.05,"viana do alentejo":0.025,"vidigueira":0.05,"vieira do minho":0.0,"vila de rei":0.025,"vila do bispo":0.0,"vila do porto":0.05,"vila flor":0.0,"vila franca de xira":0.0475,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.03,"vila nova de famalicão":0.045,"vila nova de foz coa":0.05,"vila nova de gaia":0.025,"vila nova de poiares":0.05,"vila pouca de aguiar":0.05,"vila praia da vitoria":0.04,"vila real":0.0475,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.03,"vimioso":0.05,"vinhais":0.0,"viseu":0.04,"vizela":0.03,"vouzela":0.04},
+      "2026":{"abrantes":0.045,"agueda":0.0,"aguiar da beira":0.0,"alandroal":0.05,"albergaria-a-velha":0.0275,"albufeira":0.0,"alcacer do sal":0.04,"alcanena":0.045,"alcobaça":0.022000000000000002,"alcochete":0.05,"alcoutim":0.0,"alenquer":0.047,"alfandega da fe":0.05,"alijo":0.0,"aljezur":0.0,"aljustrel":0.05,"almada":0.05,"almeida":0.0,"almeirim":0.05,"almodovar":0.04,"alpiarça":0.05,"alter do chão":0.025,"alvaiazere":0.025,"alvito":0.04,"amadora":0.035,"amarante":0.05,"amares":0.05,"anadia":0.03,"angra do heroismo":0.05,"ansião":0.01,"arcos de valdevez":0.03,"arganil":0.0,"armamar":0.01,"arraiolos":0.05,"arronches":0.0,"arruda dos vinhos":0.0365,"aveiro":0.0475,"baião":0.04,"barcelos":0.0475,"barrancos":0.03,"barreiro":0.05,"batalha":0.04,"beja":0.05,"belmonte":0.05,"benavente":0.025,"bombarral":0.035,"borba":0.04,"boticas":0.0,"braga":0.03,"bragança":0.04,"cabeceiras de basto":0.02,"cadaval":0.01,"caldas da rainha":0.02,"calheta (açores)":0.0,"calheta (madeira)":0.0,"camara de lobos":0.03,"caminha":0.045,"campo maior":0.0475,"cantanhede":0.05,"carrazeda de ansiães":0.0,"carregal do sal":0.05,"cartaxo":0.05,"cascais":0.045,"castanheira de pera":0.0,"castelo branco":0.0075,"castelo de paiva":0.05,"castelo de vide":0.025,"castro daire":0.03,"castro marim":0.03,"castro verde":0.04,"celorico da beira":0.03,"celorico de basto":0.04,"chamusca":0.01,"chaves":0.05,"cinfães":0.03,"coimbra":0.05,"condeixa-a-nova":0.04,"constancia":0.05,"coruche":0.025,"covilhã":0.05,"crato":0.045,"cuba":0.05,"elvas":0.04,"entroncamento":0.05,"espinho":0.045,"esposende":0.05,"estarreja":0.03,"estremoz":0.025,"evora":0.04,"fafe":0.03,"faro":0.045,"felgueiras":0.04,"ferreira do alentejo":0.04,"ferreira do zezere":0.01,"figueira da foz":0.045,"figueira de castelo rodrigo":0.0,"figueiro dos vinhos":0.03,"fornos de algodres":0.05,"freixo de espada a cinta":0.05,"fronteira":0.0,"funchal":0.0,"fundão":0.05,"gavião":0.0,"gois":0.025,"golegã":0.05,"gondomar":0.05,"gouveia":0.04,"grandola":0.04,"guarda":0.0375,"guimarães":0.0475,"horta":0.045,"idanha-a-nova":0.025,"ilhavo":0.045,"lagoa (algarve)":0.02,"lagoa (açores)":0.05,"lagos":0.0,"lajes das flores":0.01,"lajes do pico":0.05,"lamego":0.04,"leiria":0.05,"lisboa":0.0,"loule":0.0,"loures":0.04650000000000001,"lourinhã":0.035,"lousada":0.04,"lousã":0.04,"macedo de cavaleiros":0.01,"machico":0.04,"madalena":0.05,"mafra":0.045,"maia":0.05,"mangualde":0.04,"manteigas":0.0,"marco de canaveses":0.03,"marinha grande":0.05,"marvão":0.025,"matosinhos":0.0475,"mação":0.04,"mealhada":0.02,"meda":0.05,"melgaço":0.05,"mertola":0.03,"mesão frio":0.03,"mira":0.05,"miranda do corvo":0.04,"miranda do douro":0.025,"mirandela":0.02,"mogadouro":0.025,"moimenta da beira":0.03,"monchique":0.025,"mondim de basto":0.025,"monforte":0.045,"montalegre":0.0,"montemor-o-novo":0.03,"montemor-o-velho":0.045,"montijo":0.04,"monção":0.02,"mora":0.05,"mortagua":0.0,"moura":0.025,"mourão":0.025,"murtosa":0.04,"murça":0.025,"nazare":0.05,"nelas":0.04,"nisa":0.025,"nordeste":0.05,"obidos":0.01,"odemira":0.035,"odivelas":0.05,"oeiras":0.047,"oleiros":0.0,"olhão":0.04,"oliveira de azemeis":0.05,"oliveira de frades":0.05,"oliveira do bairro":0.0,"oliveira do hospital":0.05,"ourem":0.05,"ourique":0.025,"ovar":0.01,"palmela":0.05,"pampilhosa da serra":0.0,"paredes":0.05,"paredes de coura":0.025,"paços de ferreira":0.05,"pedrogão grande":0.01,"penacova":0.035,"penafiel":0.05,"penalva do castelo":0.04,"penamacor":0.0,"penedono":0.0,"penela":0.05,"peniche":0.03,"peso da regua":0.05,"pinhel":0.05,"pombal":0.025,"ponta delgada":0.035,"ponta do sol":0.0,"ponte da barca":0.04,"ponte de lima":0.0,"ponte de sor":0.035,"portalegre":0.0325,"portel":0.05,"portimão":0.035,"porto":0.025,"porto de mos":0.025,"porto moniz":0.0,"porto santo":0.0375,"povoa de lanhoso":0.0375,"povoa de varzim":0.04,"povoação":0.025,"proença-a-nova":0.025,"redondo":0.03,"reguengos de monsaraz":0.05,"resende":0.0,"ribeira brava":0.05,"ribeira de pena":0.05,"ribeira grande":0.015,"rio maior":0.044000000000000004,"s. bras de alportel":0.05,"s. joão da madeira":0.045,"s. joão da pesqueira":0.04,"s. pedro do sul":0.02,"s. roque do pico":0.05,"s. vicente":0.0,"sabrosa":0.0,"sabugal":0.0,"salvaterra de magos":0.05,"santa comba dão":0.044000000000000004,"santa cruz":0.04,"santa cruz da graciosa":0.03,"santa cruz das flores":0.0,"santa maria da feira":0.05,"santa marta de penaguião":0.005,"santana":0.0,"santarem":0.045,"santiago do cacem":0.05,"santo tirso":0.035,"satão":0.05,"seia":0.025,"seixal":0.05,"sernancelhe":0.05,"serpa":0.045,"sertã":0.025,"sesimbra":0.05,"setubal":0.033,"sever do vouga":0.03,"sintra":0.035,"sobral de monte agraço":0.05,"soure":0.05,"sousel":0.05,"tabua":0.05,"tabuaço":0.04,"tarouca":0.05,"tavira":0.025,"terras de bouro":0.04,"tomar":0.05,"tondela":0.015,"torre de moncorvo":0.05,"torres novas":0.04,"torres vedras":0.0375,"trancoso":0.0,"trofa":0.04,"vagos":0.05,"vale de cambra":0.025,"valença":0.0,"valongo":0.05,"valpaços":0.05,"velas":0.0,"vendas novas":0.05,"viana do alentejo":0.025,"vidigueira":0.05,"vieira do minho":0.05,"vila de rei":0.025,"vila do bispo":0.0,"vila do porto":0.05,"vila flor":0.0,"vila franca de xira":0.045,"vila franca do campo":0.05,"vila nova da barquinha":0.045,"vila nova de cerveira":0.03,"vila nova de famalicão":0.045,"vila nova de foz coa":0.05,"vila nova de gaia":0.025,"vila nova de poiares":0.05,"vila pouca de aguiar":0.025,"vila praia da vitoria":0.04,"vila real":0.045,"vila real de santo antonio":0.05,"vila velha de rodão":0.05,"vila viçosa":0.03,"vimioso":0.05,"vinhais":0.0,"viseu":0.035,"vizela":0.03,"vouzela":0.04},
+    };
+
+    const T2008 ={"1":{"to":4898,"parcel":0,"tax":0.105},"2":{"to":7410,"parcel":122.45,"tax":0.13},"3":{"to":18375,"parcel":900.50,"tax":0.235},"4":{"to":42259,"parcel":2829.88,"tax":0.34},"5":{"to":61244,"parcel":3886.36,"tax":0.365},"6":{"to":10000000000,"parcel":6029.90,"tax":0.40}};
+    const T2009 = T2008;
+    const T2010 = {"1":{"to":4898,"parcel":0,"tax":0.115},"2":{"to":7410,"parcel":122.45,"tax":0.14},"3":{"to":18375,"parcel":900.50,"tax":0.245},"4":{"to":42259,"parcel":2829.88,"tax":0.35},"5":{"to":61244,"parcel":3886.36,"tax":0.375},"6":{"to":10000000000,"parcel":6642.34,"tax":0.42}};
+    const T2011 = {"1":{"to":4898,"parcel":0,"tax":0.115},"2":{"to":7410,"parcel":146.94,"tax":0.145},"3":{"to":18375,"parcel":887.94,"tax":0.245},"4":{"to":42259,"parcel":2909.19,"tax":0.355},"5":{"to":61244,"parcel":3965.66,"tax":0.38},"6":{"to":80000,"parcel":6109.20,"tax":0.415},"7":{"to":100000,"parcel":9442.34,"tax":0.455},"8":{"to":10000000000,"parcel":11942.34,"tax":0.48}};
+    const T2012 = {"1":{"to":4898,"parcel":0,"tax":0.115},"2":{"to":7410,"parcel":122.45,"tax":0.14},"3":{"to":18375,"parcel":1048.70,"tax":0.265},"4":{"to":42259,"parcel":3253.70,"tax":0.385},"5":{"to":61244,"parcel":4521.47,"tax":0.415},"6":{"to":80000,"parcel":6971.23,"tax":0.455},"7":{"to":100000,"parcel":8571.23,"tax":0.475},"8":{"to":10000000000,"parcel":9071.23,"tax":0.48}};
+    const T2013 = T2012;
+    const T2014 = {"1":{"to":7000,"parcel":0,"tax":0.145},"2":{"to":10700,"parcel":630,"tax":0.235},"3":{"to":20000,"parcel":1165,"tax":0.285},"4":{"to":25000,"parcel":2465,"tax":0.35},"5":{"to":36750,"parcel":2965,"tax":0.37},"6":{"to":80640,"parcel":5905,"tax":0.45},"7":{"to":10000000000,"parcel":8324.20,"tax":0.48}};
+    const T2015 = {"1":{"to":7000,"parcel":0,"tax":0.145},"2":{"to":10700,"parcel":630,"tax":0.235},"3":{"to":19595,"parcel":1165,"tax":0.285},"4":{"to":25000,"parcel":2438.68,"tax":0.35},"5":{"to":36856,"parcel":2938.68,"tax":0.37},"6":{"to":80640,"parcel":5887.16,"tax":0.45},"7":{"to":10000000000,"parcel":8306.36,"tax":0.48}};
+    const T2016 = {"1":{"to":7035,"parcel":0,"tax":0.145},"2":{"to":10700,"parcel":633.15,"tax":0.235},"3":{"to":19595,"parcel":1168.15,"tax":0.285},"4":{"to":25000,"parcel":2441.83,"tax":0.35},"5":{"to":36856,"parcel":2941.83,"tax":0.37},"6":{"to":80640,"parcel":5890.31,"tax":0.45},"7":{"to":10000000000,"parcel":8309.51,"tax":0.48}};
+    const T2017 = {"1":{"to":7091,"parcel":0,"tax":0.145},"2":{"to":10700,"parcel":638.19,"tax":0.235},"3":{"to":20261,"parcel":1173.19,"tax":0.285},"4":{"to":25000,"parcel":2490.16,"tax":0.35},"5":{"to":36856,"parcel":2990.16,"tax":0.37},"6":{"to":80640,"parcel":5938.64,"tax":0.45},"7":{"to":10000000000,"parcel":8357.84,"tax":0.48}};
+    const T2018 = T2017;
+    const T2019 = {"1":{"to":7112,"parcel":0,"tax":0.145},"2":{"to":10732,"parcel":604.52,"tax":0.23},"3":{"to":20322,"parcel":1194.78,"tax":0.285},"4":{"to":25076,"parcel":2515.71,"tax":0.35},"5":{"to":36967,"parcel":3017.23,"tax":0.37},"6":{"to":80882,"parcel":5974.59,"tax":0.45},"7":{"to":10000000000,"parcel":8401.05,"tax":0.48}};
+    const T2020 = {"1":{"to":7112,"parcel":0,"tax":0.145},"2":{"to":10732,"parcel":597.89,"tax":0.23},"3":{"to":20322,"parcel":1189.10,"tax":0.285},"4":{"to":25076,"parcel":2509.77,"tax":0.35},"5":{"to":36967,"parcel":3011.23,"tax":0.37},"6":{"to":80882,"parcel":5970.69,"tax":0.45},"7":{"to":10000000000,"parcel":8397.76,"tax":0.48}};
+    const T2022 = {"1":{"to":7116,"parcel":0,"tax":0.145},"2":{"to":10736,"parcel":604.86,"tax":0.23},"3":{"to":15216,"parcel":980.62,"tax":0.265},"4":{"to":19696,"parcel":1284.99,"tax":0.285},"5":{"to":25076,"parcel":2565.21,"tax":0.35},"6":{"to":36757,"parcel":3066.79,"tax":0.37},"7":{"to":48033,"parcel":5455.84,"tax":0.435},"8":{"to":75009,"parcel":6176.56,"tax":0.45},"9":{"to":10000000000,"parcel":8426.51,"tax":0.48}};
+    const T2023 ={"1":{"to":7479,"parcel":0,"tax":0.145},"2":{"to":11284,"parcel":486.14,"tax":0.21},"3":{"to":15992,"parcel":1106.73,"tax":0.265},"4":{"to":20700,"parcel":1426.65,"tax":0.285},"5":{"to":26355,"parcel":2772.14,"tax":0.35},"6":{"to":38632,"parcel":3299.12,"tax":0.37},"7":{"to":50483,"parcel":5810.25,"tax":0.435},"8":{"to":78834,"parcel":6567.33,"tax":0.45},"9":{"to":10000000000,"parcel":8932.68,"tax":0.48}};
+    const T2024 = {"1":{"to":7703,"parcel":0,"tax":0.1325},"2":{"to":11623,"parcel":269.61,"tax":0.165},"3":{"to":16472,"parcel":908.92,"tax":0.22},"4":{"to":21321,"parcel":1403.08,"tax":0.25},"5":{"to":27146,"parcel":2895.61,"tax":0.32},"6":{"to":39791,"parcel":3845.5,"tax":0.355},"7":{"to":51997,"parcel":7029.08,"tax":0.435},"8":{"to":81199,"parcel":7673.78,"tax":0.45},"9":{"to":10000000000,"parcel":10073.6,"tax":0.48}};
+    const T2025 = {"1":{"to":8059,"parcel":0,"tax":0.125},"2":{"to":12160,"parcel":282.07,"tax":0.16},"3":{"to":17233,"parcel":950.91,"tax":0.215},"4":{"to":22306,"parcel":1450.67,"tax":0.244},"5":{"to":28400,"parcel":3011.98,"tax":0.314},"6":{"to":41629,"parcel":4006.10,"tax":0.349},"7":{"to":44987,"parcel":7419.54,"tax":0.431},"8":{"to":83696,"parcel":8094.51,"tax":0.446},"9":{"to":10000000000,"parcel":10939.90,"tax":0.48}};
+    const T2026 = {"1":{"to":8342,"parcel":0,"tax":0.125},"2":{"to":12587,"parcel":266.94,"tax":0.157},"3":{"to":17838,"parcel":959.26,"tax":0.212},"4":{"to":23089,"parcel":1476.45,"tax":0.241},"5":{"to":29397,"parcel":3092.77,"tax":0.311},"6":{"to":43090,"parcel":4209.94,"tax":0.349},"7":{"to":46566,"parcel":7743.27,"tax":0.431},"8":{"to":86634,"parcel":8441.48,"tax":0.446},"9":{"to":10000000000,"parcel":11387.17,"tax":0.48}};
+
+    const TAX_DATA = {
+      "2008":{specific_deduction:3956.64,social_security_tax:0.11,table:T2008,county_tax:COUNTY_TAXES["2008"]},
+      "2009":{specific_deduction:3956.64,social_security_tax:0.11,table:T2009,county_tax:COUNTY_TAXES["2009"]},
+      "2010":{specific_deduction:3956.64,social_security_tax:0.11,table:T2010,county_tax:COUNTY_TAXES["2010"]},
+      "2011":{specific_deduction:4041.00,social_security_tax:0.11,table:T2011,county_tax:COUNTY_TAXES["2011"]},
+      "2012":{specific_deduction:4104.00,social_security_tax:0.11,table:T2012,county_tax:COUNTY_TAXES["2012"]},
+      "2013":{specific_deduction:4104.00,social_security_tax:0.11,table:T2013,county_tax:COUNTY_TAXES["2013"]},
+      "2014":{specific_deduction:4104.00,social_security_tax:0.11,table:T2014,county_tax:COUNTY_TAXES["2014"]},
+      "2015":{specific_deduction:4104.00,social_security_tax:0.11,table:T2015,county_tax:COUNTY_TAXES["2015"]},
+      "2016":{specific_deduction:4104.00,social_security_tax:0.11,table:T2016,county_tax:COUNTY_TAXES["2016"]},
+      "2017":{specific_deduction:4104.00,social_security_tax:0.11,table:T2017,county_tax:COUNTY_TAXES["2017"]},
+      "2018":{specific_deduction:4104.00,social_security_tax:0.11,table:T2018,county_tax:COUNTY_TAXES["2018"]},
+      "2019":{specific_deduction:4104.00,social_security_tax:0.11,table:T2019,county_tax:COUNTY_TAXES["2019"]},
+      "2020":{specific_deduction:4104.00,social_security_tax:0.11,table:T2020,county_tax:COUNTY_TAXES["2020"]},
+      "2021":{specific_deduction:4104.00,social_security_tax:0.11,table:T2020,county_tax:COUNTY_TAXES["2021"]},
+      "2022":{specific_deduction:4104.00,social_security_tax:0.11,table:T2022,county_tax:COUNTY_TAXES["2022"]},
+      "2023":{specific_deduction:4196.68,social_security_tax:0.11,table:T2023,county_tax:COUNTY_TAXES["2023"]},
+      "2024":{specific_deduction:4350.24,social_security_tax:0.11,table:T2024,county_tax:COUNTY_TAXES["2024"]},
+      "2025":{specific_deduction:4462.00,social_security_tax:0.11,table:T2025,county_tax:COUNTY_TAXES["2025"]},
+      "2026":{specific_deduction:4462.00,social_security_tax:0.11,table:T2026,county_tax:COUNTY_TAXES["2026"]},
+    };
 
     function r2(n) { return Math.round(n * 100) / 100; }
 
+    const INFLATION = {
+      2008:2.59,2009:-0.83,2010:1.40,2011:3.65,2012:2.77,2013:0.30,
+      2014:-0.36,2015:0.50,2016:0.60,2017:1.40,2018:1.50,2019:0.30,
+      2020:-0.01,2021:1.27,2022:7.80,2023:3.80,2024:2.40,2025:2.30
+    };
+
     document.addEventListener('alpine:init', () => {
       Alpine.data('irsCalc', () => ({
+        darkMode: localStorage.getItem('irs-theme') !== 'light',
+        showBrackets: false,
         grossInput: '35000',
         municipality: 'porto',
-        year: '2024',
+        year: '2026',
         specificDeductionInput: '',
         deductionsInput: '650',
         withheldInput: '5200',
 
-        get gross()       { return parseFloat(this.grossInput) || 0; },
-        get deductions()  { return parseFloat(this.deductionsInput) || 0; },
-        get withheld()    { return parseFloat(this.withheldInput) || 0; },
-        get yearData()    { return TAX_DATA[this.year]; },
-        get countyRate()  { return this.yearData.county_tax[this.municipality] ?? 0; },
-        get brackets()    { return Object.values(this.yearData.table); },
+        init() {
+          this.$nextTick(() => {
+            const m = this.municipality;
+            this.municipality = '';
+            this.$nextTick(() => { this.municipality = m; });
+          });
+        },
+
+        get gross()      { return parseFloat(this.grossInput) || 0; },
+        get deductions() { return parseFloat(this.deductionsInput) || 0; },
+        get withheld()   { return parseFloat(this.withheldInput) || 0; },
+        get yearData()   { return TAX_DATA[this.year]; },
+        get countyRate() { return this.yearData.county_tax[this.municipality] ?? 0; },
+        get brackets()   { return Object.values(this.yearData.table); },
+
+        get availableYears() {
+          return ['2008','2009','2010','2011','2012','2013','2014','2015',
+                  '2016','2017','2018','2019','2020','2021','2022','2023','2024','2025','2026'];
+        },
+        get sliderPercent() { return Math.min(100, Math.max(0, this.gross / 1000)); },
 
         get sortedMunicipalities() {
           return Object.keys(this.yearData.county_tax).sort((a, b) => a.localeCompare(b, 'pt'));
         },
-
-        // Auto-calculated default: max(fixed, gross * ss_rate)
         get specificDeductionAuto() {
-          return r2(Math.max(
-            this.yearData.specific_deduction,
-            this.gross * this.yearData.social_security_tax
-          ));
+          return r2(Math.max(this.yearData.specific_deduction,
+                             this.gross * this.yearData.social_security_tax));
         },
-        // Use manual input if provided, otherwise fall back to auto
         get specificDeduction() {
-          const manual = parseFloat(this.specificDeductionInput);
-          return isNaN(manual) ? this.specificDeductionAuto : r2(manual);
+          const m = parseFloat(this.specificDeductionInput);
+          return isNaN(m) ? this.specificDeductionAuto : r2(m);
         },
-
-        // Step 2: colectable income
-        get collectableIncome() {
-          return r2(Math.max(0, this.gross - this.specificDeduction));
-        },
-
-        // Step 3: bracket — strict <
+        get collectableIncome() { return r2(Math.max(0, this.gross - this.specificDeduction)); },
         get bracket() {
-          return this.brackets.find(b => this.collectableIncome < b.to) || this.brackets[this.brackets.length - 1];
+          return this.brackets.find(b => this.collectableIncome < b.to)
+              || this.brackets[this.brackets.length - 1];
         },
-
-        // Step 4: base tax
         get amountCalculated() { return r2(this.collectableIncome * this.bracket.tax); },
         get baseTax()          { return r2(this.amountCalculated - this.bracket.parcel); },
+        get countyBenefit()    { return r2((this.baseTax - this.deductions) * (0.05 - this.countyRate)); },
+        get netTax()           { return r2(this.baseTax - this.deductions - Math.max(0, this.countyBenefit)); },
+        get takeHome()         { return r2(this.gross - this.specificDeduction - this.netTax); },
+        get assessedTax()      { return r2(this.netTax - this.withheld); },
+        get effectiveRate()    { return this.gross > 0 ? (this.netTax / this.gross * 100) : 0; },
 
-        // Step 5: municipal benefit — low county_tax = bigger reduction
-        get countyBenefit() {
-          return r2((this.baseTax - this.deductions) * (0.05 - this.countyRate));
+        get prevYear() {
+          const idx = this.availableYears.indexOf(this.year);
+          return idx > 0 ? this.availableYears[idx - 1] : null;
+        },
+        get prevCalc() {
+          if (!this.prevYear || this.gross === 0) return null;
+          const yd = TAX_DATA[this.prevYear];
+          const ss   = r2(Math.max(yd.specific_deduction, this.gross * yd.social_security_tax));
+          const col  = r2(Math.max(0, this.gross - ss));
+          const brks = Object.values(yd.table);
+          const brk  = brks.find(b => col < b.to) || brks[brks.length - 1];
+          const base = r2(col * brk.tax - brk.parcel);
+          const cr   = yd.county_tax?.[this.municipality] ?? 0;
+          const ben  = r2(base * (0.05 - cr));
+          const net  = r2(base - Math.max(0, ben));
+          return { netTax: net, takeHome: r2(this.gross - ss - net), tet: this.gross > 0 ? net / this.gross * 100 : 0 };
+        },
+        get bracketRows() {
+          const brks = this.brackets;
+          return brks.map((b, i) => {
+            const from = i === 0 ? 0 : brks[i - 1].to;
+            const to   = b.to >= 1e10 ? null : b.to;
+            const active = this.gross > 0 &&
+              this.collectableIncome > from &&
+              (to === null || this.collectableIncome <= to);
+            return { from, to, tax: b.tax, parcel: b.parcel, active };
+          });
         },
 
-        // Step 6: net tax
-        get netTax() {
-          return r2(this.baseTax - this.deductions - Math.max(0, this.countyBenefit));
+        get deltaTakeHome()      { return this.prevCalc ? r2(this.takeHome      - this.prevCalc.takeHome) : null; },
+        get deltaNetTax()        { return this.prevCalc ? r2(this.netTax        - this.prevCalc.netTax)   : null; },
+        get deltaEffectiveRate() { return this.prevCalc ? r2(this.effectiveRate - this.prevCalc.tet)      : null; },
+
+        get inflationAdjustedTakeHome() {
+          if (this.gross === 0) return null;
+          const latestYear = parseInt(this.availableYears[this.availableYears.length - 1]);
+          const curYear = parseInt(this.year);
+          if (curYear >= latestYear) return null;
+          let factor = 1;
+          for (let y = curYear + 1; y <= latestYear; y++) {
+            factor *= (1 + (INFLATION[y] ?? 0) / 100);
+          }
+          return r2(this.takeHome * factor);
         },
 
-        // Step 7: assessed tax (owed or refunded)
-        get assessedTax() { return r2(this.netTax - this.withheld); },
+        toggleTheme() {
+          this.darkMode = !this.darkMode;
+          localStorage.setItem('irs-theme', this.darkMode ? 'dark' : 'light');
+        },
 
-        get effectiveRate() {
-          return this.gross > 0 ? (this.netTax / this.gross * 100) : 0;
+        deltaClass(n, inverse) {
+          if (n === null || n === 0) return 'delta delta-neutral';
+          if (inverse) return n > 0 ? 'delta delta-tax-up' : 'delta delta-tax-down';
+          return n > 0 ? 'delta delta-up' : 'delta delta-down';
         },
 
         fmt(n) {
-          return new Intl.NumberFormat('pt-PT', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }).format(n);
+          return new Intl.NumberFormat('pt-PT', {minimumFractionDigits:2, maximumFractionDigits:2}).format(n);
+        },
+        fmtInt(n) {
+          return new Intl.NumberFormat('pt-PT').format(Math.round(n));
         },
         fmtPct(n) {
-          return new Intl.NumberFormat('pt-PT', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }).format(n) + '%';
+          return new Intl.NumberFormat('pt-PT', {minimumFractionDigits:2, maximumFractionDigits:2}).format(n) + '%';
         },
         titleCase(s) {
           return s.replace(/(^|\s|\()(\S)/g, (_, sep, c) => sep + c.toUpperCase());
@@ -413,6 +1134,5 @@
       }));
     });
   </script>
-
 </body>
 </html>
