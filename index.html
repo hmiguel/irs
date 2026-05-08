@@ -73,11 +73,12 @@
 
     /* ── Year pill bar ──────────────────────────── */
     .year-bar {
-      display: flex;
-      gap: .35rem;
-      flex-wrap: wrap;
       padding: 1.75rem 0 0;
+    }
+    .year-bar-inline {
+      display: flex;
       align-items: center;
+      gap: .75rem;
     }
     .year-bar-label {
       font-size: .68rem;
@@ -85,29 +86,11 @@
       text-transform: uppercase;
       letter-spacing: .09em;
       color: var(--muted);
-      margin-right: .25rem;
+      flex-shrink: 0;
     }
-    .year-pill-btn {
-      padding: .28rem .75rem;
-      border-radius: 0;
-      border: 2px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      font-size: .7rem;
-      font-weight: 700;
-      font-family: var(--mono);
-      cursor: pointer;
-      transition: border-color .1s, color .1s, background .1s;
-      letter-spacing: .02em;
-    }
-    .year-pill-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-    .year-pill-btn.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #fff;
+    .year-bar-track {
+      flex: 1;
+      min-width: 0;
     }
     .delta-context {
       font-size: .68rem;
@@ -115,6 +98,11 @@
       color: var(--muted);
       margin-left: .5rem;
       opacity: .7;
+    }
+    @media (max-width: 480px) {
+      .year-bar-track .slider-ticks span:nth-child(2n+2):not(:last-child) {
+        visibility: hidden;
+      }
     }
 
     /* ── Page heading ───────────────────────────── */
@@ -613,18 +601,30 @@
 <body x-data="irsCalc()" :class="darkMode ? '' : 'light'">
 <div class="page">
 
-  <!-- Year pill bar -->
+  <!-- Year slider bar -->
   <nav class="year-bar" aria-label="Selecionar ano fiscal">
-    <span class="year-bar-label" aria-hidden="true">Ano fiscal</span>
-    <template x-for="y in availableYears" :key="y">
-      <button class="year-pill-btn"
-              :class="{active: year===y}"
-              :aria-current="year===y ? 'true' : 'false'"
-              :aria-label="'Ano fiscal ' + y"
-              @click="year=y"
-              x-text="y">
-      </button>
-    </template>
+    <div class="year-bar-inline">
+      <span class="year-bar-label" id="label-year-slider">Ano fiscal</span>
+      <div class="year-bar-track">
+        <div class="slider-wrap" style="margin-top:0;">
+          <div class="slider-bubble" aria-hidden="true"
+               :style="'left:clamp(16px,' + yearSliderPercent + '%,calc(100% - 16px))'"
+               x-text="year">
+          </div>
+          <input type="range" id="input-year-slider" class="rng"
+                 min="0" max="18" step="1"
+                 aria-labelledby="label-year-slider"
+                 :aria-valuetext="year + ' — Ano fiscal'"
+                 x-model.number="yearIdx"
+                 :style="'--pct:' + yearSliderPercent + '%'">
+        </div>
+        <div class="slider-ticks">
+          <span>2008</span><span>2010</span><span>2012</span><span>2014</span>
+          <span>2016</span><span>2018</span><span>2020</span><span>2022</span>
+          <span>2024</span><span>2026</span>
+        </div>
+      </div>
+    </div>
     <template x-if="prevYear">
       <span class="delta-context" x-text="'Δ vs ' + prevYear"></span>
     </template>
@@ -1049,7 +1049,7 @@
         showBrackets: false,
         grossInput: '35000',
         municipality: 'porto',
-        year: '2026',
+        yearIdx: 18,
         specificDeductionInput: '',
         deductionsInput: '650',
         withheldInput: '5200',
@@ -1062,6 +1062,8 @@
           });
         },
 
+        get year()             { return this.availableYears[this.yearIdx]; },
+        get yearSliderPercent(){ return (this.yearIdx / (this.availableYears.length - 1)) * 100; },
         get gross()      { return parseFloat(this.grossInput) || 0; },
         get deductions() { return parseFloat(this.deductionsInput) || 0; },
         get withheld()   { return parseFloat(this.withheldInput) || 0; },
