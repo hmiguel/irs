@@ -1,7 +1,7 @@
 {
   "2008": {
     "official": true,
-    "specific_deduction": 3956.64,
+    "specific_deduction": 4104,
     "social_security_tax": 0.11,
     "table": {
       "1": {
@@ -232,7 +232,7 @@
   },
   "2009": {
     "official": true,
-    "specific_deduction": 3956.64,
+    "specific_deduction": 4104,
     "social_security_tax": 0.11,
     "table": {
       "1": {
@@ -457,7 +457,7 @@
   },
   "2010": {
     "official": true,
-    "specific_deduction": 3956.64,
+    "specific_deduction": 4104,
     "social_security_tax": 0.11,
     "table": {
       "1": {
@@ -694,7 +694,7 @@
   },
   "2011": {
     "official": true,
-    "specific_deduction": 4041,
+    "specific_deduction": 4104,
     "social_security_tax": 0.11,
     "table": {
       "1": {
@@ -4411,7 +4411,7 @@
   },
   "2023": {
     "official": true,
-    "specific_deduction": 4196.68,
+    "specific_deduction": 4104,
     "social_security_tax": 0.11,
     "table": {
       "1": {
@@ -5113,7 +5113,7 @@
   },
   "2025": {
     "official": true,
-    "specific_deduction": 4462,
+    "specific_deduction": 4462.15,
     "social_security_tax": 0.11,
     "table": {
       "1": {
@@ -5462,7 +5462,7 @@
   },
   "2026": {
     "official": true,
-    "specific_deduction": 4462,
+    "specific_deduction": 4462.15,
     "social_security_tax": 0.11,
     "table": {
       "1": {
