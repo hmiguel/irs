@@ -10,3 +10,8 @@ Thumbs.db
 
 # Claude
 .claude/
+
+# Astro
+node_modules/
+dist/
+.astro/
