@@ -60,7 +60,7 @@ const INFLATION_MAP = Object.fromEntries(
   <script defer src="/js/alpinejs.min.js"></script>
 </head>
 <body x-data="irsCalc()" :class="darkMode ? '' : 'light'">
-<div class="page">
+<div class="page" x-cloak>
 
   <!-- Year pill bar -->
   <nav class="year-bar" aria-label="Selecionar ano fiscal">
