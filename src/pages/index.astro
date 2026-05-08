@@ -431,7 +431,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
     function r2(n) { return Math.round(n * 100) / 100; }
     document.addEventListener('alpine:init', () => {
       Alpine.data('irsCalc', () => ({
-        darkMode: localStorage.getItem('irs-theme') !== 'light',
+        darkMode: localStorage.getItem('irs-theme') === 'dark',
         showBrackets: false,
         grossInput: '35000',
         municipality: 'porto',
