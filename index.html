@@ -615,7 +615,7 @@
                  min="0" max="18" step="1"
                  aria-labelledby="label-year-slider"
                  :aria-valuetext="year + ' — Ano fiscal'"
-                 x-model.number="yearIdx"
+                 :value="yearIdx" @input="yearIdx = +$event.target.value"
                  :style="'--pct:' + yearSliderPercent + '%'">
         </div>
         <div class="slider-ticks">
