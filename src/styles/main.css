@@ -88,11 +88,12 @@
 
     /* ── Year pill bar ──────────────────────────── */
     .year-bar {
-      display: flex;
-      gap: .35rem;
-      flex-wrap: wrap;
       padding: 1.75rem 0 0;
+    }
+    .year-bar-inline {
+      display: flex;
       align-items: center;
+      gap: .75rem;
     }
     .year-bar-label {
       font-size: .68rem;
@@ -100,35 +101,22 @@
       text-transform: uppercase;
       letter-spacing: .09em;
       color: var(--muted);
-      margin-right: .25rem;
+      flex-shrink: 0;
     }
-    .year-pill-btn {
-      padding: .28rem .75rem;
-      border-radius: 0;
-      border: 2px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      font-size: .7rem;
-      font-weight: 700;
-      font-family: var(--mono);
-      cursor: pointer;
-      transition: border-color .1s, color .1s, background .1s;
-      letter-spacing: .02em;
-    }
-    .year-pill-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-    .year-pill-btn.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #000;
+    .year-bar-track {
+      flex: 1;
+      min-width: 0;
     }
     .delta-context {
       font-size: .68rem;
       font-weight: 600;
       color: var(--muted);
       margin-left: .5rem;
+    }
+    @media (max-width: 480px) {
+      .year-bar-track .slider-ticks span:nth-child(2n+2):not(:last-child) {
+        visibility: hidden;
+      }
     }
 
     /* ── Page heading ───────────────────────────── */

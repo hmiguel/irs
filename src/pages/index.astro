@@ -62,18 +62,30 @@ const INFLATION_MAP = Object.fromEntries(
 <body x-data="irsCalc()" :class="darkMode ? '' : 'light'">
 <div class="page" x-cloak>
 
-  <!-- Year pill bar -->
+  <!-- Year slider bar -->
   <nav class="year-bar" aria-label="Selecionar ano fiscal">
-    <span class="year-bar-label" aria-hidden="true">Ano fiscal</span>
-    <template x-for="y in availableYears" :key="y">
-      <button class="year-pill-btn"
-              :class="{active: year===y}"
-              :aria-current="year===y ? 'true' : 'false'"
-              :aria-label="'Ano fiscal ' + y"
-              @click="year=y"
-              x-text="y">
-      </button>
-    </template>
+    <div class="year-bar-inline">
+      <span class="year-bar-label" id="label-year-slider">Ano fiscal</span>
+      <div class="year-bar-track">
+        <div class="slider-wrap" style="margin-top:0;">
+          <div class="slider-bubble" aria-hidden="true"
+               :style="'left:clamp(16px,' + yearSliderPercent + '%,calc(100% - 16px))'"
+               x-text="year">
+          </div>
+          <input type="range" id="input-year-slider" class="rng"
+                 min="0" max="18" step="1"
+                 aria-labelledby="label-year-slider"
+                 :aria-valuetext="year + ' — Ano fiscal'"
+                 x-model.number="yearIdx"
+                 :style="'--pct:' + yearSliderPercent + '%'">
+        </div>
+        <div class="slider-ticks">
+          <span>2008</span><span>2010</span><span>2012</span><span>2014</span>
+          <span>2016</span><span>2018</span><span>2020</span><span>2022</span>
+          <span>2024</span><span>2026</span>
+        </div>
+      </div>
+    </div>
     <template x-if="prevYear">
       <span class="delta-context" x-text="'Δ vs ' + prevYear"></span>
     </template>
@@ -435,7 +447,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         showBrackets: false,
         grossInput: '35000',
         municipality: 'porto',
-        year: '2026',
+        yearIdx: 18,
         specificDeductionInput: '',
         deductionsInput: '650',
         withheldInput: '5200',
@@ -448,6 +460,8 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           });
         },
 
+        get year()             { return this.availableYears[this.yearIdx]; },
+        get yearSliderPercent(){ return (this.yearIdx / (this.availableYears.length - 1)) * 100; },
         get gross()      { return parseFloat(this.grossInput) || 0; },
         get deductions() { return parseFloat(this.deductionsInput) || 0; },
         get withheld()   { return parseFloat(this.withheldInput) || 0; },
