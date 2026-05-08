@@ -2,6 +2,8 @@
 import taxData from '../data/tax-data.json';
 import inflationData from '../data/inflation.json';
 import '../styles/main.css';
+import '@fontsource-variable/plus-jakarta-sans/wght.css';
+import '@fontsource-variable/jetbrains-mono/wght.css';
 
 const INFLATION_MAP = Object.fromEntries(
   inflationData.map(({ year, inflation }) => [year, inflation])
@@ -55,10 +57,7 @@ const INFLATION_MAP = Object.fromEntries(
     }
   })}></script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+  <script defer src="/js/alpinejs.min.js"></script>
 </head>
 <body x-data="irsCalc()" :class="darkMode ? '' : 'light'">
 <div class="page">

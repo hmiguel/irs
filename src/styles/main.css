@@ -17,7 +17,7 @@
       --muted:      #a09890;
       --radius:     0px;
       --shadow:     3px 3px 0 rgba(232,93,4,.3);
-      --mono:       'JetBrains Mono', monospace;
+      --mono:       'JetBrains Mono Variable', 'JetBrains Mono', monospace;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -45,7 +45,7 @@
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      font-family: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
