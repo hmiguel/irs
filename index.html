@@ -709,7 +709,7 @@
 
           <div class="field">
             <label for="input-specific-deduction">Dedução específica (€)
-              <span class="badge badge-auto" x-show="!specificDeductionInput">calc</span>
+              <span class="badge badge-auto" x-show="!specificDeductionInput">calculado</span>
             </label>
             <input id="input-specific-deduction" type="number" min="0" step="0.01"
                    :placeholder="gross > 0 ? fmt(specificDeductionAuto) : 'Ex: 4 350,24'"
@@ -819,7 +819,7 @@
             <div class="detail-row sub">
               <span class="lbl">
                 Dedução específica
-                <span class="badge badge-auto" x-show="!specificDeductionInput">calc</span>
+                <span class="badge badge-auto" x-show="!specificDeductionInput">calculado</span>
               </span>
               <span class="val" x-text="'− € ' + fmt(specificDeduction)"></span>
             </div>
