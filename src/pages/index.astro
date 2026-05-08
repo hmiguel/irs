@@ -69,14 +69,14 @@ const INFLATION_MAP = Object.fromEntries(
       <div class="year-bar-track">
         <div class="slider-wrap" style="margin-top:0;">
           <div class="slider-bubble" aria-hidden="true"
-               :style="'left:clamp(16px,' + yearSliderPercent + '%,calculado(100% - 16px))'"
+               :style="'left:clamp(16px,' + yearSliderPercent + '%,calc(100% - 16px))'"
                x-text="year">
           </div>
           <input type="range" id="input-year-slider" class="rng"
                  min="0" max="18" step="1"
                  aria-labelledby="label-year-slider"
                  :aria-valuetext="year + ' — Ano fiscal'"
-                 :value="yearIdx" @input="yearIdx = +$event.target.value"
+                 x-model.number="yearIdx"
                  :style="'--pct:' + yearSliderPercent + '%'">
         </div>
         <div class="slider-ticks">
@@ -125,7 +125,7 @@ const INFLATION_MAP = Object.fromEntries(
           </div>
           <div class="slider-wrap">
             <div class="slider-bubble" aria-hidden="true"
-                 :style="'left:clamp(16px,' + sliderPercent + '%,calculado(100% - 16px))'"
+                 :style="'left:clamp(16px,' + sliderPercent + '%,calc(100% - 16px))'"
                  x-text="'€ ' + fmt(gross)">
             </div>
             <input type="range" id="input-gross-slider" class="rng"
