@@ -2,8 +2,6 @@
 import taxData from '../data/tax-data.json';
 import inflationData from '../data/inflation.json';
 import '../styles/main.css';
-import '@fontsource-variable/plus-jakarta-sans/wght.css';
-import '@fontsource-variable/jetbrains-mono/wght.css';
 
 const INFLATION_MAP = Object.fromEntries(
   inflationData.map(({ year, inflation }) => [year, inflation])
@@ -23,6 +21,8 @@ const INFLATION_MAP = Object.fromEntries(
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://irs.lixo.dev/">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/jetbrains-mono.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="/fonts/plus-jakarta-sans.woff2">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
