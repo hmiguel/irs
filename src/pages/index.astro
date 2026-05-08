@@ -447,7 +447,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         showBrackets: false,
         grossInput: '35000',
         municipality: 'porto',
-        yearIdx: 18,
+        yearIdx: Math.min(Math.max(new Date().getFullYear() - 1, 2008), 2026) - 2008,
         specificDeductionInput: '',
         deductionsInput: '650',
         withheldInput: '5200',
