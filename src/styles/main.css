@@ -86,9 +86,57 @@
       padding: 0 1.25rem 3rem;
     }
 
+    /* ── Year stepper (heading) ─────────────────── */
+    .year-stepper-wrap {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      margin-left: auto;
+    }
+    .year-stepper {
+      display: flex;
+      align-items: stretch;
+    }
+    .year-step-btn {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1;
+      padding: .3rem .55rem;
+      cursor: pointer;
+      position: relative;
+      transition: border-color .1s, color .1s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .year-step-btn + *, .year-step-val + .year-step-btn {
+      margin-left: -2px;
+    }
+    .year-step-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+      z-index: 1;
+    }
+    .year-step-btn:disabled {
+      opacity: .3;
+      cursor: default;
+    }
+    .year-step-val {
+      font-family: var(--mono);
+      font-size: .85rem;
+      font-weight: 700;
+      color: var(--text);
+      padding: .3rem .4rem;
+      border: 2px solid var(--border);
+      margin-left: -2px;
+      min-width: 3.2rem;
+      text-align: center;
+    }
+
     /* ── Year pill bar ──────────────────────────── */
     .year-bar {
-      padding: 1.75rem 0 0;
+      flex: 1;
+      min-width: 0;
     }
     .year-bar-inline {
       display: flex;
@@ -114,9 +162,7 @@
       margin-left: .5rem;
     }
     @media (max-width: 480px) {
-      .year-bar-track .slider-ticks span:nth-child(2n+2):not(:last-child) {
-        visibility: hidden;
-      }
+      .year-stepper-wrap .year-bar-label { display: none; }
     }
 
     /* ── Page heading ───────────────────────────── */
@@ -124,7 +170,7 @@
       display: flex;
       align-items: center;
       gap: .75rem;
-      padding: 1.25rem 0 1.25rem;
+      padding: 1.75rem 0 1.25rem;
     }
     .heading h1 {
       font-size: 1.7rem;
@@ -311,9 +357,12 @@
       line-height: 1.1;
       display: flex; align-items: baseline; gap: .5rem; flex-wrap: wrap;
     }
-    .hero-sub {
-      font-size: .75rem; color: rgba(0,0,0,.6); margin-top: .5rem;
+    .hero-sub, .monthly-hint, .inflation-sub {
+      font-size: .75rem;
       font-family: var(--mono);
+      color: rgba(0,0,0,.55);
+      margin-top: .3rem;
+      cursor: default;
     }
 
     /* Stat chips row */
@@ -524,7 +573,6 @@
 
     /* ── Theme toggle button ─────────────────────── */
     .theme-toggle {
-      margin-left: auto;
       background: transparent;
       border: 2px solid var(--border);
       border-radius: 0;
