@@ -305,7 +305,7 @@ const INFLATION_MAP = Object.fromEntries(
               <div class="detail-row sub">
                 <span class="lbl">
                   IRS Jovem
-                  <span class="badge badge-jovem" x-text="fmtPct(irsJovemRate * 100) + ' · ano ' + irsJovemBenefitYear" :title="'Isenção IRS Jovem: ' + fmtPct(irsJovemRate * 100) + ' sobre rendimento até € ' + fmt(irsJovemCap)"></span>
+                  <span class="badge" x-text="fmtPct(irsJovemRate * 100) + ' · ano ' + irsJovemBenefitYear" :title="'Isenção IRS Jovem: ' + fmtPct(irsJovemRate * 100) + ' sobre rendimento até € ' + fmt(irsJovemCap)"></span>
                 </span>
                 <span class="val" x-text="'− € ' + fmt(irsJovemExempt)"></span>
               </div>
