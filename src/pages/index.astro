@@ -596,7 +596,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
             this.grossInput = String(Math.round(pct * 100000 / 500) * 500);
           };
           update(e.clientX);
-          e.target.style.cursor = 'grabbing';
+          e.target.style.cursor = 'pointer';
           const onMove = (ev) => update(ev.clientX);
           const onUp   = () => {
             e.target.style.cursor = '';
