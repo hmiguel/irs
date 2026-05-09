@@ -10,7 +10,7 @@ Interactive Portuguese income tax (IRS) simulator covering fiscal years **2008�
 
 | Feature | Details |
 |---|---|
-| **Year selector** | All fiscal years 2008–2026 via pill bar |
+| **Year selector** | All fiscal years 2008–2026 via stepper control in the header |
 | **Year-over-year Δ** | Take-home, net tax, and effective rate show the delta vs the previous year |
 | **Municipal benefit** | Automatic deduction based on the selected municipality (~300 municipalities) |
 | **Inflation-adjusted take-home** | For historical years, shows the real purchasing-power equivalent in today's euros |
@@ -60,7 +60,7 @@ effective_rate      = net_tax / gross × 100
 src/
 ├── data/
 │   ├── tax-data.json       ← tax brackets, specific deductions, county rates — all years
-│   └── inflation.json      ← annual inflation rates (2008–2025)
+│   └── inflation.json      ← annual inflation rates (2008–2026)
 ├── styles/
 │   └── main.css            ← all CSS (dark/light themes, responsive layout)
 └── pages/
@@ -154,6 +154,12 @@ This simulator is an approximation for **Categoria A** (employment) income only.
 - Non-resident or special tax regime rules
 
 **It does not replace the official AT declaration or a qualified tax advisor.**
+
+---
+
+## Contributing
+
+Found a bug or have a suggestion? [Open an issue on GitHub](https://github.com/hmiguel/irs/issues) — feedback on missing years, wrong data, or UX ideas is welcome.
 
 ---
 
