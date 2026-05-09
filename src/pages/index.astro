@@ -178,6 +178,32 @@ const INFLATION_MAP = Object.fromEntries(
             </div>
           </div>
 
+          <!-- IRS Jovem -->
+          <div class="irs-jovem-toggle-row" :class="!irsJovemAvailable ? 'irs-jovem-disabled' : ''">
+            <label class="toggle-label" :for="'input-irs-jovem'">
+              <input id="input-irs-jovem" type="checkbox"
+                     x-model="irsJovemEnabled"
+                     :disabled="!irsJovemAvailable">
+              <span>IRS Jovem</span>
+              <span x-show="!irsJovemAvailable" class="badge" title="Disponível a partir de 2025">não disponível</span>
+            </label>
+          </div>
+
+          <div class="irs-jovem-box" x-show="irsJovemEnabled && irsJovemAvailable">
+            <div class="field" style="margin-bottom:0;">
+              <label for="input-irs-jovem-year">Primeiro ano de rendimentos</label>
+              <input id="input-irs-jovem-year" type="number"
+                     :min="parseInt(year) - 9" :max="parseInt(year) - 1"
+                     placeholder="ex: 2022"
+                     x-model="irsJovemFirstYearInput">
+              <div class="optional-label">Categorias A ou B, como não dependente</div>
+              <div class="optional-label" style="color:var(--red)"
+                   x-show="irsJovemFirstYearInput && !irsJovemFirstYearValid">
+                Fora do período elegível (máx. 10 anos, início antes de <span x-text="year"></span>)
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -274,6 +300,16 @@ const INFLATION_MAP = Object.fromEntries(
               </span>
               <span class="val" x-text="'− € ' + fmt(specificDeduction)"></span>
             </div>
+
+            <template x-if="irsJovemActive">
+              <div class="detail-row sub">
+                <span class="lbl">
+                  IRS Jovem
+                  <span class="badge badge-jovem" x-text="fmtPct(irsJovemRate * 100) + ' · ano ' + irsJovemBenefitYear" :title="'Isenção IRS Jovem: ' + fmtPct(irsJovemRate * 100) + ' sobre rendimento até € ' + fmt(irsJovemCap)"></span>
+                </span>
+                <span class="val" x-text="'− € ' + fmt(irsJovemExempt)"></span>
+              </div>
+            </template>
 
             <div class="detail-row strong">
               <span class="lbl">Rendimento Coletável</span>
@@ -432,6 +468,8 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         specificDeductionInput: '',
         deductionsInput: '650',
         withheldInput: '5200',
+        irsJovemEnabled: false,
+        irsJovemFirstYearInput: '',
 
         init() {
           this.$nextTick(() => {
@@ -467,7 +505,34 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           const m = parseFloat(this.specificDeductionInput);
           return isNaN(m) ? this.specificDeductionAuto : r2(m);
         },
-        get collectableIncome() { return r2(Math.max(0, this.gross - this.specificDeduction)); },
+
+        get irsJovemAvailable() { return parseInt(this.year) >= 2025; },
+        get irsJovemActive()    { return this.irsJovemEnabled && this.irsJovemAvailable && this.irsJovemFirstYearValid; },
+        get irsJovemFirstYear() { return parseInt(this.irsJovemFirstYearInput) || null; },
+        get irsJovemFirstYearValid() {
+          const fy = this.irsJovemFirstYear;
+          const y  = parseInt(this.year);
+          return fy !== null && fy >= y - 9 && fy <= y - 1;
+        },
+        get irsJovemBenefitYear() {
+          if (!this.irsJovemFirstYear) return null;
+          return parseInt(this.year) - this.irsJovemFirstYear + 1;
+        },
+        get irsJovemRate() {
+          const n = this.irsJovemBenefitYear;
+          if (!n || n < 1 || n > 10) return 0;
+          if (n === 1)          return 1.00;
+          if (n <= 4)           return 0.75;
+          if (n <= 7)           return 0.50;
+          return 0.25;
+        },
+        get irsJovemCap()    { return 55 * (this.yearData.ias || 0); },
+        get irsJovemExempt() {
+          if (!this.irsJovemActive) return 0;
+          return r2(Math.min(this.gross, this.irsJovemCap) * this.irsJovemRate);
+        },
+
+        get collectableIncome() { return r2(Math.max(0, this.gross - this.specificDeduction - this.irsJovemExempt)); },
         get bracket() {
           return this.brackets.find(b => this.collectableIncome < b.to)
               || this.brackets[this.brackets.length - 1];
