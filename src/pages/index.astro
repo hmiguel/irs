@@ -109,7 +109,8 @@ const INFLATION_MAP = Object.fromEntries(
           <div class="slider-wrap">
             <div class="slider-bubble" aria-hidden="true"
                  :style="'left:clamp(16px,' + sliderPercent + '%,calc(100% - 16px))'"
-                 x-text="'€ ' + fmt(gross)">
+                 x-text="'€ ' + fmt(gross)"
+                 @pointerdown.prevent="startIncomeDrag($event)">
             </div>
             <input type="range" id="input-gross-slider" class="rng"
                    min="0" max="100000" step="500"
@@ -522,6 +523,25 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
             factor *= (1 + (INFLATION[y] ?? 0) / 100);
           }
           return r2(this.takeHome * factor);
+        },
+
+        startIncomeDrag(e) {
+          const sliderEl = document.getElementById('input-gross-slider');
+          const rect = sliderEl.getBoundingClientRect();
+          const update = (clientX) => {
+            const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+            this.grossInput = String(Math.round(pct * 100000 / 500) * 500);
+          };
+          update(e.clientX);
+          e.target.style.cursor = 'grabbing';
+          const onMove = (ev) => update(ev.clientX);
+          const onUp   = () => {
+            e.target.style.cursor = '';
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup',   onUp);
+          };
+          window.addEventListener('pointermove', onMove);
+          window.addEventListener('pointerup',   onUp);
         },
 
         toggleTheme() {

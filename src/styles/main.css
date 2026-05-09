@@ -243,7 +243,7 @@
       padding: .15rem .45rem;
       border-radius: 0;
       white-space: nowrap;
-      pointer-events: none;
+      cursor: grab;
     }
     .slider-bubble::after {
       content: '';
