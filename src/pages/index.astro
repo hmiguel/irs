@@ -195,6 +195,7 @@ const INFLATION_MAP = Object.fromEntries(
               <input id="input-irs-jovem-year" type="number"
                      :min="parseInt(year) - 9" :max="parseInt(year) - 1"
                      placeholder="ex: 2022"
+                     style="max-width:7rem;"
                      x-model="irsJovemFirstYearInput">
               <div class="optional-label">Categorias A ou B, como não dependente</div>
               <div class="optional-label" style="color:var(--red)"
@@ -469,7 +470,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         deductionsInput: '650',
         withheldInput: '5200',
         irsJovemEnabled: false,
-        irsJovemFirstYearInput: '',
+        irsJovemFirstYearInput: String(Math.min(Math.max(new Date().getFullYear() - 1, 2008), 2026) - 5),
 
         init() {
           this.$nextTick(() => {

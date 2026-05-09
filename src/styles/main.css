@@ -675,9 +675,6 @@
     }
     .irs-jovem-box {
       margin-top: .6rem;
-      padding: .75rem;
-      border: 1px solid var(--primary);
-      background: var(--primary-lt);
     }
     /* ── Footer ──────────────────────────────────── */
     .footer {
