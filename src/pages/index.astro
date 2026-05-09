@@ -77,6 +77,13 @@ const INFLATION_MAP = Object.fromEntries(
       </div>
     </div>
 
+    <button class="theme-toggle" @click="showHelp = true" aria-label="Ajuda e informações">
+      <svg aria-hidden="true" focusable="false" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path stroke-linecap="round" d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
+      </svg>
+    </button>
+
     <button class="theme-toggle" @click="toggleTheme()"
             :aria-label="darkMode ? 'Mudar para modo claro' : 'Mudar para modo escuro'">
       <template x-if="darkMode">
@@ -450,6 +457,60 @@ const INFLATION_MAP = Object.fromEntries(
     </a>
   </footer>
 
+  <!-- Help modal -->
+  <template x-teleport="body">
+    <div class="help-overlay" x-show="showHelp" @click.self="showHelp = false" @keydown.escape.window="showHelp = false">
+      <div class="help-modal" role="dialog" aria-modal="true" aria-label="Ajuda">
+        <button class="help-close" @click="showHelp = false" aria-label="Fechar">✕</button>
+
+        <h2 class="help-title">Simulador IRS Portugal</h2>
+
+        <div class="help-section">
+          <div class="help-section-label">O que é</div>
+          <p>Simulador interativo do IRS em Portugal para os anos fiscais de 2008 a 2026. Todos os cálculos são feitos no teu browser — nenhum dado é enviado para servidores.</p>
+        </div>
+
+        <div class="help-section">
+          <div class="help-section-label">Como é calculado</div>
+          <p>O simulador aplica a fórmula padrão do IRS para rendimentos de trabalho dependente (Categoria A):</p>
+          <ol class="help-steps">
+            <li>A <strong>dedução específica</strong> é subtraída ao rendimento bruto (máx. entre o mínimo legal e 11% do bruto — correspondente à Segurança Social)</li>
+            <li>Se elegível ao <strong>IRS Jovem</strong>, uma percentagem do rendimento (até 55 × IAS) fica isenta</li>
+            <li>O <strong>rendimento coletável</strong> é enquadrado no escalão correspondente, aplicando a taxa marginal e abatendo a parcela do escalão</li>
+            <li>Ao resultado aplicam-se as <strong>deduções à coleta</strong> e o <strong>benefício municipal</strong> (diferença entre a taxa máxima de 5% e a taxa do município)</li>
+          </ol>
+        </div>
+
+        <div class="help-section">
+          <div class="help-section-label">IRS Jovem</div>
+          <p>Regime de isenção parcial do IRS para jovens até 35 anos, aplicável a rendimentos das categorias A e B. Disponível a partir de 2025, com duração máxima de 10 anos:</p>
+          <ul class="help-list">
+            <li>1.º ano — 100% de isenção</li>
+            <li>2.º ao 4.º ano — 75% de isenção</li>
+            <li>5.º ao 7.º ano — 50% de isenção</li>
+            <li>8.º ao 10.º ano — 25% de isenção</li>
+          </ul>
+          <p>A isenção aplica-se ao rendimento até ao limite de 55 × IAS (~€ 28 700 em 2025).</p>
+        </div>
+
+        <div class="help-section">
+          <div class="help-section-label">Fontes de dados</div>
+          <ul class="help-list">
+            <li>Escalões e deduções: Código do IRS e Orçamentos do Estado</li>
+            <li>Taxas municipais: deliberações das Assembleias Municipais, publicadas pela AT</li>
+            <li>Inflação (IHPC): Banco de Portugal / INE</li>
+          </ul>
+        </div>
+
+        <div class="help-section help-disclaimer">
+          <div class="help-section-label">Limitações</div>
+          <p>Este simulador é uma aproximação para rendimentos de <strong>Categoria A</strong> (trabalho dependente). Não contempla deduções por dependentes, saúde, educação ou habitação, sobretaxas extraordinárias, regimes autónomos regionais, nem regras para não residentes.</p>
+          <p style="margin-top:.5rem;"><strong>Não substitui a declaração oficial AT nem aconselhamento fiscal qualificado.</strong></p>
+        </div>
+      </div>
+    </div>
+  </template>
+
 </div><!-- /page -->
 
   <script is:inline set:html={`const TAX_DATA = ${JSON.stringify(taxData)};
@@ -460,6 +521,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
       Alpine.data('irsCalc', () => ({
         darkMode: localStorage.getItem('irs-theme') === 'dark',
         showBrackets: false,
+        showHelp: false,
         grossInput: '35000',
         municipality: 'lisboa',
         yearIdx: Math.min(Math.max(new Date().getFullYear() - 1, 2008), 2026) - 2008,
