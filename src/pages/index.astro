@@ -62,38 +62,21 @@ const INFLATION_MAP = Object.fromEntries(
 <body x-data="irsCalc()" :class="darkMode ? '' : 'light'">
 <div class="page" x-cloak>
 
-  <!-- Year slider bar -->
-  <nav class="year-bar" aria-label="Selecionar ano fiscal">
-    <div class="year-bar-inline">
-      <span class="year-bar-label" id="label-year-slider">Ano fiscal</span>
-      <div class="year-bar-track">
-        <div class="slider-wrap" style="margin-top:0;">
-          <div class="slider-bubble" aria-hidden="true"
-               :style="'left:clamp(16px,' + yearSliderPercent + '%,calc(100% - 16px))'"
-               x-text="year">
-          </div>
-          <input type="range" id="input-year-slider" class="rng"
-                 min="0" max="18" step="1"
-                 aria-labelledby="label-year-slider"
-                 :aria-valuetext="year + ' — Ano fiscal'"
-                 x-model.number="yearIdx"
-                 :style="'--pct:' + yearSliderPercent + '%'">
-        </div>
-        <div class="slider-ticks">
-          <span>2008</span><span>2010</span><span>2012</span><span>2014</span>
-          <span>2016</span><span>2018</span><span>2020</span><span>2022</span>
-          <span>2024</span><span>2026</span>
-        </div>
-      </div>
-    </div>
-    <template x-if="prevYear">
-      <span class="delta-context" x-text="'Δ vs ' + prevYear"></span>
-    </template>
-  </nav>
-
-  <!-- Heading -->
+  <!-- Heading + year slider -->
   <div class="heading">
     <h1>Simulador IRS</h1>
+
+    <div class="year-stepper-wrap">
+      <span class="year-bar-label">Ano fiscal</span>
+      <div class="year-stepper" role="group" aria-label="Ano fiscal">
+        <button class="year-step-btn" @click="yearIdx > 0 && yearIdx--"
+                :disabled="yearIdx === 0" aria-label="Ano anterior">‹</button>
+        <span class="year-step-val" aria-live="polite" x-text="year"></span>
+        <button class="year-step-btn" @click="yearIdx < availableYears.length - 1 && yearIdx++"
+                :disabled="yearIdx === availableYears.length - 1" aria-label="Ano seguinte">›</button>
+      </div>
+    </div>
+
     <button class="theme-toggle" @click="toggleTheme()"
             :aria-label="darkMode ? 'Mudar para modo claro' : 'Mudar para modo escuro'">
       <template x-if="darkMode">
@@ -170,7 +153,7 @@ const INFLATION_MAP = Object.fromEntries(
 
           <div class="field">
             <label for="input-specific-deduction">Dedução específica (€)
-              <span class="badge badge-auto" x-show="!specificDeductionInput">calculado</span>
+              <span class="badge badge-auto" x-show="!specificDeductionInput" title="Calculado automaticamente: máx(dedução mínima legal, rendimento bruto × taxa de segurança social)">calculado</span>
             </label>
             <input id="input-specific-deduction" type="number" min="0" step="0.01"
                    :placeholder="gross > 0 ? fmt(specificDeductionAuto) : 'Ex: 4 350,24'"
@@ -223,28 +206,34 @@ const INFLATION_MAP = Object.fromEntries(
             <div class="hero-amount">
               <span x-text="'€ ' + fmt(takeHome)"></span>
               <template x-if="deltaTakeHome !== null">
-                <span :class="deltaClass(deltaTakeHome, false)">
+                <span :class="deltaClass(deltaTakeHome, false)" :title="'Variação do rendimento líquido face a ' + prevYear">
                   <span class="sr-only" x-text="deltaTakeHome > 0 ? 'subiu' : 'desceu'"></span>
                   <span aria-hidden="true" x-text="(deltaTakeHome > 0 ? '+' : '−') + ' € ' + fmt(Math.abs(deltaTakeHome))"></span>
                 </span>
               </template>
             </div>
             <div class="hero-sub" x-text="'de € ' + fmt(gross) + ' brutos · ' + year"></div>
+            <div class="monthly-hint" title="Valor mensal líquido estimado (salário pago em 14 meses)" x-text="'≈ € ' + fmt(r2(takeHome / 14)) + ' × 14 meses'"></div>
+            <template x-if="inflationAdjustedTakeHome !== null">
+              <div class="inflation-sub" :title="'Estimativa do poder de compra equivalente, ajustado à inflação acumulada de ' + year + ' a ' + availableYears[availableYears.length-1]">
+                ≈ <span x-text="'€ ' + fmt(inflationAdjustedTakeHome)"></span> em poder de compra <span x-text="availableYears[availableYears.length-1]"></span>
+              </div>
+            </template>
           </div>
 
           <!-- Stat chips -->
           <div class="stat-chips">
-            <div class="stat-chip chip-ss">
+            <div class="stat-chip chip-ss" title="Dedução específica: segurança social e mínimo legal deduzido ao rendimento bruto">
               <div class="stat-chip-label">Seg. Social</div>
               <div class="stat-chip-val" x-text="'€ ' + fmt(specificDeduction)"></div>
               <div class="stat-chip-pct" x-text="fmtPct(specificDeduction/gross*100)"></div>
             </div>
-            <div class="stat-chip chip-tax">
+            <div class="stat-chip chip-tax" title="Coleta líquida de IRS após deduções à coleta e benefício municipal">
               <div class="stat-chip-label">IRS Líquido</div>
               <div class="stat-chip-val" x-text="'€ ' + fmt(netTax)"></div>
               <div class="stat-chip-pct" x-text="fmtPct(netTax/gross*100)"></div>
             </div>
-            <div class="stat-chip chip-net">
+            <div class="stat-chip chip-net" title="Rendimento líquido estimado: rendimento bruto menos segurança social e IRS">
               <div class="stat-chip-label">Líquido</div>
               <div class="stat-chip-val" x-text="'€ ' + fmt(takeHome)"></div>
               <div class="stat-chip-pct" x-text="fmtPct(takeHome/gross*100)"></div>
@@ -280,7 +269,7 @@ const INFLATION_MAP = Object.fromEntries(
             <div class="detail-row sub">
               <span class="lbl">
                 Dedução específica
-                <span class="badge badge-auto" x-show="!specificDeductionInput">calculado</span>
+                <span class="badge badge-auto" x-show="!specificDeductionInput" title="Calculado automaticamente: máx(dedução mínima legal, rendimento bruto × taxa de segurança social)">calculado</span>
               </span>
               <span class="val" x-text="'− € ' + fmt(specificDeduction)"></span>
             </div>
@@ -318,7 +307,7 @@ const INFLATION_MAP = Object.fromEntries(
             <div class="detail-row sub">
               <span class="lbl">
                 Benefício municipal
-                <span class="badge" x-text="titleCase(municipality) + ' ' + fmtPct(countyRate*100)"></span>
+                <span class="badge" x-text="titleCase(municipality) + ' ' + fmtPct(countyRate*100)" title="Taxa de participação municipal no IRS. O benefício é calculado sobre a diferença entre o máximo legal (5%) e a taxa do município escolhido."></span>
               </span>
               <span class="val"
                     x-text="countyBenefit > 0 ? '− € ' + fmt(countyBenefit) : '€ ' + fmt(0)">
@@ -330,7 +319,7 @@ const INFLATION_MAP = Object.fromEntries(
               <span class="val" style="display:flex;align-items:baseline;gap:.35rem;">
                 <span x-text="'€ ' + fmt(netTax)"></span>
                 <template x-if="deltaNetTax !== null">
-                  <span :class="deltaClass(deltaNetTax, true)">
+                  <span :class="deltaClass(deltaNetTax, true)" :title="'Variação da coleta líquida face a ' + prevYear">
                     <span class="sr-only" x-text="deltaNetTax > 0 ? 'subiu' : 'desceu'"></span>
                     <span aria-hidden="true" x-text="(deltaNetTax > 0 ? '+' : '−') + ' € ' + fmt(Math.abs(deltaNetTax))"></span>
                   </span>
@@ -338,15 +327,6 @@ const INFLATION_MAP = Object.fromEntries(
               </span>
             </div>
 
-            <template x-if="inflationAdjustedTakeHome !== null">
-              <div class="detail-row inflation-row">
-                <span class="lbl">
-                  Poder de compra em <span x-text="availableYears[availableYears.length-1]"></span>€
-                  <span class="badge" style="background:rgba(56,189,248,.15);color:var(--cyan);">inflação acum.</span>
-                </span>
-                <span class="val inflation-val" x-text="'≈ € ' + fmt(inflationAdjustedTakeHome)"></span>
-              </div>
-            </template>
 
           </div>
 
@@ -356,7 +336,7 @@ const INFLATION_MAP = Object.fromEntries(
             <div class="tet-val-wrap">
               <span class="tet-val" x-text="fmtPct(effectiveRate)"></span>
               <template x-if="deltaEffectiveRate !== null">
-                <span :class="deltaClass(deltaEffectiveRate, true)">
+                <span :class="deltaClass(deltaEffectiveRate, true)" :title="'pp = pontos percentuais · variação da taxa efetiva face a ' + prevYear">
                   <span class="sr-only" x-text="deltaEffectiveRate > 0 ? 'subiu' : 'desceu'"></span>
                   <span aria-hidden="true" x-text="(deltaEffectiveRate > 0 ? '+' : '') + deltaEffectiveRate.toFixed(2) + ' pp'"></span>
                 </span>
