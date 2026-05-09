@@ -112,10 +112,12 @@
     .year-step-btn + *, .year-step-val + .year-step-btn {
       margin-left: -2px;
     }
-    .year-step-btn:hover:not(:disabled) {
-      border-color: var(--primary);
-      color: var(--primary);
-      z-index: 1;
+    @media (hover: hover) {
+      .year-step-btn:hover:not(:disabled) {
+        border-color: var(--primary);
+        color: var(--primary);
+        z-index: 1;
+      }
     }
     .year-step-btn:disabled {
       opacity: .3;
