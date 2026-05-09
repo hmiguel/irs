@@ -159,7 +159,7 @@ This simulator is an approximation for **Categoria A** (employment) income only.
 
 ## Contributing
 
-Found a bug or have a suggestion? [Open an issue on GitHub](https://github.com/hmiguel/irs/issues) — feedback on missing years, wrong data, or UX ideas is welcome.
+The simulator is live at **[irs.lixo.dev](https://irs.lixo.dev)**. Found a bug or have a suggestion? [Open an issue on GitHub](https://github.com/hmiguel/irs/issues) — feedback on missing years, wrong data, or UX ideas is welcome.
 
 ---
 
