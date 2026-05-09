@@ -69,10 +69,10 @@ const INFLATION_MAP = Object.fromEntries(
     <div class="year-stepper-wrap">
       <span class="year-bar-label">Ano fiscal</span>
       <div class="year-stepper" role="group" aria-label="Ano fiscal">
-        <button class="year-step-btn" @click="yearIdx > 0 && yearIdx--"
+        <button class="year-step-btn" @click="yearIdx > 0 && yearIdx--; $el.blur()"
                 :disabled="yearIdx === 0" aria-label="Ano anterior">‹</button>
         <span class="year-step-val" aria-live="polite" x-text="year"></span>
-        <button class="year-step-btn" @click="yearIdx < availableYears.length - 1 && yearIdx++"
+        <button class="year-step-btn" @click="yearIdx < availableYears.length - 1 && yearIdx++; $el.blur()"
                 :disabled="yearIdx === availableYears.length - 1" aria-label="Ano seguinte">›</button>
       </div>
     </div>
