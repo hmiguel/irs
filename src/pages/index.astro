@@ -161,27 +161,25 @@ const INFLATION_MAP = Object.fromEntries(
                    x-model="specificDeductionInput">
           </div>
 
-          <div class="field-row">
-            <div class="field" style="margin-bottom:0;">
-              <label for="input-deductions">Deduções à coleta</label>
-              <input id="input-deductions" type="number" min="0" step="10" placeholder="Ex: 892"
-                     aria-describedby="hint-deductions"
-                     x-model="deductionsInput">
-              <div id="hint-deductions" class="optional-label">opcional</div>
-            </div>
-            <div class="field" style="margin-bottom:0;">
-              <label for="input-withheld">Retenção na fonte</label>
-              <input id="input-withheld" type="number" min="0" step="10" placeholder="Ex: 5 200"
-                     aria-describedby="hint-withheld"
-                     x-model="withheldInput">
-              <div id="hint-withheld" class="optional-label">opcional</div>
-            </div>
+          <div class="field" style="margin-bottom:0;">
+            <label for="input-deductions">Deduções à coleta (€)</label>
+            <input id="input-deductions" type="number" min="0" step="10" placeholder="Ex: 892"
+                   aria-describedby="hint-deductions"
+                   x-model="deductionsInput">
+            <div id="hint-deductions" class="optional-label">opcional</div>
+          </div>
+          <div class="field" style="margin-bottom:0;">
+            <label for="input-withheld">Retenção na fonte (€)</label>
+            <input id="input-withheld" type="number" min="0" step="10" placeholder="Ex: 5 200"
+                   aria-describedby="hint-withheld"
+                   x-model="withheldInput">
+            <div id="hint-withheld" class="optional-label">opcional</div>
           </div>
 
           <!-- IRS Jovem -->
           <div class="irs-jovem-toggle-row" :class="!irsJovemAvailable ? 'irs-jovem-disabled' : ''">
-            <label class="toggle-label" :for="'input-irs-jovem'">
-              <input id="input-irs-jovem" type="checkbox"
+            <label class="toggle-label" for="input-irs-jovem">
+              <input id="input-irs-jovem" type="checkbox" class="irs-jovem-check"
                      x-model="irsJovemEnabled"
                      :disabled="!irsJovemAvailable">
               <span>IRS Jovem</span>
@@ -195,9 +193,8 @@ const INFLATION_MAP = Object.fromEntries(
               <input id="input-irs-jovem-year" type="number"
                      :min="parseInt(year) - 9" :max="parseInt(year) - 1"
                      placeholder="ex: 2022"
-                     style="max-width:7rem;"
                      x-model="irsJovemFirstYearInput">
-              <div class="optional-label">Categorias A ou B, como não dependente</div>
+              <div class="optional-label">Categorias A ou B (não dependente)</div>
               <div class="optional-label" style="color:var(--red)"
                    x-show="irsJovemFirstYearInput && !irsJovemFirstYearValid">
                 Fora do período elegível (máx. 10 anos, início antes de <span x-text="year"></span>)
@@ -464,7 +461,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         darkMode: localStorage.getItem('irs-theme') === 'dark',
         showBrackets: false,
         grossInput: '35000',
-        municipality: 'porto',
+        municipality: 'lisboa',
         yearIdx: Math.min(Math.max(new Date().getFullYear() - 1, 2008), 2026) - 2008,
         specificDeductionInput: '',
         deductionsInput: '650',
