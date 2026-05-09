@@ -124,11 +124,9 @@ To update inflation data, add an entry to **`src/data/inflation.json`**:
 
 | Data | Source |
 |---|---|
-| IRS brackets & deductions | [Código do IRS](https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/irs_rep/) and annual Orçamentos do Estado |
+| IRS brackets & deductions | [Código do IRS](https://info.portaldasfinancas.gov.pt/pt/informacao_fiscal/codigos_tributarios/irs_rep/), annual Orçamentos do Estado, and various websites across the internet |
 | Municipal surcharge rates | Annual deliberations of Municipal Assemblies, published by AT |
 | Inflation (IHPC) | [Banco de Portugal](https://www.bportugal.pt) / [INE](https://www.ine.pt) |
-
-> Data for 2008–2021 are approximations based on published legislation. Always verify with the official AT simulator for decisions with legal or financial consequences.
 
 ---
 
