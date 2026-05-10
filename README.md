@@ -14,6 +14,7 @@ Interactive Portuguese income tax (IRS) simulator covering fiscal years **2008â€
 | **Year-over-year Î”** | Take-home, net tax, and effective rate show the delta vs the previous year |
 | **Municipal benefit** | Automatic deduction based on the selected municipality (~300 municipalities) |
 | **Inflation-adjusted take-home** | For historical years, shows the real purchasing-power equivalent in today's euros |
+| **IRS Jovem** | Exemption for young workers (2025+): applies the graduated exemption based on years of income |
 | **Bracket viewer** | IRS bracket table for the active year, with the applicable bracket highlighted |
 | **Dark / Light mode** | Dark (warm charcoal + Braun orange) and light (cream + orange) themes, preference saved in `localStorage` |
 | **Accessible** | ARIA labels, `aria-live` regions, focus indicators, reduced-motion support |
@@ -115,7 +116,7 @@ Then add `"2027"` to the `availableYears` array in `src/pages/index.astro`.
 To update inflation data, add an entry to **`src/data/inflation.json`**:
 
 ```json
-{ "year": 2026, "inflation": 2.10 }
+{ "year": 2026, "inflation": 3.1 }
 ```
 
 ---
