@@ -365,6 +365,16 @@ const INFLATION_MAP = Object.fromEntries(
               </span>
             </div>
 
+            <template x-if="minimoExistenciaActive">
+              <div class="detail-row sub">
+                <span class="lbl">
+                  Mínimo de existência
+                  <span class="badge badge-auto" :title="'Rendimento bruto ≤ € ' + fmt(minimoExistencia) + ' — coleta anulada'">isento</span>
+                </span>
+                <span class="val">€ 0,00</span>
+              </div>
+            </template>
+
             <div class="detail-row strong">
               <span class="lbl">Coleta Líquida</span>
               <span class="val" style="display:flex;align-items:baseline;gap:.35rem;">
@@ -615,6 +625,11 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           return r2(Math.min(this.gross, this.irsJovemCap) * this.irsJovemRate);
         },
 
+        get minimoExistencia() {
+          const yd = this.yearData;
+          return Math.max(yd.minimum_monthly_income * 14, 1.5 * 14 * yd.ias);
+        },
+
         get collectableIncome() { return r2(Math.max(0, this.gross - this.specificDeduction - this.irsJovemExempt)); },
         get bracket() {
           return this.brackets.find(b => this.collectableIncome < b.to)
@@ -623,7 +638,9 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         get amountCalculated() { return r2(this.collectableIncome * this.bracket.tax); },
         get baseTax()          { return r2(this.amountCalculated - this.bracket.parcel); },
         get countyBenefit()    { return r2((this.baseTax - this.deductions) * (0.05 - this.countyRate)); },
-        get netTax()           { return r2(this.baseTax - this.deductions - Math.max(0, this.countyBenefit)); },
+        get rawNetTax()        { return r2(this.baseTax - this.deductions - Math.max(0, this.countyBenefit)); },
+        get minimoExistenciaActive() { return this.gross > 0 && this.rawNetTax > 0 && this.gross <= this.minimoExistencia; },
+        get netTax()           { return this.minimoExistenciaActive ? 0 : this.rawNetTax; },
         get takeHome()         { return r2(this.gross - this.specificDeduction - this.netTax); },
         get assessedTax()      { return r2(this.netTax - this.withheld); },
         get effectiveRate()    { return this.gross > 0 ? (this.netTax / this.gross * 100) : 0; },
