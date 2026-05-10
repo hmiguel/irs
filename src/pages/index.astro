@@ -461,9 +461,13 @@ const INFLATION_MAP = Object.fromEntries(
   <template x-teleport="body">
     <div class="help-overlay" x-show="showHelp" @click.self="showHelp = false" @keydown.escape.window="showHelp = false">
       <div class="help-modal" role="dialog" aria-modal="true" aria-label="Ajuda">
-        <button class="help-close" @click="showHelp = false" aria-label="Fechar">✕</button>
+        <button class="help-close" @click="showHelp = false" aria-label="Fechar">
+          <svg aria-hidden="true" focusable="false" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" d="M6 6l12 12M6 18L18 6"/>
+          </svg>
+        </button>
 
-        <h2 class="help-title">Simulador IRS Portugal</h2>
+        <h2 class="help-title">Simulador IRS (Portugal)</h2>
 
         <div class="help-section">
           <div class="help-section-label">O que é</div>
