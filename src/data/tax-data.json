@@ -1,4 +1,91 @@
 {
+  "2002": {
+    "official": true,
+    "specific_deduction": 3006.81,
+    "social_security_tax": 0.11,
+    "table": {
+      "1": { "to": 4100.12, "parcel": 0, "tax": 0.12 },
+      "2": { "to": 6201.42, "parcel": 82.00, "tax": 0.14 },
+      "3": { "to": 15375.45, "parcel": 702.14, "tax": 0.24 },
+      "4": { "to": 35363.52, "parcel": 2239.69, "tax": 0.34 },
+      "5": { "to": 51251.48, "parcel": 3654.23, "tax": 0.38 },
+      "6": { "to": 10000000000, "parcel": 4679.26, "tax": 0.40 }
+    },
+    "minimum_monthly_income": 348.01
+  },
+  "2003": {
+    "official": true,
+    "specific_deduction": 3081.02,
+    "social_security_tax": 0.11,
+    "table": {
+      "1": { "to": 4182.12, "parcel": 0, "tax": 0.12 },
+      "2": { "to": 6325.45, "parcel": 83.64, "tax": 0.14 },
+      "3": { "to": 15682.96, "parcel": 716.19, "tax": 0.24 },
+      "4": { "to": 36070.79, "parcel": 2284.48, "tax": 0.34 },
+      "5": { "to": 52276.51, "parcel": 3727.32, "tax": 0.38 },
+      "6": { "to": 10000000000, "parcel": 4772.85, "tax": 0.40 }
+    },
+    "minimum_monthly_income": 356.60
+  },
+  "2004": {
+    "official": true,
+    "specific_deduction": 3158.78,
+    "social_security_tax": 0.11,
+    "table": {
+      "1": { "to": 4266.00, "parcel": 0, "tax": 0.12 },
+      "2": { "to": 6452.00, "parcel": 85.32, "tax": 0.14 },
+      "3": { "to": 15997.00, "parcel": 730.52, "tax": 0.24 },
+      "4": { "to": 36792.00, "parcel": 2330.22, "tax": 0.34 },
+      "5": { "to": 53322.00, "parcel": 3801.90, "tax": 0.38 },
+      "6": { "to": 10000000000, "parcel": 4868.34, "tax": 0.40 }
+    },
+    "minimum_monthly_income": 365.60
+  },
+  "2005": {
+    "official": true,
+    "specific_deduction": 3237.41,
+    "social_security_tax": 0.11,
+    "table": {
+      "1": { "to": 4351.00, "parcel": 0, "tax": 0.105 },
+      "2": { "to": 6581.00, "parcel": 108.78, "tax": 0.13 },
+      "3": { "to": 16317.00, "parcel": 799.78, "tax": 0.235 },
+      "4": { "to": 37528.00, "parcel": 2513.07, "tax": 0.34 },
+      "5": { "to": 54388.00, "parcel": 3451.27, "tax": 0.365 },
+      "6": { "to": 10000000000, "parcel": 5354.85, "tax": 0.40 }
+    },
+    "minimum_monthly_income": 374.70
+  },
+  "2006": {
+    "official": true,
+    "specific_deduction": 3334.18,
+    "social_security_tax": 0.11,
+    "table": {
+      "1": { "to": 4451.00, "parcel": 0, "tax": 0.105 },
+      "2": { "to": 6732.00, "parcel": 111.28, "tax": 0.13 },
+      "3": { "to": 16692.00, "parcel": 818.14, "tax": 0.235 },
+      "4": { "to": 38391.00, "parcel": 2570.80, "tax": 0.34 },
+      "5": { "to": 55639.00, "parcel": 3530.57, "tax": 0.365 },
+      "6": { "to": 60000.00, "parcel": 5477.94, "tax": 0.40 },
+      "7": { "to": 10000000000, "parcel": 6677.94, "tax": 0.42 }
+    },
+    "minimum_monthly_income": 385.90
+  },
+  "2007": {
+    "official": true,
+    "specific_deduction": 3437.51,
+    "social_security_tax": 0.11,
+    "table": {
+      "1": { "to": 4544.00, "parcel": 0, "tax": 0.105 },
+      "2": { "to": 6873.00, "parcel": 113.60, "tax": 0.13 },
+      "3": { "to": 17043.00, "parcel": 835.27, "tax": 0.235 },
+      "4": { "to": 39197.00, "parcel": 2624.78, "tax": 0.34 },
+      "5": { "to": 56807.00, "parcel": 3604.71, "tax": 0.365 },
+      "6": { "to": 61260.00, "parcel": 5592.95, "tax": 0.40 },
+      "7": { "to": 10000000000, "parcel": 6818.15, "tax": 0.42 }
+    },
+    "ias": 397.86,
+    "minimum_monthly_income": 403.00
+  },
   "2008": {
     "official": true,
     "specific_deduction": 4104,

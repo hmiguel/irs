@@ -1,5 +1,29 @@
 [
   {
+    "year": 2002,
+    "inflation": 3.6
+  },
+  {
+    "year": 2003,
+    "inflation": 3.22
+  },
+  {
+    "year": 2004,
+    "inflation": 2.37
+  },
+  {
+    "year": 2005,
+    "inflation": 2.28
+  },
+  {
+    "year": 2006,
+    "inflation": 3.11
+  },
+  {
+    "year": 2007,
+    "inflation": 2.45
+  },
+  {
     "year": 2008,
     "inflation": 2.59
   },
