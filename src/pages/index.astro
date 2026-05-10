@@ -348,6 +348,16 @@ const INFLATION_MAP = Object.fromEntries(
               <span class="val" x-text="'€ ' + fmt(baseTax)"></span>
             </div>
 
+            <template x-if="solidarityTax > 0">
+              <div class="detail-row sub">
+                <span class="lbl">
+                  Taxa solidariedade
+                  <span class="badge" x-text="solidarityRateLabel" title="Taxa adicional de solidariedade (art.º 68.º-A CIRS)"></span>
+                </span>
+                <span class="val" x-text="'+ € ' + fmt(solidarityTax)"></span>
+              </div>
+            </template>
+
             <template x-if="deductions > 0">
               <div class="detail-row sub">
                 <span class="lbl">Deduções à coleta</span>
@@ -638,8 +648,30 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         },
         get amountCalculated() { return r2(this.collectableIncome * this.bracket.tax); },
         get baseTax()          { return r2(this.amountCalculated - this.bracket.parcel); },
+        get solidarityTax() {
+          const bands = this.yearData.solidarity?.bands;
+          if (!bands || bands.length === 0) return 0;
+          const income = this.collectableIncome;
+          let tax = 0;
+          for (let i = 0; i < bands.length; i++) {
+            const from = bands[i].from;
+            const to = i + 1 < bands.length ? bands[i + 1].from : Infinity;
+            if (income <= from) break;
+            tax += (Math.min(income, to) - from) * bands[i].rate;
+          }
+          return r2(tax);
+        },
+        get solidarityRateLabel() {
+          const bands = this.yearData.solidarity?.bands;
+          if (!bands || this.solidarityTax === 0) return '';
+          const income = this.collectableIncome;
+          return bands
+            .filter(b => income > b.from)
+            .map(b => (b.rate * 100).toLocaleString('pt-PT') + '%')
+            .join(' + ');
+        },
         get countyBenefit()    { return r2((this.baseTax - this.deductions) * (0.05 - this.countyRate)); },
-        get rawNetTax()        { return r2(this.baseTax - this.deductions - Math.max(0, this.countyBenefit)); },
+        get rawNetTax()        { return r2(this.baseTax + this.solidarityTax - this.deductions - Math.max(0, this.countyBenefit)); },
         get minimoExistenciaActive() { return this.gross > 0 && this.rawNetTax > 0 && this.gross <= this.minimoExistencia; },
         get netTax()           { return Math.max(0, this.minimoExistenciaActive ? 0 : this.rawNetTax); },
         get takeHome()         { return r2(this.gross - this.specificDeduction - this.netTax); },

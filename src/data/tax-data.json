@@ -1186,7 +1186,12 @@
       "vouzela": 0.05
     },
     "ias": 419.22,
-    "minimum_monthly_income": 485
+    "minimum_monthly_income": 485,
+    "solidarity": {
+      "bands": [
+        { "from": 153300, "rate": 0.025 }
+      ]
+    }
   },
   "2013": {
     "official": true,
@@ -1426,7 +1431,13 @@
       "vouzela": 0.05
     },
     "ias": 419.22,
-    "minimum_monthly_income": 485
+    "minimum_monthly_income": 485,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2014": {
     "official": true,
@@ -1688,7 +1699,13 @@
       "vouzela": 0.05
     },
     "ias": 419.22,
-    "minimum_monthly_income": 485
+    "minimum_monthly_income": 485,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2015": {
     "official": true,
@@ -2028,7 +2045,13 @@
       "vouzela": 0.05
     },
     "ias": 419.22,
-    "minimum_monthly_income": 505
+    "minimum_monthly_income": 505,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2016": {
     "official": true,
@@ -2370,7 +2393,13 @@
       "vouzela": 0.05
     },
     "ias": 419.22,
-    "minimum_monthly_income": 530
+    "minimum_monthly_income": 530,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2017": {
     "official": true,
@@ -2710,7 +2739,13 @@
       "vouzela": 0.05
     },
     "ias": 421.32,
-    "minimum_monthly_income": 557
+    "minimum_monthly_income": 557,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2018": {
     "official": true,
@@ -3063,7 +3098,13 @@
       "vouzela": 0.05
     },
     "ias": 428.9,
-    "minimum_monthly_income": 580
+    "minimum_monthly_income": 580,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2019": {
     "official": true,
@@ -3416,7 +3457,13 @@
       "vouzela": 0.05
     },
     "ias": 435.76,
-    "minimum_monthly_income": 600
+    "minimum_monthly_income": 600,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2020": {
     "official": true,
@@ -3752,7 +3799,13 @@
       "vouzela": 0.05
     },
     "ias": 438.81,
-    "minimum_monthly_income": 635
+    "minimum_monthly_income": 635,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2021": {
     "official": true,
@@ -4090,7 +4143,13 @@
       "vouzela": 0.05
     },
     "ias": 438.81,
-    "minimum_monthly_income": 665
+    "minimum_monthly_income": 665,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2022": {
     "official": true,
@@ -4437,7 +4496,13 @@
       "vouzela": 0.05
     },
     "ias": 443.2,
-    "minimum_monthly_income": 705
+    "minimum_monthly_income": 705,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2023": {
     "official": true,
@@ -4789,7 +4854,13 @@
       "vouzela": 0.05
     },
     "ias": 480.43,
-    "minimum_monthly_income": 760
+    "minimum_monthly_income": 760,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2024": {
     "official": true,
@@ -5143,7 +5214,13 @@
       "vouzela": 0.05
     },
     "ias": 509.26,
-    "minimum_monthly_income": 820
+    "minimum_monthly_income": 820,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2025": {
     "official": true,
@@ -5494,7 +5571,13 @@
       "vouzela": 0.04
     },
     "ias": 522.5,
-    "minimum_monthly_income": 870
+    "minimum_monthly_income": 870,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   },
   "2026": {
     "official": true,
@@ -5846,6 +5929,12 @@
       "vouzela": 0.04
     },
     "ias": 537.13,
-    "minimum_monthly_income": 920
+    "minimum_monthly_income": 920,
+    "solidarity": {
+      "bands": [
+        { "from": 80000, "rate": 0.025 },
+        { "from": 250000, "rate": 0.05 }
+      ]
+    }
   }
 }
