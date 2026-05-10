@@ -153,6 +153,8 @@ This simulator is an approximation for **Categoria A** (employment) income only.
 
 **It does not replace the official AT declaration or a qualified tax advisor.**
 
+The fiscal data (tax brackets, deductions, municipal rates) was compiled through independent research and may contain errors or omissions. Always verify against official publications from the [AT (Autoridade Tributária e Aduaneira)](https://www.portaldasfinancas.gov.pt) before making any financial or tax decisions.
+
 ---
 
 ## Contributing
