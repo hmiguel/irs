@@ -1,54 +1,13 @@
-# Simulador IRS Portugal
+# IRS Simulator
 
-> Calculadora interativa do Imposto sobre o Rendimento das Pessoas Singulares (IRS) em Portugal, cobrindo os anos fiscais de 2008 a 2026.
+> Portuguese personal income tax (IRS) simulator for mainland Portugal. Calculates net salary, tax brackets, deductions, and municipal surcharges for any year from 2008 to 2026.
 
-## O que faz
+## Resources
 
-Dado um rendimento bruto anual e município de residência, calcula:
+- [2026 Tax Data](https://irs.lixo.dev/tax-data-2026.md): Markdown reference for 2026 IRS brackets, rates, and parameters — includes context notes on how Portuguese IRS works.
+- [Full Tax Data JSON](https://irs.lixo.dev/tax-data.json): Complete structured dataset for all years (2008–2026), including tax brackets, specific deductions, Social Security rates, and county tax rates for all 278 mainland municipalities.
 
-- **Dedução específica** (segurança social — 11% do bruto, mínimo garantido por ano)
-- **Rendimento coletável** (bruto menos dedução específica)
-- **Escalão de IRS** aplicável e parcela a abater
-- **Coleta base** (rendimento coletável × taxa marginal − parcela)
-- **Benefício municipal** (desconto de 0–5% da coleta consoante a taxa do município)
-- **Coleta líquida** (IRS efetivamente pago)
-- **Rendimento líquido** (take-home anual)
-- **Taxa efetiva de tributação (TET)**
-- **Retenção na fonte** — cálculo de reembolso ou pagamento ao estado
-- **Ajuste à inflação** — poder de compra equivalente no ano mais recente
+## Notes
 
-## Dados disponíveis
-
-- Anos fiscais: 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025, 2026
-- Municípios: todos os municípios de Portugal continental, Açores e Madeira (~300)
-- Taxa de inflação anual: 2008–2025
-
-## Fórmula resumida
-
-```
-dedução_específica = max(mínimo_legal_ano, bruto × 0.11)
-rendimento_coletável = max(0, bruto − dedução_específica)
-escalão = primeiro escalão onde rendimento_coletável < limite_superior
-coleta_base = rendimento_coletável × taxa_marginal − parcela_abater
-benefício_municipal = (coleta_base − deduções_coleta) × (0.05 − taxa_município)
-coleta_líquida = coleta_base − deduções_coleta − max(0, benefício_municipal)
-take_home = bruto − dedução_específica − coleta_líquida
-TET = coleta_líquida / bruto × 100
-```
-
-## Limitações
-
-- Cálculo aproximado para rendimentos de trabalho dependente (categoria A).
-- Não contempla deduções especiais (família, saúde, educação, etc.) além do campo "deduções à coleta".
-- Não substitui a declaração oficial na Autoridade Tributária (AT).
-- Dados de 2008–2023 são aproximados.
-
-## Fonte dos dados
-
-- Tabelas de IRS: Orçamentos do Estado publicados pela AT / CIRS
-- Taxas municipais: deliberações anuais das Assembleias Municipais
-- Inflação: Banco de Portugal / INE (IHPC)
-
-## Tecnologia
-
-Aplicação web estática (Astro + Alpine.js). Todo o cálculo é feito no browser — nenhum dado é enviado para servidores.
+- Data covers **mainland Portugal only**. Madeira and Azores have separate regional tax rates not included here.
+- The JSON dataset is the authoritative source. The markdown file covers 2026 only.
