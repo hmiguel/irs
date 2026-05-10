@@ -486,6 +486,15 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
       </svg>
       hmiguel/irs
     </a>
+    {commitSha && (
+      <a
+        href={`https://github.com/hmiguel/irs/commit/${commitSha}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="build-sha"
+        title={`Build: ${commitSha}`}
+      >{commitSha}</a>
+    )}
   </footer>
 
   <!-- Help modal -->
@@ -788,14 +797,6 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
       }));
     });
   </script>
-  {commitSha && (
-    <a
-      href={`https://github.com/hmiguel/irs/commit/${commitSha}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="build-sha"
-      title={`Build: ${commitSha}`}
-    >{commitSha}</a>
-  )}
+
 </body>
 </html>
