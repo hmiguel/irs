@@ -49,6 +49,12 @@ Each of Portugal's 278 mainland municipalities sets its own surcharge rate (0%�
 
 ---
 
+## Disclaimer
+
+This data was compiled through independent research and is provided for informational purposes only. It may contain errors or omissions. Always verify against official publications from AT (Autoridade Tributária e Aduaneira) or the Portuguese tax authority before making any financial or tax decisions.
+
+---
+
 ## Full Dataset
 
 Historical data for all years (2008–2026), including all tax brackets, deductions, Social Security rates, and county tax rates per municipality, is available at:
