@@ -1,6 +1,6 @@
 # Simulador IRS · Portugal
 
-Interactive Portuguese income tax (IRS) simulator covering fiscal years **2008–2026**. Runs entirely in the browser — calculations are client-side only, no data leaves your device.
+Interactive Portuguese income tax (IRS) simulator covering fiscal years **2002–2026**. Runs entirely in the browser — calculations are client-side only, no data leaves your device.
 
 **Live demo → [irs.lixo.dev](https://irs.lixo.dev)**
 
@@ -10,7 +10,7 @@ Interactive Portuguese income tax (IRS) simulator covering fiscal years **2008�
 
 | Feature | Details |
 |---|---|
-| **Year selector** | All fiscal years 2008–2026 via stepper control in the header |
+| **Year selector** | All fiscal years 2002–2026 via stepper control in the header |
 | **Year-over-year Δ** | Take-home, net tax, and effective rate show the delta vs the previous year |
 | **Municipal benefit** | Automatic deduction based on the selected municipality (~300 municipalities) |
 | **Inflation-adjusted take-home** | For historical years, shows the real purchasing-power equivalent in today's euros |
@@ -61,7 +61,7 @@ effective_rate      = net_tax / gross × 100
 src/
 ├── data/
 │   ├── tax-data.json       ← tax brackets, specific deductions, county rates — all years
-│   └── inflation.json      ← annual inflation rates (2008–2026)
+│   └── inflation.json      ← annual inflation rates (2002–2026)
 ├── styles/
 │   └── main.css            ← all CSS (dark/light themes, responsive layout)
 └── pages/

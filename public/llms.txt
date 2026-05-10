@@ -1,11 +1,11 @@
 # IRS Simulator
 
-> Portuguese personal income tax (IRS) simulator for mainland Portugal. Calculates net salary, tax brackets, deductions, and municipal surcharges for any year from 2008 to 2026.
+> Portuguese personal income tax (IRS) simulator for mainland Portugal. Calculates net salary, tax brackets, deductions, and municipal surcharges for any year from 2002 to 2026.
 
 ## Resources
 
 - [2026 Tax Data](https://irs.lixo.dev/tax-data-2026.md): Markdown reference for 2026 IRS brackets, rates, and parameters — includes context notes on how Portuguese IRS works.
-- [Full Tax Data JSON](https://irs.lixo.dev/tax-data.json): Complete structured dataset for all years (2008–2026), including tax brackets, specific deductions, Social Security rates, and county tax rates for all 278 mainland municipalities.
+- [Full Tax Data JSON](https://irs.lixo.dev/tax-data.json): Complete structured dataset for all years (2002–2026), including tax brackets, specific deductions, Social Security rates, and county tax rates for all 278 mainland municipalities.
 
 ## Notes
 

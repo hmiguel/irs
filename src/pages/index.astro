@@ -16,8 +16,8 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Simulador IRS Portugal 2008–2026 · Calcula o teu IRS</title>
-  <meta name="description" content="Simula o teu IRS em Portugal de 2008 a 2026. Calcula rendimento líquido, taxa efetiva de tributação e benefício municipal para qualquer município. Grátis e sem registo.">
+  <title>Simulador IRS Portugal 2002–2026 · Calcula o teu IRS</title>
+  <meta name="description" content="Simula o teu IRS em Portugal de 2002 a 2026. Calcula rendimento líquido, taxa efetiva de tributação e benefício municipal para qualquer município. Grátis e sem registo.">
   <meta name="keywords" content="simulador IRS, IRS Portugal, calculadoular IRS, taxa efetiva IRS, rendimento líquido, IRS 2024, IRS 2025, IRS 2026, declaração IRS">
   <meta name="author" content="Hugo Conceição">
   <meta name="robots" content="index, follow">
@@ -29,21 +29,21 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
   <!-- Open Graph -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://irs.lixo.dev/">
-  <meta property="og:title" content="Simulador IRS Portugal 2008–2026">
-  <meta property="og:description" content="Calcula o teu IRS em Portugal de 2008 a 2026 — rendimento líquido, taxa efetiva e benefício municipal por município.">
+  <meta property="og:title" content="Simulador IRS Portugal 2002–2026">
+  <meta property="og:description" content="Calcula o teu IRS em Portugal de 2002 a 2026 — rendimento líquido, taxa efetiva e benefício municipal por município.">
   <meta property="og:locale" content="pt_PT">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Simulador IRS Portugal 2008–2026">
-  <meta name="twitter:description" content="Calcula o teu IRS em Portugal de 2008 a 2026 — rendimento líquido, taxa efetiva e benefício municipal por município.">
+  <meta name="twitter:title" content="Simulador IRS Portugal 2002–2026">
+  <meta name="twitter:description" content="Calcula o teu IRS em Portugal de 2002 a 2026 — rendimento líquido, taxa efetiva e benefício municipal por município.">
 
   <!-- JSON-LD structured data -->
   <script type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Simulador IRS Portugal",
-    "description": "Calculadora interativa do IRS em Portugal para os anos fiscais de 2008 a 2026. Calcula rendimento líquido, taxa efetiva de tributação e benefício municipal.",
+    "description": "Calculadora interativa do IRS em Portugal para os anos fiscais de 2002 a 2026. Calcula rendimento líquido, taxa efetiva de tributação e benefício municipal.",
     "url": "https://irs.lixo.dev/",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Web",
@@ -156,9 +156,9 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
           </div>
 
           <div class="field-row">
-            <div class="field" style="margin-bottom:0;">
+            <div class="field" style="margin-bottom:0;" :class="!yearData.county_tax ? 'irs-jovem-disabled' : ''">
               <label for="input-municipality">Município</label>
-              <select id="input-municipality" x-model="municipality">
+              <select id="input-municipality" x-model="municipality" :disabled="!yearData.county_tax">
                 <template x-for="m in sortedMunicipalities" :key="m">
                   <option :value="m" x-text="titleCase(m)"></option>
                 </template>
@@ -369,6 +369,7 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
               </div>
             </template>
 
+            <template x-if="yearData.county_tax">
             <div class="detail-row sub">
               <span class="lbl">
                 Benefício municipal
@@ -378,6 +379,7 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
                     x-text="countyBenefit > 0 ? '− € ' + fmt(countyBenefit) : '€ ' + fmt(0)">
               </span>
             </div>
+            </template>
 
             <template x-if="minimoExistenciaActive">
               <div class="detail-row sub">
@@ -513,7 +515,7 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
 
         <div class="help-section">
           <div class="help-section-label">O que é</div>
-          <p>Simulador interativo do IRS em Portugal para os anos fiscais de 2008 a 2026. Todos os cálculos são feitos no teu browser — nenhum dado é enviado para servidores.</p>
+          <p>Simulador interativo do IRS em Portugal para os anos fiscais de 2002 a 2026. Todos os cálculos são feitos no teu browser — nenhum dado é enviado para servidores.</p>
         </div>
 
         <div class="help-section">
@@ -571,12 +573,12 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         showHelp: false,
         grossInput: '35000',
         municipality: 'lisboa',
-        yearIdx: Math.min(Math.max(new Date().getFullYear() - 1, 2008), 2026) - 2008,
+        yearIdx: Math.min(Math.max(new Date().getFullYear() - 1, 2002), 2026) - 2002,
         specificDeductionInput: '',
         deductionsInput: '650',
         withheldInput: '5200',
         irsJovemEnabled: false,
-        irsJovemFirstYearInput: String(Math.min(Math.max(new Date().getFullYear() - 1, 2008), 2026) - 5),
+        irsJovemFirstYearInput: String(Math.min(Math.max(new Date().getFullYear() - 1, 2002), 2026) - 5),
 
         init() {
           try {
@@ -602,17 +604,19 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         get deductions() { return parseFloat(this.deductionsInput) || 0; },
         get withheld()   { return parseFloat(this.withheldInput) || 0; },
         get yearData()   { return TAX_DATA[this.year]; },
-        get countyRate() { return this.yearData.county_tax[this.municipality] ?? 0; },
+        get countyRate() { return this.yearData.county_tax?.[this.municipality] ?? 0; },
         get brackets()   { return Object.values(this.yearData.table); },
 
         get availableYears() {
-          return ['2008','2009','2010','2011','2012','2013','2014','2015',
+          return ['2002','2003','2004','2005','2006','2007',
+                  '2008','2009','2010','2011','2012','2013','2014','2015',
                   '2016','2017','2018','2019','2020','2021','2022','2023','2024','2025','2026'];
         },
         get sliderPercent() { return Math.min(100, Math.max(0, this.gross / 1000)); },
 
         get sortedMunicipalities() {
-          return Object.keys(this.yearData.county_tax).sort((a, b) => a.localeCompare(b, 'pt'));
+          const ct = this.yearData.county_tax ?? TAX_DATA['2008'].county_tax;
+          return Object.keys(ct).sort((a, b) => a.localeCompare(b, 'pt'));
         },
         get specificDeductionAuto() {
           return r2(Math.max(this.yearData.specific_deduction,
@@ -651,7 +655,8 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
 
         get minimoExistencia() {
           const yd = this.yearData;
-          return Math.max(yd.minimum_monthly_income * 14, 1.5 * 14 * yd.ias);
+          const ias = yd.ias ?? yd.minimum_monthly_income;
+          return Math.max(yd.minimum_monthly_income * 14, 1.5 * 14 * ias);
         },
 
         get collectableIncome() { return r2(Math.max(0, this.gross - this.specificDeduction - this.irsJovemExempt)); },
@@ -683,7 +688,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
             .map(b => (b.rate * 100).toLocaleString('pt-PT') + '%')
             .join(' + ');
         },
-        get countyBenefit()    { return r2((this.baseTax - this.deductions) * (0.05 - this.countyRate)); },
+        get countyBenefit()    { return this.yearData.county_tax ? r2((this.baseTax - this.deductions) * (0.05 - this.countyRate)) : 0; },
         get rawNetTax()        { return r2(this.baseTax + this.solidarityTax - this.deductions - Math.max(0, this.countyBenefit)); },
         get minimoExistenciaActive() { return this.gross > 0 && this.rawNetTax > 0 && this.gross <= this.minimoExistencia; },
         get netTax()           { return Math.max(0, this.minimoExistenciaActive ? 0 : this.rawNetTax); },
@@ -704,7 +709,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           const brk  = brks.find(b => col < b.to) || brks[brks.length - 1];
           const base = r2(col * brk.tax - brk.parcel);
           const cr   = yd.county_tax?.[this.municipality] ?? 0;
-          const ben  = r2(base * (0.05 - cr));
+          const ben  = yd.county_tax ? r2(base * (0.05 - cr)) : 0;
           const net  = r2(base - Math.max(0, ben));
           return { netTax: net, takeHome: r2(this.gross - ss - net), tet: this.gross > 0 ? net / this.gross * 100 : 0 };
         },
@@ -766,9 +771,9 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
 
         resetState() {
           localStorage.removeItem('irs-state');
-          const y = Math.min(Math.max(new Date().getFullYear() - 1, 2008), 2026);
+          const y = Math.min(Math.max(new Date().getFullYear() - 1, 2002), 2026);
           this.grossInput = '35000'; this.municipality = 'lisboa';
-          this.yearIdx = y - 2008; this.specificDeductionInput = '';
+          this.yearIdx = y - 2002; this.specificDeductionInput = '';
           this.deductionsInput = '650'; this.withheldInput = '5200';
           this.irsJovemEnabled = false; this.irsJovemFirstYearInput = String(y - 5);
         },

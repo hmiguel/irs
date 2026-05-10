@@ -57,7 +57,7 @@ This data was compiled through independent research and is provided for informat
 
 ## Full Dataset
 
-Historical data for all years (2008–2026), including all tax brackets, deductions, Social Security rates, and county tax rates per municipality, is available at:
+Historical data for all years (2002–2026), including all tax brackets, deductions, Social Security rates, and county tax rates per municipality, is available at:
 
 - **JSON (all years):** https://irs.lixo.dev/tax-data.json
 - **Interactive simulator:** https://irs.lixo.dev
