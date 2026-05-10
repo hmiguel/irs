@@ -640,7 +640,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         get countyBenefit()    { return r2((this.baseTax - this.deductions) * (0.05 - this.countyRate)); },
         get rawNetTax()        { return r2(this.baseTax - this.deductions - Math.max(0, this.countyBenefit)); },
         get minimoExistenciaActive() { return this.gross > 0 && this.rawNetTax > 0 && this.gross <= this.minimoExistencia; },
-        get netTax()           { return this.minimoExistenciaActive ? 0 : this.rawNetTax; },
+        get netTax()           { return Math.max(0, this.minimoExistenciaActive ? 0 : this.rawNetTax); },
         get takeHome()         { return r2(this.gross - this.specificDeduction - this.netTax); },
         get assessedTax()      { return r2(this.netTax - this.withheld); },
         get effectiveRate()    { return this.gross > 0 ? (this.netTax / this.gross * 100) : 0; },
