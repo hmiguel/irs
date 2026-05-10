@@ -11,32 +11,32 @@
       },
       "2": {
         "to": 7017,
-        "parcel": 115.88,
+        "parcel": 115.98,
         "tax": 0.13
       },
       "3": {
         "to": 17401,
-        "parcel": 852.65,
+        "parcel": 852.75,
         "tax": 0.235
       },
       "4": {
         "to": 40020,
-        "parcel": 2679.53,
+        "parcel": 2679.86,
         "tax": 0.34
       },
       "5": {
         "to": 58000,
-        "parcel": 3676.39,
+        "parcel": 3680.39,
         "tax": 0.365
       },
       "6": {
         "to": 62546,
-        "parcel": 5699.97,
+        "parcel": 5710.39,
         "tax": 0.4
       },
       "7": {
         "to": 10000000000,
-        "parcel": 6950.06,
+        "parcel": 6961.31,
         "tax": 0.42
       }
     },
@@ -244,32 +244,32 @@
       },
       "2": {
         "to": 7192,
-        "parcel": 118.96,
+        "parcel": 118.88,
         "tax": 0.13
       },
       "3": {
         "to": 17836,
-        "parcel": 874.38,
+        "parcel": 874.04,
         "tax": 0.235
       },
       "4": {
         "to": 41021,
-        "parcel": 2748.56,
+        "parcel": 2746.81,
         "tax": 0.34
       },
       "5": {
         "to": 59450,
-        "parcel": 3774.29,
+        "parcel": 3772.34,
         "tax": 0.365
       },
       "6": {
         "to": 64110,
-        "parcel": 5849.96,
+        "parcel": 5853.11,
         "tax": 0.4
       },
       "7": {
         "to": 10000000000,
-        "parcel": 7131.16,
+        "parcel": 7135.31,
         "tax": 0.42
       }
     },
@@ -465,44 +465,44 @@
     "social_security_tax": 0.11,
     "table": {
       "1": {
-        "to": 4898,
-        "parcel": 0,
-        "tax": 0.115
+        "to": 4793,
+        "parcel": 0.0,
+        "tax": 0.1108
       },
       "2": {
-        "to": 7410,
-        "parcel": 122.45,
-        "tax": 0.14
+        "to": 7250,
+        "parcel": 119.83,
+        "tax": 0.1358
       },
       "3": {
-        "to": 18375,
-        "parcel": 900.46,
-        "tax": 0.245
+        "to": 17979,
+        "parcel": 881.07,
+        "tax": 0.2408
       },
       "4": {
-        "to": 42259,
-        "parcel": 2921.81,
-        "tax": 0.355
+        "to": 41349,
+        "parcel": 2822.81,
+        "tax": 0.3488
       },
       "5": {
-        "to": 61244,
-        "parcel": 3978.26,
-        "tax": 0.38
+        "to": 59926,
+        "parcel": 3856.53,
+        "tax": 0.3738
       },
       "6": {
-        "to": 66045,
-        "parcel": 6121.95,
-        "tax": 0.415
+        "to": 64623,
+        "parcel": 5953.94,
+        "tax": 0.4088
       },
       "7": {
-        "to": 153300,
-        "parcel": 7442.61,
-        "tax": 0.435
+        "to": 150000,
+        "parcel": 7246.4,
+        "tax": 0.4288
       },
       "8": {
         "to": 10000000000,
-        "parcel": 12041.72,
-        "tax": 0.465
+        "parcel": 11746.4,
+        "tax": 0.4588
       }
     },
     "county_tax": {
@@ -1189,7 +1189,10 @@
     "minimum_monthly_income": 485,
     "solidarity": {
       "bands": [
-        { "from": 153300, "rate": 0.025 }
+        {
+          "from": 153300,
+          "rate": 0.025
+        }
       ]
     }
   },
@@ -1434,8 +1437,14 @@
     "minimum_monthly_income": 485,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -1702,8 +1711,14 @@
     "minimum_monthly_income": 485,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -2048,8 +2063,14 @@
     "minimum_monthly_income": 505,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -2396,8 +2417,14 @@
     "minimum_monthly_income": 530,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -2742,8 +2769,14 @@
     "minimum_monthly_income": 557,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -2784,7 +2817,7 @@
       },
       "7": {
         "to": 10000000000,
-        "parcel": 8376.88,
+        "parcel": 8376.08,
         "tax": 0.48
       }
     },
@@ -3101,8 +3134,14 @@
     "minimum_monthly_income": 580,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -3460,8 +3499,14 @@
     "minimum_monthly_income": 600,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -3802,8 +3847,14 @@
     "minimum_monthly_income": 635,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -4146,8 +4197,14 @@
     "minimum_monthly_income": 665,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -4499,8 +4556,14 @@
     "minimum_monthly_income": 705,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -4857,8 +4920,14 @@
     "minimum_monthly_income": 760,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -4870,7 +4939,7 @@
       "1": {
         "to": 7703,
         "parcel": 0,
-        "tax": 0.1325
+        "tax": 0.13
       },
       "2": {
         "to": 11623,
@@ -4898,12 +4967,12 @@
         "tax": 0.355
       },
       "7": {
-        "to": 51997,
+        "to": 43000,
         "parcel": 7029.08,
         "tax": 0.435
       },
       "8": {
-        "to": 81199,
+        "to": 80000,
         "parcel": 7673.78,
         "tax": 0.45
       },
@@ -5217,8 +5286,14 @@
     "minimum_monthly_income": 820,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -5574,8 +5649,14 @@
     "minimum_monthly_income": 870,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   },
@@ -5932,8 +6013,14 @@
     "minimum_monthly_income": 920,
     "solidarity": {
       "bands": [
-        { "from": 80000, "rate": 0.025 },
-        { "from": 250000, "rate": 0.05 }
+        {
+          "from": 80000,
+          "rate": 0.025
+        },
+        {
+          "from": 250000,
+          "rate": 0.05
+        }
       ]
     }
   }
