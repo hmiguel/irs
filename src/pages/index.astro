@@ -6,6 +6,8 @@ import '../styles/main.css';
 const INFLATION_MAP = Object.fromEntries(
   inflationData.map(({ year, inflation }) => [year, inflation])
 );
+
+const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.slice(0, 7);
 ---
 
 <!DOCTYPE html>
@@ -786,5 +788,14 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
       }));
     });
   </script>
+  {commitSha && (
+    <a
+      href={`https://github.com/hmiguel/irs/commit/${commitSha}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="build-sha"
+      title={`Build: ${commitSha}`}
+    >{commitSha}</a>
+  )}
 </body>
 </html>

@@ -753,3 +753,6 @@
       font-weight: 600; transition: color .1s;
     }
     .footer-gh:hover { color: var(--primary); }
+
+    .build-sha { position:fixed;bottom:8px;right:8px;font-family:var(--mono);font-size:11px;text-decoration:none;color:var(--muted);z-index:9999;transition:color .2s; }
+    .build-sha:hover { color:var(--primary); }
