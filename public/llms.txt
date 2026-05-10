@@ -11,3 +11,4 @@
 
 - Data covers **mainland Portugal only**. Madeira and Azores have separate regional tax rates not included here.
 - The JSON dataset is the authoritative source. The markdown file covers 2026 only.
+- **Disclaimer:** This data was compiled through independent research and is provided for informational purposes only. It may contain errors or omissions. Always verify against official AT (Autoridade Tributária) publications before making any financial or tax decisions.
