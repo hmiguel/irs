@@ -228,7 +228,9 @@
       "vimioso": 0.05,
       "vinhais": 0.025,
       "vizela": 0.05
-    }
+    },
+    "ias": 407.41,
+    "minimum_monthly_income": 426
   },
   "2009": {
     "official": true,
@@ -453,7 +455,9 @@
       "vimioso": 0.05,
       "vinhais": 0.025,
       "vizela": 0.05
-    }
+    },
+    "ias": 419.22,
+    "minimum_monthly_income": 450
   },
   "2010": {
     "official": true,
@@ -690,7 +694,9 @@
       "vinhais": 0.025,
       "vizela": 0.045,
       "vouzela": 0.05
-    }
+    },
+    "ias": 419.22,
+    "minimum_monthly_income": 475
   },
   "2011": {
     "official": true,
@@ -928,7 +934,9 @@
       "vimioso": 0.05,
       "vizela": 0.045,
       "vouzela": 0.05
-    }
+    },
+    "ias": 419.22,
+    "minimum_monthly_income": 485
   },
   "2012": {
     "official": true,
@@ -1176,7 +1184,9 @@
       "vinhais": 0.025,
       "vizela": 0.045,
       "vouzela": 0.05
-    }
+    },
+    "ias": 419.22,
+    "minimum_monthly_income": 485
   },
   "2013": {
     "official": true,
@@ -1414,7 +1424,9 @@
       "viseu": 0.04,
       "vizela": 0.05,
       "vouzela": 0.05
-    }
+    },
+    "ias": 419.22,
+    "minimum_monthly_income": 485
   },
   "2014": {
     "official": true,
@@ -1674,7 +1686,9 @@
       "viseu": 0.04,
       "vizela": 0.05,
       "vouzela": 0.05
-    }
+    },
+    "ias": 419.22,
+    "minimum_monthly_income": 485
   },
   "2015": {
     "official": true,
@@ -2012,7 +2026,9 @@
       "viseu": 0.04,
       "vizela": 0.05,
       "vouzela": 0.05
-    }
+    },
+    "ias": 419.22,
+    "minimum_monthly_income": 505
   },
   "2016": {
     "official": true,
@@ -2352,7 +2368,9 @@
       "viseu": 0.04,
       "vizela": 0.05,
       "vouzela": 0.05
-    }
+    },
+    "ias": 419.22,
+    "minimum_monthly_income": 530
   },
   "2017": {
     "official": true,
@@ -2690,7 +2708,9 @@
       "viseu": 0.04,
       "vizela": 0.05,
       "vouzela": 0.05
-    }
+    },
+    "ias": 421.32,
+    "minimum_monthly_income": 557
   },
   "2018": {
     "official": true,
@@ -3041,7 +3061,9 @@
       "viseu": 0.04,
       "vizela": 0.05,
       "vouzela": 0.05
-    }
+    },
+    "ias": 428.9,
+    "minimum_monthly_income": 580
   },
   "2019": {
     "official": true,
@@ -3392,7 +3414,9 @@
       "viseu": 0.04,
       "vizela": 0.045,
       "vouzela": 0.05
-    }
+    },
+    "ias": 435.76,
+    "minimum_monthly_income": 600
   },
   "2020": {
     "official": true,
@@ -3726,7 +3750,9 @@
       "viseu": 0.04,
       "vizela": 0.04,
       "vouzela": 0.05
-    }
+    },
+    "ias": 438.81,
+    "minimum_monthly_income": 635
   },
   "2021": {
     "official": true,
@@ -4062,7 +4088,9 @@
       "viseu": 0.04,
       "vizela": 0.035,
       "vouzela": 0.05
-    }
+    },
+    "ias": 438.81,
+    "minimum_monthly_income": 665
   },
   "2022": {
     "official": true,
@@ -4407,7 +4435,9 @@
       "viseu": 0.04,
       "vizela": 0.035,
       "vouzela": 0.05
-    }
+    },
+    "ias": 443.2,
+    "minimum_monthly_income": 705
   },
   "2023": {
     "official": true,
@@ -4757,7 +4787,9 @@
       "viseu": 0.04,
       "vizela": 0.035,
       "vouzela": 0.05
-    }
+    },
+    "ias": 480.43,
+    "minimum_monthly_income": 760
   },
   "2024": {
     "official": true,
@@ -5109,7 +5141,9 @@
       "viseu": 0.04,
       "vizela": 0.035,
       "vouzela": 0.05
-    }
+    },
+    "ias": 509.26,
+    "minimum_monthly_income": 820
   },
   "2025": {
     "official": true,
@@ -5459,7 +5493,8 @@
       "vizela": 0.03,
       "vouzela": 0.04
     },
-    "ias": 522.5
+    "ias": 522.5,
+    "minimum_monthly_income": 870
   },
   "2026": {
     "official": true,
@@ -5810,6 +5845,7 @@
       "vizela": 0.03,
       "vouzela": 0.04
     },
-    "ias": 537.13
+    "ias": 537.13,
+    "minimum_monthly_income": 920
   }
 }
