@@ -207,13 +207,13 @@ const INFLATION_MAP = Object.fromEntries(
             <div class="field" style="margin-bottom:0;">
               <label for="input-irs-jovem-year">Primeiro ano de rendimentos</label>
               <input id="input-irs-jovem-year" type="number"
-                     :min="parseInt(year) - 9" :max="parseInt(year) - 1"
+                     :min="parseInt(year) - 9" :max="parseInt(year)"
                      placeholder="ex: 2022"
                      x-model="irsJovemFirstYearInput">
               <div class="optional-label">Categorias A ou B (não dependente)</div>
               <div class="optional-label" style="color:var(--red)"
                    x-show="irsJovemFirstYearInput && !irsJovemFirstYearValid">
-                Fora do período elegível (máx. 10 anos, início antes de <span x-text="year"></span>)
+                Fora do período elegível (máx. 10 anos, entre <span x-text="parseInt(year)-9"></span> e <span x-text="year"></span>)
               </div>
             </div>
           </div>
@@ -616,7 +616,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         get irsJovemFirstYearValid() {
           const fy = this.irsJovemFirstYear;
           const y  = parseInt(this.year);
-          return fy !== null && fy >= y - 9 && fy <= y - 1;
+          return fy !== null && fy >= y - 9 && fy <= y;
         },
         get irsJovemBenefitYear() {
           if (!this.irsJovemFirstYear) return null;
