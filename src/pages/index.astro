@@ -199,11 +199,11 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
           <!-- IRS Jovem -->
           <div class="irs-jovem-toggle-row" :class="!irsJovemAvailable ? 'irs-jovem-disabled' : ''">
             <label class="toggle-label" for="input-irs-jovem">
+              <span>IRS Jovem</span>
+              <span x-show="!irsJovemAvailable" class="badge" title="Disponível a partir de 2025">não disponível</span>
               <input id="input-irs-jovem" type="checkbox" class="irs-jovem-check"
                      x-model="irsJovemEnabled"
                      :disabled="!irsJovemAvailable">
-              <span>IRS Jovem</span>
-              <span x-show="!irsJovemAvailable" class="badge" title="Disponível a partir de 2025">não disponível</span>
             </label>
           </div>
 
