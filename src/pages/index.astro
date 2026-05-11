@@ -348,7 +348,7 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
             </div>
 
             <div class="detail-row">
-              <span class="lbl">Coleta (base)</span>
+              <span class="lbl">Coleta (total)</span>
               <span class="val" x-text="'€ ' + fmt(baseTax)"></span>
             </div>
 
@@ -404,8 +404,26 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
               </span>
             </div>
 
+            <template x-if="withheld > 0">
+              <div class="detail-row sub">
+                <span class="lbl">Retenção na fonte</span>
+                <span class="val" x-text="'− € ' + fmt(withheld)"></span>
+              </div>
+            </template>
 
           </div>
+
+          <!-- A pagar / A receber -->
+          <template x-if="withheld > 0">
+            <div class="assessed-row" :class="assessedTax >= 0 ? 'payment' : 'refund'">
+              <span class="assessed-label"
+                    x-text="assessedTax >= 0 ? 'A pagar ao estado' : 'Reembolso estimado'">
+              </span>
+              <span class="assessed-val"
+                    x-text="(assessedTax >= 0 ? '€ ' : '+ € ') + fmt(Math.abs(assessedTax))">
+              </span>
+            </div>
+          </template>
 
           <!-- TET -->
           <div class="tet-row">
@@ -420,18 +438,6 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
               </template>
             </div>
           </div>
-
-          <!-- A pagar / A receber -->
-          <template x-if="withheld > 0">
-            <div class="assessed-row" :class="assessedTax >= 0 ? 'payment' : 'refund'">
-              <span class="assessed-label"
-                    x-text="assessedTax >= 0 ? 'A pagar ao estado' : 'Reembolso estimado'">
-              </span>
-              <span class="assessed-val"
-                    x-text="(assessedTax >= 0 ? '€ ' : '+ € ') + fmt(Math.abs(assessedTax))">
-              </span>
-            </div>
-          </template>
 
         </div>
       </template>
@@ -694,7 +700,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         get netTax()           { return Math.max(0, this.minimoExistenciaActive ? 0 : this.rawNetTax); },
         get takeHome()         { return r2(this.gross - this.specificDeduction - this.netTax); },
         get assessedTax()      { return r2(this.netTax - this.withheld); },
-        get effectiveRate()    { return this.gross > 0 ? (this.netTax / this.gross * 100) : 0; },
+        get effectiveRate()    { return this.collectableIncome > 0 ? (this.netTax / this.collectableIncome * 100) : 0; },
 
         get prevYear() {
           const idx = this.availableYears.indexOf(this.year);
@@ -714,7 +720,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           const ias    = yd.ias ?? yd.minimum_monthly_income;
           const minimoEx = Math.max(yd.minimum_monthly_income * 14, 1.5 * 14 * ias);
           const net    = Math.max(0, rawNet > 0 && this.gross <= minimoEx ? 0 : rawNet);
-          return { netTax: net, takeHome: r2(this.gross - ss - net), tet: this.gross > 0 ? net / this.gross * 100 : 0 };
+          return { netTax: net, takeHome: r2(this.gross - ss - net), tet: col > 0 ? net / col * 100 : 0 };
         },
         get bracketRows() {
           const brks = this.brackets;
