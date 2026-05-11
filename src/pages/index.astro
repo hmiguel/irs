@@ -250,12 +250,6 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
             <div class="hero-label">Rendimento Líquido estimado</div>
             <div class="hero-amount">
               <span x-text="'€ ' + fmt(takeHome)"></span>
-              <template x-if="deltaTakeHome !== null">
-                <span :class="deltaClass(deltaTakeHome, false)" :title="'Variação do rendimento líquido face a ' + prevYear">
-                  <span class="sr-only" x-text="deltaTakeHome > 0 ? 'subiu' : 'desceu'"></span>
-                  <span aria-hidden="true" x-text="(deltaTakeHome > 0 ? '+' : '−') + ' € ' + fmt(Math.abs(deltaTakeHome))"></span>
-                </span>
-              </template>
             </div>
             <div class="hero-sub" x-text="'de € ' + fmt(gross) + ' brutos · ' + year"></div>
             <div class="monthly-hint" title="Valor mensal líquido estimado (salário pago em 14 meses)" x-text="'≈ € ' + fmt(r2(takeHome / 14)) + ' × 14 meses'"></div>
@@ -393,15 +387,7 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
 
             <div class="detail-row strong">
               <span class="lbl">Coleta Líquida</span>
-              <span class="val" style="display:flex;align-items:baseline;gap:.35rem;">
-                <span x-text="'€ ' + fmt(netTax)"></span>
-                <template x-if="deltaNetTax !== null">
-                  <span :class="deltaClass(deltaNetTax, true)" :title="'Variação da coleta líquida face a ' + prevYear">
-                    <span class="sr-only" x-text="deltaNetTax > 0 ? 'subiu' : 'desceu'"></span>
-                    <span aria-hidden="true" x-text="(deltaNetTax > 0 ? '+' : '−') + ' € ' + fmt(Math.abs(deltaNetTax))"></span>
-                  </span>
-                </template>
-              </span>
+              <span class="val" x-text="'€ ' + fmt(netTax)"></span>
             </div>
 
             <template x-if="withheld > 0">
@@ -430,12 +416,6 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
             <span class="tet-label">Taxa Efetiva de Tributação</span>
             <div class="tet-val-wrap">
               <span class="tet-val" x-text="fmtPct(effectiveRate)"></span>
-              <template x-if="deltaEffectiveRate !== null">
-                <span :class="deltaClass(deltaEffectiveRate, true)" :title="'pp = pontos percentuais · variação da taxa efetiva face a ' + prevYear">
-                  <span class="sr-only" x-text="deltaEffectiveRate > 0 ? 'subiu' : 'desceu'"></span>
-                  <span aria-hidden="true" x-text="(deltaEffectiveRate > 0 ? '+' : '') + deltaEffectiveRate.toFixed(2) + ' pp'"></span>
-                </span>
-              </template>
             </div>
           </div>
 
@@ -702,26 +682,6 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         get assessedTax()      { return r2(this.netTax - this.withheld); },
         get effectiveRate()    { return this.collectableIncome > 0 ? (this.netTax / this.collectableIncome * 100) : 0; },
 
-        get prevYear() {
-          const idx = this.availableYears.indexOf(this.year);
-          return idx > 0 ? this.availableYears[idx - 1] : null;
-        },
-        get prevCalc() {
-          if (!this.prevYear || this.gross === 0) return null;
-          const yd = TAX_DATA[this.prevYear];
-          const ss   = r2(Math.max(yd.specific_deduction, this.gross * yd.social_security_tax));
-          const col  = r2(Math.max(0, this.gross - ss));
-          const brks = Object.values(yd.table);
-          const brk  = brks.find(b => col < b.to) || brks[brks.length - 1];
-          const base   = r2(col * brk.tax - brk.parcel);
-          const cr     = yd.county_tax?.[this.municipality] ?? 0;
-          const ben    = yd.county_tax ? r2(base * (0.05 - cr)) : 0;
-          const rawNet = r2(base - Math.max(0, ben));
-          const ias    = yd.ias ?? yd.minimum_monthly_income;
-          const minimoEx = Math.max(yd.minimum_monthly_income * 14, 1.5 * 14 * ias);
-          const net    = Math.max(0, rawNet > 0 && this.gross <= minimoEx ? 0 : rawNet);
-          return { netTax: net, takeHome: r2(this.gross - ss - net), tet: col > 0 ? net / col * 100 : 0 };
-        },
         get bracketRows() {
           const brks = this.brackets;
           return brks.map((b, i) => {
@@ -734,9 +694,6 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           });
         },
 
-        get deltaTakeHome()      { return this.prevCalc ? r2(this.takeHome      - this.prevCalc.takeHome) : null; },
-        get deltaNetTax()        { return this.prevCalc ? r2(this.netTax        - this.prevCalc.netTax)   : null; },
-        get deltaEffectiveRate() { return this.prevCalc ? r2(this.effectiveRate - this.prevCalc.tet)      : null; },
 
         get inflationAdjustedTakeHome() {
           if (this.gross === 0) return null;
@@ -796,11 +753,6 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           localStorage.setItem('irs-theme', this.darkMode ? 'dark' : 'light');
         },
 
-        deltaClass(n, inverse) {
-          if (n === null || n === 0) return 'delta delta-neutral';
-          if (inverse) return n > 0 ? 'delta delta-tax-up' : 'delta delta-tax-down';
-          return n > 0 ? 'delta delta-up' : 'delta delta-down';
-        },
 
         fmt(n) {
           return new Intl.NumberFormat('pt-PT', {minimumFractionDigits:2, maximumFractionDigits:2}).format(n);
