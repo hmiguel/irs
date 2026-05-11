@@ -753,7 +753,11 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           };
           update(e.clientX);
           e.target.style.cursor = 'pointer';
-          const onMove = (ev) => update(ev.clientX);
+          let rafId = null;
+          const onMove = (ev) => {
+            if (rafId) return;
+            rafId = requestAnimationFrame(() => { rafId = null; update(ev.clientX); });
+          };
           const onUp   = () => {
             e.target.style.cursor = '';
             window.removeEventListener('pointermove', onMove);
