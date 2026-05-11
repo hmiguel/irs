@@ -387,7 +387,7 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
                   Mínimo de existência
                   <span class="badge badge-auto" :title="'Rendimento bruto ≤ € ' + fmt(minimoExistencia) + ' — coleta anulada'">isento</span>
                 </span>
-                <span class="val">€ 0,00</span>
+                <span class="val" x-text="'− € ' + fmt(rawNetTax)"></span>
               </div>
             </template>
 
@@ -707,10 +707,13 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           const col  = r2(Math.max(0, this.gross - ss));
           const brks = Object.values(yd.table);
           const brk  = brks.find(b => col < b.to) || brks[brks.length - 1];
-          const base = r2(col * brk.tax - brk.parcel);
-          const cr   = yd.county_tax?.[this.municipality] ?? 0;
-          const ben  = yd.county_tax ? r2(base * (0.05 - cr)) : 0;
-          const net  = r2(base - Math.max(0, ben));
+          const base   = r2(col * brk.tax - brk.parcel);
+          const cr     = yd.county_tax?.[this.municipality] ?? 0;
+          const ben    = yd.county_tax ? r2(base * (0.05 - cr)) : 0;
+          const rawNet = r2(base - Math.max(0, ben));
+          const ias    = yd.ias ?? yd.minimum_monthly_income;
+          const minimoEx = Math.max(yd.minimum_monthly_income * 14, 1.5 * 14 * ias);
+          const net    = Math.max(0, rawNet > 0 && this.gross <= minimoEx ? 0 : rawNet);
           return { netTax: net, takeHome: r2(this.gross - ss - net), tet: this.gross > 0 ? net / this.gross * 100 : 0 };
         },
         get bracketRows() {
