@@ -158,12 +158,6 @@
       flex: 1;
       min-width: 0;
     }
-    .delta-context {
-      font-size: .68rem;
-      font-weight: 600;
-      color: var(--muted);
-      margin-left: .5rem;
-    }
 
     /* ── Page heading ───────────────────────────── */
     .heading {
@@ -492,26 +486,6 @@
     .badge-btn { cursor: pointer; transition: background .1s, color .1s; }
     .badge-btn:hover { background: var(--primary); color: #fff; }
 
-    /* Delta badges */
-    .delta {
-      font-size: .62rem; font-weight: 700;
-      font-family: var(--mono);
-      padding: .08rem .35rem;
-      border-radius: 0; border: 1px solid currentColor;
-      vertical-align: middle; white-space: nowrap;
-    }
-    .delta-up      { color: var(--green); }
-    .delta-down    { color: var(--red); }
-    .delta-tax-up  { color: var(--red); }
-    .delta-tax-down{ color: var(--green); }
-    .delta-neutral { color: var(--muted); }
-    /* On the orange hero background, override to readable white */
-    .hero .delta-up, .hero .delta-down,
-    .hero .delta-tax-up, .hero .delta-tax-down,
-    .hero .delta-neutral {
-      color: #000;
-      border-color: rgba(0,0,0,.3);
-    }
 
     /* Inflation row */
     .inflation-row {
