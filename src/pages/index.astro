@@ -222,6 +222,17 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
             </div>
           </div>
 
+          <!-- RNH / IFICI -->
+          <div class="irs-jovem-toggle-row" style="border-top:none; padding-top:.25rem;" :class="!rnhAvailable ? 'irs-jovem-disabled' : ''">
+            <label class="toggle-label" for="input-rnh">
+              <span>RNH / IFICI</span>
+              <span x-show="!rnhAvailable" class="badge" title="Disponível a partir de 2009 · incompatível com IRS Jovem">não disponível</span>
+              <input id="input-rnh" type="checkbox" class="irs-jovem-check"
+                     x-model="rnhEnabled"
+                     :disabled="!rnhAvailable">
+            </label>
+          </div>
+
         </div>
       </div>
 
@@ -328,18 +339,32 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
               <span class="val" x-text="'€ ' + fmt(collectableIncome)"></span>
             </div>
 
-            <div class="detail-row sub">
-              <span class="lbl">
-                Escalão
-                <button class="badge badge-btn" @click="showBrackets = true; $nextTick(() => document.querySelector('.brackets-section')?.scrollIntoView({behavior:'smooth', block:'nearest'}))" :title="'Ver escalões ' + year" x-text="fmtPct(bracket.tax * 100)"></button>
-              </span>
-              <span class="val" x-text="'€ ' + fmt(amountCalculated)"></span>
-            </div>
+            <template x-if="!rnhActive">
+              <div class="detail-row sub">
+                <span class="lbl">
+                  Escalão
+                  <button class="badge badge-btn" @click="showBrackets = true; $nextTick(() => document.querySelector('.brackets-section')?.scrollIntoView({behavior:'smooth', block:'nearest'}))" :title="'Ver escalões ' + year" x-text="fmtPct(bracket.tax * 100)"></button>
+                </span>
+                <span class="val" x-text="'€ ' + fmt(amountCalculated)"></span>
+              </div>
+            </template>
 
-            <div class="detail-row sub">
-              <span class="lbl">Parcela a abater</span>
-              <span class="val" x-text="'− € ' + fmt(bracket.parcel)"></span>
-            </div>
+            <template x-if="!rnhActive">
+              <div class="detail-row sub">
+                <span class="lbl">Parcela a abater</span>
+                <span class="val" x-text="'− € ' + fmt(bracket.parcel)"></span>
+              </div>
+            </template>
+
+            <template x-if="rnhActive">
+              <div class="detail-row sub">
+                <span class="lbl">
+                  RNH / IFICI
+                  <span class="badge">20% taxa fixa</span>
+                </span>
+                <span class="val" x-text="'€ ' + fmt(amountCalculated)"></span>
+              </div>
+            </template>
 
             <div class="detail-row strong">
               <span class="lbl">Coleta (total)</span>
@@ -528,6 +553,16 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
         </div>
 
         <div class="help-section">
+          <div class="help-section-label">RNH / IFICI</div>
+          <p>Regime de tributação à taxa fixa de 20% sobre rendimentos de fonte portuguesa, em substituição dos escalões progressivos normais. Disponível para residentes não habituais elegíveis a partir de 2009.</p>
+          <ul class="help-list">
+            <li><strong>RNH</strong> (Residente Não Habitual) — até 2023, para novas inscrições</li>
+            <li><strong>IFICI</strong> (RNH 2.0) — a partir de 2024, para investigadores, profissionais de tecnologia e outras atividades elegíveis</li>
+          </ul>
+          <p>A taxa solidariedade e o benefício municipal continuam a aplicar-se normalmente. Regime mutuamente exclusivo com o IRS Jovem.</p>
+        </div>
+
+        <div class="help-section">
           <div class="help-section-label">Fontes de dados</div>
           <ul class="help-list">
             <li>Escalões e deduções: Código do IRS e Orçamentos do Estado</li>
@@ -565,17 +600,18 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         withheldInput: '5750',
         irsJovemEnabled: false,
         irsJovemFirstYearInput: String(Math.min(Math.max(new Date().getFullYear() - 1, 2002), 2026) - 5),
+        rnhEnabled: false,
 
         init() {
           try {
             const saved = JSON.parse(localStorage.getItem('irs-state') || 'null');
             if (saved) {
-              const fields = ['grossInput','municipality','yearIdx','specificDeductionInput','deductionsInput','withheldInput','irsJovemEnabled','irsJovemFirstYearInput'];
+              const fields = ['grossInput','municipality','yearIdx','specificDeductionInput','deductionsInput','withheldInput','irsJovemEnabled','irsJovemFirstYearInput','rnhEnabled'];
               for (const f of fields) if (saved[f] !== undefined) this[f] = saved[f];
               this.yearIdx = Math.max(0, Math.min(this.availableYears.length - 1, this.yearIdx));
             }
           } catch {}
-          ['grossInput','municipality','yearIdx','specificDeductionInput','deductionsInput','withheldInput','irsJovemEnabled','irsJovemFirstYearInput']
+          ['grossInput','municipality','yearIdx','specificDeductionInput','deductionsInput','withheldInput','irsJovemEnabled','irsJovemFirstYearInput','rnhEnabled']
             .forEach(f => this.$watch(f, () => this._saveState()));
           this.$nextTick(() => {
             const m = this.municipality;
@@ -613,7 +649,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           return isNaN(m) ? this.specificDeductionAuto : r2(m);
         },
 
-        get irsJovemAvailable() { return parseInt(this.year) >= 2025; },
+        get irsJovemAvailable() { return parseInt(this.year) >= 2025 && !this.rnhEnabled; },
         get irsJovemActive()    { return this.irsJovemEnabled && this.irsJovemAvailable && this.irsJovemFirstYearValid; },
         get irsJovemFirstYear() { return parseInt(this.irsJovemFirstYearInput) || null; },
         get irsJovemFirstYearValid() {
@@ -639,6 +675,9 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           return r2(Math.min(this.gross, this.irsJovemCap) * this.irsJovemRate);
         },
 
+        get rnhAvailable()  { return parseInt(this.year) >= 2009 && !this.irsJovemActive; },
+        get rnhActive()     { return this.rnhEnabled && this.rnhAvailable; },
+
         get minimoExistencia() {
           const yd = this.yearData;
           const ias = yd.ias ?? yd.minimum_monthly_income;
@@ -650,8 +689,8 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           return this.brackets.find(b => this.collectableIncome < b.to)
               || this.brackets[this.brackets.length - 1];
         },
-        get amountCalculated() { return r2(this.collectableIncome * this.bracket.tax); },
-        get baseTax()          { return r2(this.amountCalculated - this.bracket.parcel); },
+        get amountCalculated() { return this.rnhActive ? r2(this.collectableIncome * 0.20) : r2(this.collectableIncome * this.bracket.tax); },
+        get baseTax()          { return this.rnhActive ? this.amountCalculated : r2(this.amountCalculated - this.bracket.parcel); },
         get solidarityTax() {
           const bands = this.yearData.solidarity?.bands;
           if (!bands || bands.length === 0) return 0;
@@ -676,7 +715,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         },
         get countyBenefit()    { return this.yearData.county_tax ? r2((this.baseTax - this.deductions) * (0.05 - this.countyRate)) : 0; },
         get rawNetTax()        { return r2(this.baseTax + this.solidarityTax - this.deductions - Math.max(0, this.countyBenefit)); },
-        get minimoExistenciaActive() { return this.gross > 0 && this.rawNetTax > 0 && this.gross <= this.minimoExistencia; },
+        get minimoExistenciaActive() { return !this.rnhActive && this.gross > 0 && this.rawNetTax > 0 && this.gross <= this.minimoExistencia; },
         get netTax()           { return Math.max(0, this.minimoExistenciaActive ? 0 : this.rawNetTax); },
         get takeHome()         { return r2(this.gross - this.specificDeduction - this.netTax); },
         get assessedTax()      { return r2(this.netTax - this.withheld); },
@@ -736,6 +775,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
             yearIdx: this.yearIdx, specificDeductionInput: this.specificDeductionInput,
             deductionsInput: this.deductionsInput, withheldInput: this.withheldInput,
             irsJovemEnabled: this.irsJovemEnabled, irsJovemFirstYearInput: this.irsJovemFirstYearInput,
+            rnhEnabled: this.rnhEnabled,
           }));
         },
 
@@ -746,6 +786,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           this.yearIdx = y - 2002; this.specificDeductionInput = '';
           this.deductionsInput = '650'; this.withheldInput = '5750';
           this.irsJovemEnabled = false; this.irsJovemFirstYearInput = String(y - 5);
+          this.rnhEnabled = false;
         },
 
         toggleTheme() {
