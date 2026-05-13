@@ -173,7 +173,7 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
           <div style="height:.75rem;"></div>
 
           <div class="field">
-            <label for="input-specific-deduction">Dedução específica (€)
+            <label for="input-specific-deduction"><span class="toggle-tip" data-tooltip="Deduzido automaticamente ao bruto: Segurança Social (11%) ou mínimo legal, o que for maior">Dedução específica (€)</span>
               <span class="badge badge-auto" x-show="!specificDeductionInput" title="Calculado automaticamente: máx(dedução mínima legal, rendimento bruto × taxa de segurança social)">calculado</span>
             </label>
             <input id="input-specific-deduction" type="number" min="0" step="0.01"
@@ -182,14 +182,14 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
           </div>
 
           <div class="field" style="margin-bottom:0;">
-            <label for="input-deductions">Deduções à coleta (€)</label>
+            <label for="input-deductions"><span class="toggle-tip" data-tooltip="Despesas de saúde, educação ou habitação que reduzem diretamente o imposto a pagar">Deduções à coleta (€)</span></label>
             <input id="input-deductions" type="number" min="0" step="10" placeholder="Ex: 892"
                    aria-describedby="hint-deductions"
                    x-model="deductionsInput">
             <div id="hint-deductions" class="optional-label">opcional</div>
           </div>
           <div class="field" style="margin-bottom:0;">
-            <label for="input-withheld">Retenção na fonte (€)</label>
+            <label for="input-withheld"><span class="toggle-tip" data-tooltip="Valor já descontado no salário ao longo do ano pela entidade patronal por conta do IRS">Retenção na fonte (€)</span></label>
             <input id="input-withheld" type="number" min="0" step="10" placeholder="Ex: 5 200"
                    aria-describedby="hint-withheld"
                    x-model="withheldInput">
@@ -199,7 +199,7 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
           <!-- IRS Jovem -->
           <div class="irs-jovem-toggle-row" :class="!irsJovemAvailable ? 'irs-jovem-disabled' : ''">
             <label class="toggle-label" for="input-irs-jovem">
-              <span>IRS Jovem</span>
+              <span class="toggle-tip" data-tooltip="Isenção parcial (100%→25%) nos primeiros 10 anos de rendimentos, para jovens até 35 anos">IRS Jovem</span>
               <span x-show="!irsJovemAvailable" class="badge" title="Disponível a partir de 2025">não disponível</span>
               <input id="input-irs-jovem" type="checkbox" class="irs-jovem-check"
                      x-model="irsJovemEnabled"
@@ -222,10 +222,21 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
             </div>
           </div>
 
+          <!-- Programa Regressar -->
+          <div class="irs-jovem-toggle-row" style="border-top:none; padding-top:.25rem;" :class="!regressarAvailable ? 'irs-jovem-disabled' : ''">
+            <label class="toggle-label" for="input-regressar">
+              <span class="toggle-tip" data-tooltip="Isenção de 50% para emigrantes regressados a Portugal (máx. € 250 000 · 5 anos)">Prog. Regressar</span>
+              <span x-show="!regressarAvailable" class="badge" title="Disponível a partir de 2019 · incompatível com IRS Jovem e RNH">não disponível</span>
+              <input id="input-regressar" type="checkbox" class="irs-jovem-check"
+                     x-model="regressarEnabled"
+                     :disabled="!regressarAvailable">
+            </label>
+          </div>
+
           <!-- RNH / IFICI -->
           <div class="irs-jovem-toggle-row" style="border-top:none; padding-top:.25rem;" :class="!rnhAvailable ? 'irs-jovem-disabled' : ''">
             <label class="toggle-label" for="input-rnh">
-              <span>RNH / IFICI</span>
+              <span class="toggle-tip" data-tooltip="Taxa fixa de 20% em substituição dos escalões progressivos (residente não habitual)">RNH / IFICI</span>
               <span x-show="!rnhAvailable" class="badge" title="Disponível a partir de 2009 · incompatível com IRS Jovem">não disponível</span>
               <input id="input-rnh" type="checkbox" class="irs-jovem-check"
                      x-model="rnhEnabled"
@@ -331,6 +342,16 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
                   <span class="badge" x-text="fmtPct(irsJovemRate * 100) + ' · ano ' + irsJovemBenefitYear" :title="'Isenção IRS Jovem: ' + fmtPct(irsJovemRate * 100) + ' sobre rendimento até € ' + fmt(irsJovemCap)"></span>
                 </span>
                 <span class="val" x-text="'− € ' + fmt(irsJovemExempt)"></span>
+              </div>
+            </template>
+
+            <template x-if="regressarActive">
+              <div class="detail-row sub">
+                <span class="lbl">
+                  Prog. Regressar
+                  <span class="badge" title="Isenção de 50% sobre rendimento até € 250 000">50%</span>
+                </span>
+                <span class="val" x-text="'− € ' + fmt(regressarExempt)"></span>
               </div>
             </template>
 
@@ -553,13 +574,25 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
         </div>
 
         <div class="help-section">
-          <div class="help-section-label">RNH / IFICI</div>
-          <p>Regime de tributação à taxa fixa de 20% sobre rendimentos de fonte portuguesa, em substituição dos escalões progressivos normais. Disponível para residentes não habituais elegíveis a partir de 2009.</p>
+          <div class="help-section-label">Programa Regressar</div>
+          <p>Regime fiscal para emigrantes portugueses que regressam a Portugal (art.º 12.º-A do CIRS), introduzido no Orçamento do Estado de 2019. Para ser elegível é necessário:</p>
           <ul class="help-list">
-            <li><strong>RNH</strong> (Residente Não Habitual) — até 2023, para novas inscrições</li>
-            <li><strong>IFICI</strong> (RNH 2.0) — a partir de 2024, para investigadores, profissionais de tecnologia e outras atividades elegíveis</li>
+            <li>Tornar-se residente fiscal em Portugal entre 2019 e 2026</li>
+            <li>Não ter sido residente em Portugal nos 5 anos civis anteriores ao regresso</li>
+            <li>Ter sido residente em Portugal em momento anterior a esse período</li>
+            <li>Ter a situação tributária regularizada</li>
           </ul>
-          <p>A taxa solidariedade e o benefício municipal continuam a aplicar-se normalmente. Regime mutuamente exclusivo com o IRS Jovem.</p>
+          <p>O benefício consiste numa isenção de <strong>50%</strong> sobre rendimentos do trabalho dependente até <strong>€ 250 000</strong>, durante <strong>5 anos</strong> consecutivos a partir do ano de regresso. Regime mutuamente exclusivo com IRS Jovem e RNH / IFICI.</p>
+        </div>
+
+        <div class="help-section">
+          <div class="help-section-label">RNH / IFICI</div>
+          <p>Regime de tributação à <strong>taxa fixa de 20%</strong> sobre rendimentos de fonte portuguesa, em substituição dos escalões progressivos normais, com duração de 10 anos. Existem duas variantes:</p>
+          <ul class="help-list">
+            <li><strong>RNH</strong> (Residente Não Habitual) — regime original, disponível para inscrições até 2023; ainda ativo para quem se inscreveu até essa data</li>
+            <li><strong>IFICI</strong> (RNH 2.0) — em vigor a partir de 2024, destinado a investigadores, docentes, profissionais de tecnologia e outras atividades de elevado valor acrescentado</li>
+          </ul>
+          <p>A taxa de solidariedade (rendimentos &gt; € 80 000) e o benefício municipal continuam a aplicar-se normalmente. Regime mutuamente exclusivo com IRS Jovem e Programa Regressar.</p>
         </div>
 
         <div class="help-section">
@@ -601,17 +634,18 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
         irsJovemEnabled: false,
         irsJovemFirstYearInput: String(Math.min(Math.max(new Date().getFullYear() - 1, 2002), 2026) - 5),
         rnhEnabled: false,
+        regressarEnabled: false,
 
         init() {
           try {
             const saved = JSON.parse(localStorage.getItem('irs-state') || 'null');
             if (saved) {
-              const fields = ['grossInput','municipality','yearIdx','specificDeductionInput','deductionsInput','withheldInput','irsJovemEnabled','irsJovemFirstYearInput','rnhEnabled'];
+              const fields = ['grossInput','municipality','yearIdx','specificDeductionInput','deductionsInput','withheldInput','irsJovemEnabled','irsJovemFirstYearInput','rnhEnabled','regressarEnabled'];
               for (const f of fields) if (saved[f] !== undefined) this[f] = saved[f];
               this.yearIdx = Math.max(0, Math.min(this.availableYears.length - 1, this.yearIdx));
             }
           } catch {}
-          ['grossInput','municipality','yearIdx','specificDeductionInput','deductionsInput','withheldInput','irsJovemEnabled','irsJovemFirstYearInput','rnhEnabled']
+          ['grossInput','municipality','yearIdx','specificDeductionInput','deductionsInput','withheldInput','irsJovemEnabled','irsJovemFirstYearInput','rnhEnabled','regressarEnabled']
             .forEach(f => this.$watch(f, () => this._saveState()));
           this.$nextTick(() => {
             const m = this.municipality;
@@ -649,7 +683,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           return isNaN(m) ? this.specificDeductionAuto : r2(m);
         },
 
-        get irsJovemAvailable() { return parseInt(this.year) >= 2025 && !this.rnhEnabled; },
+        get irsJovemAvailable() { return parseInt(this.year) >= 2025 && !this.rnhEnabled && !this.regressarEnabled; },
         get irsJovemActive()    { return this.irsJovemEnabled && this.irsJovemAvailable && this.irsJovemFirstYearValid; },
         get irsJovemFirstYear() { return parseInt(this.irsJovemFirstYearInput) || null; },
         get irsJovemFirstYearValid() {
@@ -675,8 +709,12 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           return r2(Math.min(this.gross, this.irsJovemCap) * this.irsJovemRate);
         },
 
-        get rnhAvailable()  { return parseInt(this.year) >= 2009 && !this.irsJovemActive; },
+        get rnhAvailable()  { return parseInt(this.year) >= 2009 && !this.irsJovemActive && !this.regressarEnabled; },
         get rnhActive()     { return this.rnhEnabled && this.rnhAvailable; },
+
+        get regressarAvailable() { return parseInt(this.year) >= 2019 && !this.irsJovemActive && !this.rnhActive; },
+        get regressarActive()    { return this.regressarEnabled && this.regressarAvailable; },
+        get regressarExempt()    { return this.regressarActive ? r2(Math.min(this.gross, 250000) * 0.50) : 0; },
 
         get minimoExistencia() {
           const yd = this.yearData;
@@ -684,7 +722,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           return Math.max(yd.minimum_monthly_income * 14, 1.5 * 14 * ias);
         },
 
-        get collectableIncome() { return r2(Math.max(0, this.gross - this.specificDeduction - this.irsJovemExempt)); },
+        get collectableIncome() { return r2(Math.max(0, this.gross - this.specificDeduction - this.irsJovemExempt - this.regressarExempt)); },
         get bracket() {
           return this.brackets.find(b => this.collectableIncome < b.to)
               || this.brackets[this.brackets.length - 1];
@@ -776,6 +814,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
             deductionsInput: this.deductionsInput, withheldInput: this.withheldInput,
             irsJovemEnabled: this.irsJovemEnabled, irsJovemFirstYearInput: this.irsJovemFirstYearInput,
             rnhEnabled: this.rnhEnabled,
+            regressarEnabled: this.regressarEnabled,
           }));
         },
 
@@ -787,6 +826,7 @@ const INFLATION = ${JSON.stringify(INFLATION_MAP)};`}></script>
           this.deductionsInput = '650'; this.withheldInput = '5750';
           this.irsJovemEnabled = false; this.irsJovemFirstYearInput = String(y - 5);
           this.rnhEnabled = false;
+          this.regressarEnabled = false;
         },
 
         toggleTheme() {
