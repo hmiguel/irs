@@ -649,6 +649,29 @@
       user-select: none;
     }
     .toggle-label .irs-jovem-check { margin-left: auto; }
+    .toggle-tip {
+      position: relative;
+    }
+    .toggle-tip::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + .4rem);
+      left: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      color: var(--fg);
+      font-size: .65rem; font-weight: 400;
+      text-transform: none; letter-spacing: 0;
+      padding: .3rem .5rem;
+      white-space: normal;
+      max-width: 220px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .15s;
+      z-index: 10;
+    }
+    .toggle-tip:hover::after { opacity: 1; }
     .irs-jovem-check {
       appearance: none; -webkit-appearance: none;
       width: .9rem; height: .9rem;
