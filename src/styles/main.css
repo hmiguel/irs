@@ -642,14 +642,19 @@
     .irs-jovem-disabled { opacity: .4; pointer-events: none; }
     .toggle-label {
       display: flex; align-items: center; gap: .5rem;
+      width: 100%;
       cursor: pointer; font-size: .7rem; font-weight: 700;
       text-transform: uppercase; letter-spacing: .06em;
       color: var(--muted);
       user-select: none;
     }
+    .toggle-label .irs-jovem-check { margin-left: auto; }
     .irs-jovem-check {
       appearance: none; -webkit-appearance: none;
       width: .9rem; height: .9rem;
+      min-width: .9rem; min-height: .9rem;
+      flex-shrink: 0;
+      margin: 0; padding: 0;
       border: 1px solid var(--muted);
       background: transparent;
       cursor: pointer; position: relative;
