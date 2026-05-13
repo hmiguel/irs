@@ -690,7 +690,7 @@
     .irs-jovem-check:checked::after {
       content: '';
       position: absolute; inset: 0;
-      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1.5 5l2.5 2.5 4.5-4' stroke='%23e85d04' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") center/80% no-repeat;
+      background: url("data:image/svg+xml,%3Csvg viewBox='0 0 10 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 2L8 8M8 2L2 8' stroke='%23e85d04' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") center/80% no-repeat;
     }
     .irs-jovem-check:focus-visible {
       outline: 2px solid var(--primary); outline-offset: 2px;
