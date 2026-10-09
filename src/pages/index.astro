@@ -594,7 +594,7 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
             <li><strong>RNH</strong> (Residente Não Habitual) — regime original, disponível para inscrições até 2023; ainda ativo para quem se inscreveu até essa data</li>
             <li><strong>IFICI</strong> (RNH 2.0) — em vigor a partir de 2024, destinado a investigadores, docentes, profissionais de tecnologia e outras atividades de elevado valor acrescentado</li>
           </ul>
-          <p>A taxa de solidariedade (rendimentos &gt; € 80 000) e o benefício municipal continuam a aplicar-se normalmente. Regime mutuamente exclusivo com IRS Jovem e Programa Regressar.</p>
+          <p>A taxa de solidariedade (rendimentos &gt; <span x-text="'€ ' + fmtInt(yearData.solidarity?.bands?.[0]?.from ?? 80000)">€ 80 000</span>) e o benefício municipal continuam a aplicar-se normalmente. Regime mutuamente exclusivo com IRS Jovem e Programa Regressar.</p>
         </div>
 
         <div class="help-section">
