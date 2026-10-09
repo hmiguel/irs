@@ -136,6 +136,17 @@
       text-align: center;
     }
 
+    .year-preview {
+      font-size: .62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .09em;
+      color: var(--primary);
+      border: 1px solid var(--primary);
+      padding: .15rem .35rem;
+      cursor: help;
+    }
+
     /* ── Year pill bar ──────────────────────────── */
     .year-bar {
       flex: 1;
