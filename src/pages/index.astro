@@ -275,7 +275,7 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
             <div class="hero-amount">
               <span x-text="'€ ' + fmt(takeHome)"></span>
             </div>
-            <div class="hero-sub" x-text="'de € ' + fmt(gross) + ' brutos · ' + year"></div>
+            <div class="hero-sub" x-text="'de € ' + fmt(gross) + ' brutos · ' + year + (yearData.official === false ? ' (previsão)' : '')"></div>
             <div class="monthly-hint" title="Valor mensal líquido estimado (salário pago em 14 meses)" x-text="'≈ € ' + fmt(r2(takeHome / 14)) + ' × 14 meses'"></div>
             <template x-if="inflationAdjustedTakeHome !== null">
               <div class="inflation-sub" :title="'Estimativa do poder de compra equivalente, ajustado à inflação acumulada de ' + year + ' a ' + availableYears[availableYears.length-1]">
@@ -473,15 +473,15 @@ const commitSha = (import.meta.env.CF_PAGES_COMMIT_SHA as string | undefined)?.s
       <!-- Escalões -->
       <button class="brackets-toggle" @click="showBrackets = !showBrackets"
               :aria-expanded="showBrackets"
-              :aria-label="'Escalões de IRS ' + year + (showBrackets ? ' — fechar' : ' — abrir')">
-        <span aria-hidden="true">Escalões <span x-text="year"></span></span>
+              :aria-label="'Escalões de IRS ' + year + (yearData.official === false ? ' (previsão)' : '') + (showBrackets ? ' — fechar' : ' — abrir')">
+        <span aria-hidden="true">Escalões <span x-text="year"></span> <span class="year-preview" x-show="yearData.official === false">Previsão</span></span>
         <span class="brackets-toggle-icon" aria-hidden="true" x-text="showBrackets ? '−' : '+'"></span>
       </button>
 
       <template x-if="showBrackets">
         <div class="brackets-section">
           <table>
-            <caption class="sr-only" x-text="'Escalões de IRS ' + year"></caption>
+            <caption class="sr-only" x-text="'Escalões de IRS ' + year + (yearData.official === false ? ' (previsão)' : '')"></caption>
             <thead>
               <tr>
                 <th scope="col">Rendimento coletável</th>

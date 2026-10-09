@@ -146,6 +146,7 @@
       padding: .15rem .35rem;
       cursor: help;
     }
+    .brackets-toggle .year-preview { margin-left: .4rem; vertical-align: middle; cursor: inherit; }
 
     /* ── Year pill bar ──────────────────────────── */
     .year-bar {
